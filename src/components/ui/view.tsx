@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Package, Pencil, Plus, RefreshCw, Search, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -37,6 +37,8 @@ export default function ProductListPage() {
     );
   }, [products, search, typeFilter, statusFilter]);
 
+  const hasFilters = Boolean(search.trim() || typeFilter || statusFilter);
+
   async function confirmDelete() {
     if (!toDelete) return;
     setDeleting(true);
@@ -54,46 +56,76 @@ export default function ProductListPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
           <p className="mt-1 text-sm text-slate-400">
             {loading ? "Loading…" : `${filtered.length} of ${products.length} products`}
           </p>
         </div>
-        <div className="flex gap-3">
-          <button onClick={reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+        <div className="flex w-full gap-3 sm:w-auto">
+          <button onClick={reload} aria-label="Refresh products" title="Refresh products"
+            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 transition hover:bg-slate-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <Link href="/products/add"
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500">
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 sm:flex-none">
             <Plus className="h-4 w-4" /> Add Product
           </Link>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_200px_160px]">
-        <Input label="" aria-label="Search products" icon={Search} placeholder="Search by name or code…"
-          value={search} onChange={(e) => setSearch(e.target.value)} className="mt-0" />
-        <Select aria-label="Filter by type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-          <option value="">All types</option>
-          {PRODUCT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-        </Select>
-        <Select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="">All status</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </Select>
+      <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900/60 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-sm font-medium text-slate-200">Find a product</p>
+            <p className="mt-0.5 text-xs text-slate-500">Search by name or code, then narrow by type or status.</p>
+          </div>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setTypeFilter("");
+                setStatusFilter("");
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-400 transition hover:text-blue-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+            >
+              <X className="h-3.5 w-3.5" /> Clear filters
+            </button>
+          )}
+        </div>
+        <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_200px_160px]">
+          <Input label="" aria-label="Search products" icon={Search} placeholder="Search by name or code…"
+            value={search} onChange={(e) => setSearch(e.target.value)} className="mt-0" />
+          <Select aria-label="Filter by type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="">All types</option>
+            {PRODUCT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </Select>
+          <Select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="">All status</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </Select>
+        </div>
+        {hasFilters && (
+          <p className="mt-3 text-xs text-slate-500" role="status">
+            Showing {filtered.length} matching {filtered.length === 1 ? "product" : "products"}.
+          </p>
+        )}
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="mt-6 overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-lg shadow-black/10">
         {loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex flex-col items-center justify-center gap-3 p-16">
+            <Spinner className="h-7 w-7" />
+            <p className="text-sm text-slate-400">Loading products…</p>
+          </div>
         ) : error ? (
           <div className="p-12 text-center">
-            <p className="text-red-400">{error}</p>
-            <button onClick={reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
+            <p className="font-medium text-red-300">Could not load products</p>
+            <p className="mt-1 text-sm text-red-400/90">{error}</p>
+            <button onClick={reload} className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">Try again</button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center p-16 text-center">
@@ -107,8 +139,11 @@ export default function ProductListPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
+            <p className="border-b border-slate-800 px-5 py-2 text-xs text-slate-500 sm:hidden">
+              Swipe horizontally to see all product details.
+            </p>
             <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-800 bg-slate-950/30 text-xs uppercase tracking-wider text-slate-400">
                 <tr>
                   <th className="px-5 py-3 font-medium">Code</th>
                   <th className="px-5 py-3 font-medium">Name</th>
@@ -121,7 +156,7 @@ export default function ProductListPage() {
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {filtered.map((p) => (
-                  <tr key={p._id} className="hover:bg-slate-800/40">
+                  <tr key={p._id} className="transition-colors hover:bg-slate-800/40">
                     <td className="px-5 py-3.5 font-mono text-xs text-slate-300">{p.code}</td>
                     <td className="px-5 py-3.5 font-medium">{p.name}</td>
                     <td className="px-5 py-3.5">
@@ -140,11 +175,12 @@ export default function ProductListPage() {
                     <td className="px-5 py-3.5">
                       <div className="flex justify-end gap-1">
                         <Link href={`/products/edit?id=${p._id}`} aria-label={`Edit ${p.code}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                          title={`Edit ${p.code}`}
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
                           <Pencil className="h-4 w-4" />
                         </Link>
-                        <button onClick={() => setToDelete(p)} aria-label={`Delete ${p.code}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400">
+                        <button onClick={() => setToDelete(p)} aria-label={`Delete ${p.code}`} title={`Delete ${p.code}`}
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>

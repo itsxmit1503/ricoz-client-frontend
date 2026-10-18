@@ -7,6 +7,7 @@ type Props = SelectHTMLAttributes<HTMLSelectElement> & {
 
 export default function Select({ label, error, className = "", children, ...rest }: Props) {
   const id = useId();
+  const errorId = error ? `${id}-error` : undefined;
   return (
     <div className="space-y-1.5">
       {label && (
@@ -16,16 +17,18 @@ export default function Select({ label, error, className = "", children, ...rest
       )}
       <select
         id={id}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         className={`h-11 w-full rounded-lg border bg-slate-900 px-3 text-sm text-slate-100 transition focus:outline-none focus:ring-2 ${
           error
             ? "border-red-500/70 focus:ring-red-500/40"
-            : "border-slate-700 focus:border-blue-500 focus:ring-blue-500/40"
+            : "border-slate-700/90 focus:border-slate-500 focus:ring-slate-500/40"
         } ${className}`}
         {...rest}
       >
         {children}
       </select>
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p id={errorId} className="text-xs text-red-400">{error}</p>}
     </div>
   );
 }

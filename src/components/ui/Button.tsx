@@ -8,7 +8,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants = {
   primary:
-    "bg-blue-600 text-white hover:bg-blue-500 focus-visible:ring-blue-500 disabled:hover:bg-blue-600",
+    "bg-blue-500 text-white hover:bg-blue-400 focus-visible:ring-blue-400 disabled:hover:bg-blue-500",
   outline:
     "border border-slate-700 bg-slate-900 text-slate-100 hover:bg-slate-800 focus-visible:ring-slate-500",
 };

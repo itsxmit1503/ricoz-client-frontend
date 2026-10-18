@@ -20,9 +20,9 @@ export default function AuthShell({
 }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <aside className="hidden flex-col justify-between border-r border-slate-800 bg-linear-to-br from-slate-900 via-slate-900 to-blue-950 p-12 lg:flex">
+      <aside className="hidden flex-col justify-between border-r border-slate-800 bg-linear-to-br from-slate-900 via-slate-900 to-slate-950 p-12 lg:flex">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600/80">
             <Factory className="h-5 w-5 text-white" />
           </span>
           <span className="text-xl font-semibold tracking-tight">Ricoz</span>
@@ -35,7 +35,7 @@ export default function AuthShell({
           <ul className="mt-8 space-y-4">
             {highlights.map((h) => (
               <li key={h} className="flex items-start gap-3 text-slate-300">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-400" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-blue-300" />
                 {h}
               </li>
             ))}
@@ -48,7 +48,7 @@ export default function AuthShell({
       <main className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600/80">
               <Factory className="h-4 w-4 text-white" />
             </span>
             <span className="text-lg font-semibold">Ricoz</span>

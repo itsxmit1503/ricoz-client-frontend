@@ -1,7 +1,9 @@
 "use client";
 
 import { TriangleAlert } from "lucide-react";
+import { useEffect, useId, useRef } from "react";
 import Button from "./Button";
+import { focusWithoutScroll, getFocusableElements, isTopmostLayer, lockBodyScroll } from "./focus";
 
 interface Props {
   open: boolean;
@@ -22,18 +24,88 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
 }: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const onCancelRef = useRef(onCancel);
+  const loadingRef = useRef(Boolean(loading));
+  const titleId = useId();
+
+  useEffect(() => {
+    onCancelRef.current = onCancel;
+    loadingRef.current = Boolean(loading);
+  }, [loading, onCancel]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    previouslyFocusedRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const releaseBodyScroll = lockBodyScroll();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const dialog = dialogRef.current;
+      if (!dialog || !isTopmostLayer(dialog)) return;
+
+      if (event.key === "Escape") {
+        if (!loadingRef.current) {
+          event.preventDefault();
+          onCancelRef.current();
+        }
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const focusable = getFocusableElements(dialog);
+      if (!focusable.length) {
+        event.preventDefault();
+        focusWithoutScroll(dialog);
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+        event.preventDefault();
+        focusWithoutScroll(last);
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        focusWithoutScroll(first);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    requestAnimationFrame(() => focusWithoutScroll(getFocusableElements(dialogRef.current!)[0] ?? dialogRef.current));
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      releaseBodyScroll();
+      requestAnimationFrame(() => {
+        if (previouslyFocusedRef.current?.isConnected) {
+          focusWithoutScroll(previouslyFocusedRef.current);
+        }
+      });
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div
+      ref={dialogRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
+    >
       <div className="absolute inset-0 bg-black/70" onClick={loading ? undefined : onCancel} />
-      <div className="relative w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+      <div className="relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
         <div className="flex items-start gap-4">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
             <TriangleAlert className="h-5 w-5" />
           </span>
           <div>
-            <h2 className="font-semibold">{title}</h2>
+            <h2 id={titleId} className="font-semibold">{title}</h2>
             <p className="mt-1 text-sm text-slate-400">{message}</p>
           </div>
         </div>

@@ -15,25 +15,25 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const dashActive = pathname === dashboardItem.href;
 
   return (
-    <nav className="flex h-full w-72 flex-col border-r border-slate-800 bg-slate-900">
-      <div className="flex h-16 shrink-0 items-center gap-3 px-5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600">
+    <nav className="flex h-full w-72 flex-col border-r border-slate-800 bg-slate-900/95">
+      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-800/80 px-5">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600/80">
           <Factory className="h-4 w-4 text-white" />
         </span>
         <span className="text-lg font-semibold tracking-tight">Ricoz</span>
       </div>
 
-      <div className="flex-1 space-y-1 overflow-y-auto px-3 pb-6">
+      <div className="theme-scrollbar flex-1 space-y-1 overflow-y-auto px-3 pb-6">
         {/* Dashboard row (highlighted, chevron collapses all sections) */}
         <div
-          className={`flex items-center rounded-lg ${
-            dashActive ? "bg-slate-800 text-white" : "text-slate-200 hover:bg-slate-800/60"
+          className={`flex items-center rounded-lg transition-colors ${
+            dashActive ? "bg-slate-800/80 text-slate-100" : "text-slate-300 hover:bg-slate-800/60"
           }`}
         >
           <Link
             href={dashboardItem.href}
             onClick={onNavigate}
-            className="flex flex-1 items-center gap-3 px-3 py-2.5 font-medium"
+            className="flex min-h-11 flex-1 items-center gap-3 rounded-lg px-3 py-2.5 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             <DashIcon className="h-5 w-5" />
             {dashboardItem.label}
@@ -41,8 +41,9 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <button
             type="button"
             aria-label={hideAll ? "Expand sections" : "Collapse sections"}
+            aria-expanded={!hideAll}
             onClick={() => setHideAll((v) => !v)}
-            className="px-3 py-2.5 text-slate-400 hover:text-white"
+            className="rounded-lg px-3 py-2.5 text-slate-400 transition hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             <ChevronDown className={`h-4 w-4 transition-transform ${hideAll ? "-rotate-90" : ""}`} />
           </button>
@@ -54,16 +55,20 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           const isOpen = !hideAll && (openGroups[group.label] ?? true);
 
           return (
-            <div key={group.label} className="pt-2">
+            <div key={group.label} className="border-t border-slate-800/60 pt-2 first:border-t-0">
               <button
                 type="button"
+                aria-expanded={isOpen}
                 onClick={() =>
                   setOpenGroups((s) => ({ ...s, [group.label]: !(s[group.label] ?? true) }))
                 }
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-medium text-slate-100 hover:bg-slate-800/60"
+                className="flex min-h-10 w-full items-center gap-3 rounded-lg px-3 py-2 text-left font-medium text-slate-200 transition hover:bg-slate-800/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
               >
                 <Icon className="h-5 w-5 text-slate-300" />
                 <span className="flex-1">{group.label}</span>
+                <ChevronDown
+                  className={`h-4 w-4 text-slate-500 transition-transform ${isOpen ? "" : "-rotate-90"}`}
+                />
               </button>
 
               {isOpen && (
@@ -76,10 +81,10 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                         <Link
                           href={child.href}
                           onClick={onNavigate}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition ${
+                          className={`flex min-h-9 items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
                             active
-                              ? "bg-blue-600/15 text-blue-300"
-                              : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+                              ? "bg-blue-500/10 text-blue-200"
+                              : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-200"
                           }`}
                         >
                           {ChildIcon ? (

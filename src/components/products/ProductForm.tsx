@@ -52,8 +52,9 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border border-slate-800 bg-slate-900 p-6">
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-lg shadow-black/10 sm:p-6">
+      <fieldset className="grid gap-5 sm:grid-cols-2">
+        <legend className="mb-4 text-sm font-semibold text-slate-200">Product details</legend>
         <div className="sm:col-span-2">
           <Input label="Product name" placeholder="e.g. Steel Rod 10mm" value={form.name}
             onChange={(e) => update("name", e.target.value)} error={errors.name} />
@@ -85,11 +86,11 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
             Active
           </label>
         </div>
-      </div>
+      </fieldset>
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-6 sm:flex-row sm:justify-end">
         <Link href="/products"
-          className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 px-5 text-sm font-medium text-slate-200 hover:bg-slate-800">
+          className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 px-5 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
           Cancel
         </Link>
         <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">

@@ -24,3 +24,26 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.theme-scrollbar {
+  scrollbar-color: #334155 #0f172a;
+  scrollbar-width: thin;
+}
+
+.theme-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.theme-scrollbar::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.theme-scrollbar::-webkit-scrollbar-thumb {
+  border: 3px solid #0f172a;
+  border-radius: 999px;
+  background: #334155;
+}
+
+.theme-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
