@@ -1,5 +1,12 @@
 # UI Change Log
 
+## 2026-10-20 - Dashboard module density and responsive layout
+
+- **Files modified:** `src/components/dashboard/DashboardModuleGrid.tsx`, `src/app/(protected)/dashboard/page.tsx`, `src/app/dashboard-preview/page.tsx`
+- **What changed:** Adjusted the module grid to use two columns from the small breakpoint and three columns from the extra-large breakpoint; reduced mobile card density while retaining larger-screen breathing room; tightened card/list spacing; improved welcome-panel wrapping for the greeting, verification badge, supporting copy, and logout action; and aligned the preview spacing with the real Dashboard.
+- **Why:** Use common desktop widths more effectively, reduce repetitive vertical space, and keep the real Dashboard and isolated preview visually consistent across mobile, tablet, and desktop without changing navigation, routes, authentication, mock data, logout behavior, APIs, or business logic.
+- **Testing:** `npm.cmd run lint` passed; `npx.cmd tsc --noEmit` passed; `npm.cmd run build` passed; `git diff --check` passed. Browser verification passed at 390px, 768px, and 1440px preview widths: one-, two-, and three-column module layouts rendered as intended, with no visible clipping or overflow in the responsive welcome content.
+
 ## 2026-10-17 - Dashboard preview visual hierarchy
 
 - **Files modified:** `src/app/dashboard-preview/page.tsx`

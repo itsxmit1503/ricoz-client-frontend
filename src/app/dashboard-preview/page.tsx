@@ -26,11 +26,11 @@ export default function DashboardPreviewPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-5 sm:p-6">
+        <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-4 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
             Operations workspace
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
             <h1 className="text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
               Welcome, {mockUser.username} <span aria-hidden="true">👋</span>
             </h1>
@@ -46,7 +46,7 @@ export default function DashboardPreviewPage() {
           </p>
         </div>
 
-        <div className="mb-4 mt-8 flex items-end justify-between gap-4">
+        <div className="mb-4 mt-7 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 sm:mt-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Workspace modules

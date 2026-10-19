@@ -4,14 +4,14 @@ import { navGroups } from "@/components/layout/nav-config";
 
 export default function DashboardModuleGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
       {navGroups.map((group) => {
         const Icon = group.icon;
 
         return (
           <section
             key={group.label}
-            className="group flex min-h-52 flex-col rounded-xl border border-slate-800/80 bg-slate-900/70 p-5 transition duration-200 hover:border-slate-700 hover:bg-slate-900/90 focus-within:border-slate-700 focus-within:ring-1 focus-within:ring-slate-700"
+            className="group flex min-h-48 flex-col rounded-xl border border-slate-800/80 bg-slate-900/70 p-4 transition duration-200 hover:border-slate-700 hover:bg-slate-900/90 focus-within:border-slate-700 focus-within:ring-1 focus-within:ring-slate-700 sm:p-5"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
@@ -30,7 +30,7 @@ export default function DashboardModuleGrid() {
               </span>
             </div>
 
-            <ul className="mt-5 space-y-1 border-t border-slate-800/80 pt-3">
+            <ul className="mt-4 space-y-1 border-t border-slate-800/80 pt-3 sm:mt-5">
               {group.children.map((child) => (
                 <li key={child.href}>
                   <Link
