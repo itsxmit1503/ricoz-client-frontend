@@ -26,14 +26,15 @@ function MachinePicker() {
   }, [machines, search]);
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Machine Details</h1>
+    <div className="ui-page-enter mx-auto max-w-3xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Operations</p>
+      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">Machine Details</h1>
       <p className="mb-6 mt-1 text-sm text-slate-400">Choose a machine to view its details.</p>
 
       <Input label="" aria-label="Search machines" icon={Search} placeholder="Search by name or code…"
         value={search} onChange={(e) => setSearch(e.target.value)} />
 
-      <div className="mt-4 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="mt-5 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80">
         {loading ? (
           <div className="flex justify-center p-12"><Spinner /></div>
         ) : error ? (
@@ -43,7 +44,7 @@ function MachinePicker() {
         ) : (
           filtered.map((m) => (
             <Link key={m._id} href={`/machines/details?id=${m._id}`}
-              className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-800/50">
+              className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-slate-800/50 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-500">
               <div>
                 <p className="font-medium">{m.name}</p>
                 <p className="font-mono text-xs text-slate-400">{m.code}</p>
@@ -127,7 +128,7 @@ function MachineDetails({ id }: { id: string }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/machines" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
+      <Link href="/machines" className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors duration-150 hover:text-white motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
         <ArrowLeft className="h-4 w-4" /> Back to machines
       </Link>
 
@@ -140,19 +141,20 @@ function MachineDetails({ id }: { id: string }) {
         </div>
       ) : (
         <>
-          <div className="mb-6 mt-3 flex flex-wrap items-start justify-between gap-4">
+          <div className="mb-6 mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">{machine.name}</h1>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Machine profile</p>
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">{machine.name}</h1>
               <p className="mt-1 font-mono text-sm text-slate-400">{machine.code}</p>
             </div>
             {!editing && (
-              <div className="flex gap-3">
+              <div className="flex w-full gap-2 sm:w-auto sm:gap-3">
                 <button onClick={() => setEditing(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium hover:bg-slate-800">
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium transition duration-150 hover:bg-slate-800 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 sm:flex-none">
                   <Pencil className="h-4 w-4" /> Edit
                 </button>
                 <button onClick={() => setConfirmOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/10">
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-red-500/40 px-4 py-2.5 text-sm font-medium text-red-300 transition duration-150 hover:bg-red-500/10 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400 sm:flex-none">
                   <Trash2 className="h-4 w-4" /> Delete
                 </button>
               </div>
@@ -160,7 +162,7 @@ function MachineDetails({ id }: { id: string }) {
           </div>
 
           {editing ? (
-            <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+            <div className="rounded-xl border border-slate-800/90 bg-slate-900/80 p-4 sm:p-6">
               <MachineForm
                 submitLabel="Save changes"
                 onSubmit={handleUpdate}
@@ -176,7 +178,7 @@ function MachineDetails({ id }: { id: string }) {
             </div>
           ) : (
             <div className="space-y-6">
-              <section className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <section className="rounded-xl border border-slate-800/90 bg-slate-900/80 p-4 sm:p-6">
                 <h2 className="text-sm font-medium text-slate-300">Current status</h2>
                 <div className="mt-3"><MachineStatusBadge status={machine.status} /></div>
                 <p className="mb-3 mt-5 text-xs text-slate-500">Change status</p>
@@ -186,7 +188,7 @@ function MachineDetails({ id }: { id: string }) {
                     return (
                       <button key={s.value} onClick={() => changeStatus(s.value)}
                         disabled={current || savingStatus !== null}
-                        className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition disabled:cursor-not-allowed ${
+                        className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition duration-150 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 disabled:cursor-not-allowed ${
                           current
                             ? "border-blue-500 bg-blue-500/10 text-blue-300"
                             : "border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-50"
@@ -199,7 +201,7 @@ function MachineDetails({ id }: { id: string }) {
                 </div>
               </section>
 
-              <section className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+              <section className="rounded-xl border border-slate-800/90 bg-slate-900/80 p-4 sm:p-6">
                 <dl className="grid gap-6 sm:grid-cols-2">
                   <Detail label="Location">
                     <span className="inline-flex items-center gap-1.5">

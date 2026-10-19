@@ -18,7 +18,7 @@ export default function StatusFilterCards({ options, counts, active, onChange }:
             key={o.value}
             type="button"
             onClick={() => onChange(isActive ? "" : o.value)}
-            className={`min-w-32.5 flex-1 rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+            className={`min-w-32.5 flex-1 rounded-xl border p-3 text-left transition duration-200 ease-out motion-reduce:transition-none active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
               isActive ? "border-blue-500 bg-blue-500/10" : "border-slate-800 bg-slate-900 hover:border-slate-700"
             }`}
           >

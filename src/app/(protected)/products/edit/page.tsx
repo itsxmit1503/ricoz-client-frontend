@@ -24,14 +24,15 @@ function ProductPicker() {
   }, [products, search]);
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Edit Product</h1>
+    <div className="ui-page-enter mx-auto max-w-3xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Catalog</p>
+      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">Edit Product</h1>
       <p className="mb-6 mt-1 text-sm text-slate-400">Choose the product you want to edit.</p>
 
       <Input label="" aria-label="Search products" icon={Search} placeholder="Search by name or code…"
         value={search} onChange={(e) => setSearch(e.target.value)} />
 
-      <div className="mt-4 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="mt-5 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80">
         {loading ? (
           <div className="flex justify-center p-12"><Spinner /></div>
         ) : error ? (
@@ -41,7 +42,7 @@ function ProductPicker() {
         ) : (
           filtered.map((p) => (
             <Link key={p._id} href={`/products/edit?id=${p._id}`}
-              className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-800/50">
+              className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-slate-800/50 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-500">
               <div>
                 <p className="font-medium">{p.name}</p>
                 <p className="font-mono text-xs text-slate-400">{p.code}</p>
@@ -88,7 +89,8 @@ function EditProduct({ id }: { id: string }) {
       <Link href="/products" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
         <ArrowLeft className="h-4 w-4" /> Back to products
       </Link>
-      <h1 className="mb-6 mt-3 text-2xl font-semibold tracking-tight">Edit Product</h1>
+      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Catalog</p>
+      <h1 className="mb-6 mt-1 text-2xl font-semibold tracking-tight text-slate-50">Edit Product</h1>
 
       {loading ? (
         <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>

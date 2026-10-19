@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import {
   focusWithoutScroll,
   getFocusableElements,
@@ -23,6 +23,17 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
   const titleId = useId();
+  const [mounted, setMounted] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      const frame = window.requestAnimationFrame(() => setMounted(true));
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const timeout = window.setTimeout(() => setMounted(false), 220);
+    return () => window.clearTimeout(timeout);
+  }, [open]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -78,7 +89,7 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!mounted && !open) return null;
 
   return (
     <div
@@ -89,9 +100,12 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
       aria-labelledby={titleId}
       tabIndex={-1}
     >
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
       <div
-        className={`theme-scrollbar relative max-h-[calc(100vh-2rem)] w-full ${wide ? "max-w-2xl" : "max-w-lg"} overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 shadow-xl`}
+        className={`ui-dialog-backdrop absolute inset-0 bg-black/70 ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
+        onClick={onClose}
+      />
+      <div
+        className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} theme-scrollbar relative max-h-[calc(100vh-2rem)] w-full ${wide ? "max-w-2xl" : "max-w-lg"} overflow-y-auto rounded-xl border border-slate-700/90 bg-slate-900/95 shadow-xl shadow-black/20`}
       >
         <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
           <h2 id={titleId} className="font-semibold">{title}</h2>
@@ -105,7 +119,7 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6">{children}</div>
       </div>
     </div>
   );

@@ -24,11 +24,12 @@ export default function AddProductPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="ui-page-enter mx-auto max-w-3xl">
       <Link href="/products" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
         <ArrowLeft className="h-4 w-4" /> Back to products
       </Link>
-      <h1 className="mb-6 mt-3 text-2xl font-semibold tracking-tight">Add Product</h1>
+      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Catalog</p>
+      <h1 className="mb-6 mt-1 text-2xl font-semibold tracking-tight text-slate-50">Add Product</h1>
       <ProductForm submitLabel="Create product" onSubmit={handleCreate} />
     </div>
   );

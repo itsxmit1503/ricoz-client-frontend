@@ -27,7 +27,7 @@ export default function Input({ label, error, icon: Icon, type = "text", classNa
           type={isPassword && show ? "text" : type}
           aria-invalid={Boolean(error)}
           aria-describedby={errorId}
-          className={`h-11 w-full rounded-lg border bg-slate-900 text-sm text-slate-100 placeholder:text-slate-500 transition focus:outline-none focus:ring-2 ${
+          className={`h-11 w-full rounded-lg border bg-slate-900 text-sm text-slate-100 placeholder:text-slate-500 transition duration-200 ease-out motion-reduce:transition-none focus:outline-none focus:ring-2 ${
             Icon ? "pl-10" : "pl-3"
           } ${isPassword ? "pr-10" : "pr-3"} ${
             error
@@ -41,13 +41,13 @@ export default function Input({ label, error, icon: Icon, type = "text", classNa
             type="button"
             onClick={() => setShow((s) => !s)}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded text-slate-500 hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded text-slate-500 transition-colors duration-150 ease-out motion-reduce:transition-none hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
           >
             {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         )}
       </div>
-      {error && <p id={errorId} className="text-xs text-red-400">{error}</p>}
+      {error && <p id={errorId} className="ui-feedback-enter text-xs text-red-400">{error}</p>}
     </div>
   );
 }

@@ -52,9 +52,9 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border border-slate-800 bg-slate-900 p-4 shadow-lg shadow-black/10 sm:p-6">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border border-slate-800/90 bg-slate-900/80 p-4 shadow-lg shadow-black/10 sm:p-6">
       <fieldset className="grid gap-5 sm:grid-cols-2">
-        <legend className="mb-4 text-sm font-semibold text-slate-200">Product details</legend>
+        <legend className="mb-1 text-sm font-semibold text-slate-200">Product details</legend>
         <div className="sm:col-span-2">
           <Input label="Product name" placeholder="e.g. Steel Rod 10mm" value={form.name}
             onChange={(e) => update("name", e.target.value)} error={errors.name} />
@@ -80,7 +80,7 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
         </div>
 
         <div className="flex items-end">
-          <label className="flex h-11 cursor-pointer items-center gap-3 text-sm text-slate-200">
+          <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/30 px-3 text-sm text-slate-200 transition duration-150 hover:border-slate-700 motion-reduce:transition-none">
             <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)}
               className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-blue-600" />
             Active
@@ -88,7 +88,7 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
         </div>
       </fieldset>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-6 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/90 pt-5 sm:flex-row sm:justify-end">
         <Link href="/products"
           className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 px-5 text-sm font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
           Cancel

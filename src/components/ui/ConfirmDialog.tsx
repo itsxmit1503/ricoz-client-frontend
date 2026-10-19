@@ -1,7 +1,7 @@
 "use client";
 
 import { TriangleAlert } from "lucide-react";
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Button from "./Button";
 import { focusWithoutScroll, getFocusableElements, isTopmostLayer, lockBodyScroll } from "./focus";
 
@@ -29,6 +29,17 @@ export default function ConfirmDialog({
   const onCancelRef = useRef(onCancel);
   const loadingRef = useRef(Boolean(loading));
   const titleId = useId();
+  const [mounted, setMounted] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      const frame = window.requestAnimationFrame(() => setMounted(true));
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    const timeout = window.setTimeout(() => setMounted(false), 220);
+    return () => window.clearTimeout(timeout);
+  }, [open]);
 
   useEffect(() => {
     onCancelRef.current = onCancel;
@@ -87,7 +98,7 @@ export default function ConfirmDialog({
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!mounted && !open) return null;
 
   return (
     <div
@@ -98,8 +109,11 @@ export default function ConfirmDialog({
       aria-labelledby={titleId}
       tabIndex={-1}
     >
-      <div className="absolute inset-0 bg-black/70" onClick={loading ? undefined : onCancel} />
-      <div className="relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+      <div
+        className={`ui-dialog-backdrop absolute inset-0 bg-black/70 ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
+        onClick={loading ? undefined : onCancel}
+      />
+      <div className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-slate-900/95 p-5 shadow-xl shadow-black/20 sm:p-6`}>
         <div className="flex items-start gap-4">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
             <TriangleAlert className="h-5 w-5" />

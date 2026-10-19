@@ -47,3 +47,122 @@ body {
 .theme-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+@keyframes ui-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-feedback-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-dialog-open {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ui-backdrop-open {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.ui-page-enter {
+  animation: ui-page-enter 240ms ease-out both;
+}
+
+.ui-feedback-enter {
+  animation: ui-feedback-enter 180ms ease-out both;
+}
+
+.ui-dropdown-enter {
+  animation: ui-dropdown-open 180ms ease-out both;
+  transform-origin: top;
+}
+
+@keyframes ui-dropdown-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ui-dialog-panel {
+  transition:
+    opacity 220ms ease-out,
+    transform 220ms ease-out;
+}
+
+.ui-dialog-panel-enter {
+  opacity: 1;
+  transform: scale(1);
+  animation: ui-dialog-open 220ms ease-out both;
+}
+
+.ui-dialog-panel-exit {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.ui-dialog-backdrop {
+  transition: opacity 220ms ease-out;
+}
+
+.ui-dialog-backdrop-enter {
+  opacity: 1;
+  animation: ui-backdrop-open 220ms ease-out both;
+}
+
+.ui-dialog-backdrop-exit {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-page-enter,
+  .ui-feedback-enter,
+  .ui-dropdown-enter {
+    animation: none;
+  }
+
+  .ui-dialog-panel,
+  .ui-dialog-backdrop {
+    transition: none;
+  }
+
+  .ui-dialog-panel-enter,
+  .ui-dialog-backdrop-enter {
+    animation: none;
+  }
+}

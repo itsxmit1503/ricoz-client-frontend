@@ -68,21 +68,22 @@ export default function MachineListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-6xl">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Machines</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Operations</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">Machines</h1>
           <p className="mt-1 text-sm text-slate-400">
             {loading ? "Loading…" : `${filtered.length} of ${machines.length} machines`}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex w-full gap-2 sm:w-auto sm:gap-3">
           <button onClick={reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+            className="rounded-lg border border-slate-700/90 bg-slate-900/60 p-2.5 text-slate-300 transition duration-150 hover:border-slate-600 hover:bg-slate-800 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button onClick={() => setAdding(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500">
+            className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition duration-150 hover:bg-blue-500 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 sm:flex-none">
             <Plus className="h-4 w-4" /> Add Machine
           </button>
         </div>
@@ -94,7 +95,7 @@ export default function MachineListPage() {
           const active = statusFilter === s.value;
           return (
             <button key={s.value} onClick={() => setStatusFilter(active ? "" : s.value)}
-              className={`rounded-xl border p-3 text-left transition ${
+              className={`rounded-xl border p-3 text-left transition duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
                 active ? "border-blue-500 bg-blue-500/10" : "border-slate-800 bg-slate-900 hover:border-slate-700"
               }`}>
               <span className="flex items-center gap-2 text-xs text-slate-400">
@@ -106,21 +107,21 @@ export default function MachineListPage() {
         })}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-5 rounded-xl border border-slate-800/90 bg-slate-900/60 p-4 sm:p-5">
         <Input label="" aria-label="Search machines" icon={Search} placeholder="Search by name, code or location…"
           value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="mt-5 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 sm:mt-6">
         {loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex min-h-64 items-center justify-center p-8 sm:p-16"><Spinner className="h-7 w-7" /></div>
         ) : error ? (
-          <div className="p-12 text-center">
+          <div className="p-8 text-center sm:p-12">
             <p className="text-red-400">{error}</p>
             <button onClick={reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
+          <div className="flex min-h-64 flex-col items-center justify-center p-8 text-center sm:p-16">
             <Wrench className="h-10 w-10 text-slate-600" />
             <p className="mt-4 text-slate-300">{machines.length ? "No machines match your filters." : "No machines yet."}</p>
             {!machines.length && (
@@ -131,23 +132,26 @@ export default function MachineListPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
+            <p className="border-b border-slate-800 px-5 py-2 text-xs text-slate-500 sm:hidden">
+              Swipe horizontally to see all machine details.
+            </p>
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Code</th>
+                  <th className="whitespace-nowrap px-5 py-3 font-medium">Code</th>
                   <th className="px-5 py-3 font-medium">Name</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
+                  <th className="whitespace-nowrap px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Location</th>
-                  <th className="px-5 py-3 font-medium">Active</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                  <th className="whitespace-nowrap px-5 py-3 font-medium">Active</th>
+                  <th className="whitespace-nowrap px-5 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {filtered.map((m) => (
-                  <tr key={m._id} className="hover:bg-slate-800/40">
+                  <tr key={m._id} className="transition-colors duration-150 hover:bg-slate-800/40 motion-reduce:transition-none">
                     <td className="px-5 py-3.5 font-mono text-xs text-slate-300">{m.code}</td>
                     <td className="px-5 py-3.5 font-medium">
-                      <Link href={`/machines/details?id=${m._id}`} className="hover:text-blue-300">{m.name}</Link>
+                      <Link href={`/machines/details?id=${m._id}`} className="transition-colors duration-150 hover:text-blue-300 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">{m.name}</Link>
                     </td>
                     <td className="px-5 py-3.5"><MachineStatusBadge status={m.status} /></td>
                     <td className="px-5 py-3.5 text-slate-300">{m.location || "—"}</td>
@@ -157,11 +161,11 @@ export default function MachineListPage() {
                     <td className="px-5 py-3.5">
                       <div className="flex justify-end gap-1">
                         <Link href={`/machines/details?id=${m._id}`} aria-label={`View ${m.code}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                          className="rounded-lg p-2 text-slate-400 transition duration-150 hover:bg-slate-800 hover:text-white motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400">
                           <Eye className="h-4 w-4" />
                         </Link>
                         <button onClick={() => setToDelete(m)} aria-label={`Delete ${m.code}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400">
+                          className="rounded-lg p-2 text-slate-400 transition duration-150 hover:bg-red-500/10 hover:text-red-400 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
