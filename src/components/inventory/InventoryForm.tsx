@@ -72,30 +72,36 @@ export default function InventoryForm({ initial, products = [], lockedProduct, s
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {lockedProduct ? (
-        <div>
+        <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4">
           <p className="text-sm font-medium text-slate-300">Product</p>
           <p className="mt-1.5 rounded-lg border border-slate-800 bg-slate-950 px-3 py-2.5 text-sm text-slate-300">{lockedProduct}</p>
         </div>
       ) : (
-        <>
+        <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4">
           <ProductSelect products={products} value={form.product} onChange={(v) => update("product", v)} error={errors.product} />
           {products.length === 0 && (
             <p className="-mt-2 text-xs text-amber-300">Every active product already has a stock record.</p>
           )}
-        </>
+        </div>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <Input label="On hand" type="number" min={0} step="any" value={form.quantity}
-          onChange={(e) => update("quantity", e.target.value)} error={errors.quantity} />
-        <Input label="Reserved" type="number" min={0} step="any" value={form.reservedQuantity}
-          onChange={(e) => update("reservedQuantity", e.target.value)} error={errors.reservedQuantity} />
-        <Input label="Reorder level" type="number" min={0} step="any" value={form.reorderLevel}
-          onChange={(e) => update("reorderLevel", e.target.value)} error={errors.reorderLevel} />
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Stock levels</h3>
+          <p className="mt-1 text-xs text-slate-500">Track physical stock, committed stock, and the replenishment threshold.</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-3">
+          <Input label="On hand" type="number" min={0} step="any" value={form.quantity}
+            onChange={(e) => update("quantity", e.target.value)} error={errors.quantity} />
+          <Input label="Reserved" type="number" min={0} step="any" value={form.reservedQuantity}
+            onChange={(e) => update("reservedQuantity", e.target.value)} error={errors.reservedQuantity} />
+          <Input label="Reorder level" type="number" min={0} step="any" value={form.reorderLevel}
+            onChange={(e) => update("reorderLevel", e.target.value)} error={errors.reorderLevel} />
+        </div>
+        <p className="mt-4 text-xs text-slate-500">Available = on hand − reserved. Stock shows as low when available drops to the reorder level.</p>
       </div>
-      <p className="text-xs text-slate-500">Available = on hand − reserved. Stock shows as low when available drops to the reorder level.</p>
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>

@@ -140,8 +140,13 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Order details</h3>
+          <p className="mt-1 text-xs text-slate-500">Set the supplier, dates, and current purchasing status.</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
         <Input label="PO number" className="uppercase" value={form.poNumber}
           onChange={(e) => update("poNumber", e.target.value)} error={errors.poNumber} />
         <Select label="Supplier" value={form.supplier} onChange={(e) => update("supplier", e.target.value)} error={errors.supplier}>
@@ -159,11 +164,15 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
         <Select label="Status" value={form.status} onChange={(e) => update("status", e.target.value as PurchaseOrderStatus)}>
           {PO_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
         </Select>
+        </div>
       </div>
 
-      <div>
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-slate-300">Items</h3>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-200">Order items</h3>
+            <p className="mt-1 text-xs text-slate-500">Add each product and its agreed unit price.</p>
+          </div>
           <button type="button" onClick={addItem}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-400 hover:text-blue-300">
             <Plus className="h-4 w-4" /> Add item
@@ -206,7 +215,7 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
 
         <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-4">
           <span className="text-sm text-slate-400">Order total</span>
-          <span className="text-lg font-semibold tabular-nums">{formatMoney(total)}</span>
+          <span className="text-lg font-semibold tabular-nums text-slate-100">{formatMoney(total)}</span>
         </div>
       </div>
 

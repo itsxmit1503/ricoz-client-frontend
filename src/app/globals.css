@@ -98,6 +98,26 @@ body {
   animation: ui-page-enter 240ms ease-out both;
 }
 
+.ui-section-enter {
+  animation: ui-page-enter 280ms ease-out both;
+}
+
+.ui-table-row {
+  transition:
+    background-color 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+.ui-table-row:hover {
+  box-shadow: inset 3px 0 0 rgb(96 165 250 / 0.45);
+}
+
+.ui-surface {
+  border: 1px solid rgb(30 41 59 / 0.9);
+  background: rgb(15 23 42 / 0.72);
+  box-shadow: 0 12px 32px rgb(2 6 23 / 0.12);
+}
+
 .ui-feedback-enter {
   animation: ui-feedback-enter 180ms ease-out both;
 }
@@ -151,9 +171,16 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ui-page-enter,
+  .ui-section-enter,
   .ui-feedback-enter,
   .ui-dropdown-enter {
     animation: none;
+  }
+
+  .ui-table-row,
+  .ui-table-row:hover {
+    transition: none;
+    box-shadow: none;
   }
 
   .ui-dialog-panel,

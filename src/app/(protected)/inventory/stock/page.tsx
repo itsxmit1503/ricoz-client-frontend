@@ -98,36 +98,41 @@ export default function StockPage() {
   const productLabel = (i: InventoryItem) => (i.product ? `${i.product.code} — ${i.product.name}` : "Deleted product");
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-6xl">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Stock</h1>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Inventory control</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Stock</h1>
           <p className="mt-1 text-sm text-slate-400">
             {stock.loading ? "Loading…" : `${filtered.length} of ${stock.items.length} items`}
           </p>
         </div>
         <div className="flex gap-3">
           <button onClick={stock.reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800">
             <RefreshCw className={`h-4 w-4 ${stock.loading ? "animate-spin" : ""}`} />
           </button>
           <button onClick={() => setModal("new")} disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60">
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60">
             <Plus className="h-4 w-4" /> Add Stock
           </button>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="ui-section-enter mt-7">
         <StatusFilterCards options={STOCK_LEVELS} counts={counts} active={levelFilter} onChange={setLevelFilter} />
       </div>
 
-      <div className="mt-4">
+      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Find stock items</p>
+          {levelFilter && <p className="text-xs text-blue-300">Filtered by stock level</p>}
+        </div>
         <Input label="" aria-label="Search stock" icon={Search} placeholder="Search by product name or code…"
           value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
         {stock.loading ? (
           <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
         ) : stock.error ? (
@@ -164,11 +169,11 @@ export default function StockPage() {
                   const available = getAvailable(i);
                   const unit = i.product?.unit ?? "";
                   return (
-                    <tr key={i._id} className="hover:bg-slate-800/40">
+                    <tr key={i._id} className="ui-table-row hover:bg-slate-800/40">
                       <td className="px-5 py-3.5">
                         {i.product ? (
                           <>
-                            <p className="font-medium">{i.product.name}</p>
+                            <p className="font-medium text-slate-100">{i.product.name}</p>
                             <p className="font-mono text-xs text-slate-500">{i.product.code}</p>
                           </>
                         ) : (
