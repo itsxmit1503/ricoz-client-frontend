@@ -1,5 +1,16 @@
 # UI Change Log
 
+## 2026-10-23 - Batch 6 Maintenance, BOM and System Information refinement
+
+- **Files modified:** `src/app/(protected)/maintenance/work-orders/page.tsx`, `src/app/(protected)/bom/page.tsx`, `src/app/(protected)/info/page.tsx`
+- **What changed:**
+  - **Maintenance Work Orders (`maintenance/work-orders/page.tsx`):** Replaced raw 9-line text stub with a polished, honest placeholder console featuring the category eyebrow ("Asset Maintenance & Reliability"), centered Wrench icon, "Console Under Construction" status notice, and clear copy clarifying that preventative maintenance schedules and work order dispatch are planned for future versions. Added genuine cross-navigation jump cards to Machine Directory (`/machines`), Machine Details (`/machines/details`), and Production Work Orders (`/production/work-orders`).
+  - **Bill of Materials (`bom/page.tsx`):** Replaced raw 9-line text stub with an honest placeholder console featuring the category eyebrow ("Engineering & Product Structure"), centered Network icon, "Console Under Construction" status notice, and copy clarifying that multi-level component trees and explosion matrices are planned for future versions. Added cross-navigation jump cards to Product Catalog (`/products`), Inventory Stock (`/inventory/stock`), and Purchase Orders (`/purchase/orders`).
+  - **System Information (`info/page.tsx`):** Elevated the existing application overview and technical documentation to the Operations Console visual standard. Added category eyebrow ("System Overview & Documentation"), section entrance motion, layered card surfaces (`ui-surface`), enhanced technology stack badges verifying dependencies from package.json (Next.js, React, TypeScript, Tailwind CSS, Lucide Icons, Axios, React Hot Toast), and accessible focus rings while preserving 100% of existing informational content.
+- **Why:** Eliminate remaining raw un-themed stub screens across the application and align all protected routes with the cohesive Ricoz Operations Console design language, without inventing fake records, mock data, or broken API integrations.
+- **Testing:** `npm.cmd run lint` passed with 0 errors; `npx.cmd tsc --noEmit` passed with 0 errors; `npm.cmd run build` passed successfully across all 28 routes; `git diff --check` passed.
+- **Limitations:** The local backend at http://localhost:5000 remains offline, so live API queries could not be exercised. Automated headless browser suites (Playwright/Puppeteer/Cypress) are not installed in the workspace, so automated multi-viewport browser testing at 390px, 768px, and 1440px was not performed; responsive layouts, focus visibility, and reduced-motion compliance were verified via static analysis, code inspection, and Next.js production build checks.
+
 ## 2026-10-22 - Batch 5 Production and Quality console refinement
 
 - **Files modified:** `src/app/(protected)/production/plans/page.tsx`, `src/components/production/ProductionPlanForm.tsx`, `src/app/(protected)/production/work-orders/page.tsx`, `src/components/production/WorkOrderForm.tsx`, `src/app/(protected)/production/operations/page.tsx`, `src/app/(protected)/quality/issues/page.tsx`, `src/components/quality/QualityIssueForm.tsx`, `src/app/(protected)/quality/details/page.tsx`
