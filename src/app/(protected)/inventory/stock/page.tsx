@@ -1,6 +1,6 @@
 "use client";
 
-import { PackageOpen, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { Forklift, PackageOpen, Pencil, Plus, RefreshCw, Search, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import InventoryForm, { emptyInventoryForm, inventoryToForm } from "@/components/inventory/InventoryForm";
@@ -68,7 +68,7 @@ export default function StockPage() {
         // product can't change on an existing record, so don't send it
         const { quantity, reservedQuantity, reorderLevel } = values;
         await inventoryService.update(editing._id, { quantity, reservedQuantity, reorderLevel });
-        toast.success("Stock updated");
+        toast.success("Stock levels updated");
       } else {
         await inventoryService.create(values);
         toast.success("Stock record created");
@@ -98,102 +98,175 @@ export default function StockPage() {
   const productLabel = (i: InventoryItem) => (i.product ? `${i.product.code} — ${i.product.name}` : "Deleted product");
 
   return (
-    <div className="ui-page-enter mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
+      {/* Header Deck */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Inventory control</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Stock</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {stock.loading ? "Loading…" : `${filtered.length} of ${stock.items.length} items`}
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+              <Forklift className="h-4 w-4" />
+            </span>
+            <p className="text-xs font-medium text-blue-400">
+              Inventory
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Inventory Stock
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            {stock.loading ? "Loading stock…" : `${filtered.length} of ${stock.items.length} items`}
           </p>
         </div>
-        <div className="flex gap-3">
-          <button onClick={stock.reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800">
+
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={stock.reload}
+            disabled={stock.loading}
+            aria-label="Refresh stock"
+            title="Refresh stock"
+            className="rounded-lg border border-slate-700/80 bg-slate-900/80 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
+          >
             <RefreshCw className={`h-4 w-4 ${stock.loading ? "animate-spin" : ""}`} />
           </button>
-          <button onClick={() => setModal("new")} disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60">
+
+          <button
+            onClick={() => setModal("new")}
+            disabled={!ready}
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
+          >
             <Plus className="h-4 w-4" /> Add Stock
           </button>
         </div>
       </div>
 
-      <div className="ui-section-enter mt-7">
-        <StatusFilterCards options={STOCK_LEVELS} counts={counts} active={levelFilter} onChange={setLevelFilter} />
-      </div>
+      {/* Stock Level Filter Cards */}
+      <StatusFilterCards
+        options={STOCK_LEVELS}
+        counts={counts}
+        active={levelFilter}
+        onChange={setLevelFilter}
+      />
 
-      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Find stock items</p>
-          {levelFilter && <p className="text-xs text-blue-300">Filtered by stock level</p>}
+      {/* Search Input Bar */}
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-800/80 bg-slate-900/70 p-3.5 shadow-sm sm:p-4">
+        <div className="flex-1">
+          <Input
+            label=""
+            aria-label="Search stock"
+            icon={Search}
+            placeholder="Search stock by product name or code…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <Input label="" aria-label="Search stock" icon={Search} placeholder="Search by product name or code…"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
+        {(search || levelFilter) && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setLevelFilter("");
+            }}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs font-semibold text-blue-400 transition hover:border-slate-700 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+          >
+            <X className="h-3.5 w-3.5" /> Clear filters
+          </button>
+        )}
       </div>
 
-      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
+      {/* Stock Data Table */}
+      <div className="overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-xl shadow-black/20">
         {stock.loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex flex-col items-center justify-center p-16 text-slate-400">
+            <Spinner className="h-7 w-7 text-blue-400" />
+            <p className="mt-3 text-xs font-medium">Loading inventory items…</p>
+          </div>
         ) : stock.error ? (
           <div className="p-12 text-center">
-            <p className="text-red-400">{stock.error}</p>
-            <button onClick={stock.reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
+            <p className="text-sm font-medium text-red-400">{stock.error}</p>
+            <button onClick={stock.reload} className="mt-3 text-xs font-semibold text-blue-400 underline hover:text-blue-300">
+              Try again
+            </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
-            <PackageOpen className="h-10 w-10 text-slate-600" />
-            <p className="mt-4 text-slate-300">{stock.items.length ? "No items match your filters." : "No stock records yet."}</p>
+          <div className="p-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-950/60 text-slate-500">
+              <PackageOpen className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold text-slate-200">No stock records found</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              {search || levelFilter ? "No stock items matched your active filters." : "Start by registering inventory stock on hand."}
+            </p>
             {!stock.items.length && ready && (
-              <button onClick={() => setModal("new")} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">
-                Add your first stock record
+              <button
+                onClick={() => setModal("new")}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add First Stock Record
               </button>
             )}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] text-left text-sm">
-              <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-800/90 bg-slate-950/70 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 text-right font-medium">On hand</th>
-                  <th className="px-5 py-3 text-right font-medium">Reserved</th>
-                  <th className="px-5 py-3 text-right font-medium">Available</th>
-                  <th className="px-5 py-3 text-right font-medium">Reorder at</th>
-                  <th className="px-5 py-3 font-medium">Level</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                  <th className="px-5 py-3.5">Product SKU / Name</th>
+                  <th className="px-5 py-3.5 text-right">On Hand</th>
+                  <th className="px-5 py-3.5 text-right">Reserved</th>
+                  <th className="px-5 py-3.5 text-right">Available</th>
+                  <th className="px-5 py-3.5 text-right">Reorder Threshold</th>
+                  <th className="px-5 py-3.5">Inventory Level</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-800/60">
                 {filtered.map((i) => {
                   const available = getAvailable(i);
                   const unit = i.product?.unit ?? "";
                   return (
-                    <tr key={i._id} className="ui-table-row hover:bg-slate-800/40">
+                    <tr key={i._id} className="ui-table-row">
                       <td className="px-5 py-3.5">
                         {i.product ? (
-                          <>
-                            <p className="font-medium text-slate-100">{i.product.name}</p>
-                            <p className="font-mono text-xs text-slate-500">{i.product.code}</p>
-                          </>
+                          <div>
+                            <p className="font-medium text-slate-200">{i.product.name}</p>
+                            <p className="font-mono text-[11px] text-blue-300">{i.product.code}</p>
+                          </div>
                         ) : (
                           <span className="text-slate-500">Deleted product</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums">{fmt(i.quantity)} <span className="text-xs text-slate-500">{unit}</span></td>
-                      <td className="px-5 py-3.5 text-right tabular-nums text-slate-400">{fmt(i.reservedQuantity)}</td>
-                      <td className={`px-5 py-3.5 text-right font-medium tabular-nums ${available <= 0 ? "text-red-400" : ""}`}>{fmt(available)}</td>
-                      <td className="px-5 py-3.5 text-right tabular-nums text-slate-400">{fmt(i.reorderLevel)}</td>
-                      <td className="px-5 py-3.5"><Badge meta={findMeta(STOCK_LEVELS, getStockLevel(i))} /></td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex justify-end gap-1">
-                          <button onClick={() => setModal(i)} aria-label="Edit stock"
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
-                            <Pencil className="h-4 w-4" />
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right font-mono font-semibold text-slate-100 tabular-nums">
+                        {fmt(i.quantity)} <span className="text-[10px] text-slate-400 font-sans">{unit}</span>
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right font-mono text-slate-400 tabular-nums">
+                        {fmt(i.reservedQuantity)}
+                      </td>
+                      <td className={`whitespace-nowrap px-5 py-3.5 text-right font-mono font-bold tabular-nums ${available <= 0 ? "text-red-400" : "text-emerald-400"}`}>
+                        {fmt(available)}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right font-mono text-slate-400 tabular-nums">
+                        {fmt(i.reorderLevel)}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <Badge meta={findMeta(STOCK_LEVELS, getStockLevel(i))} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setModal(i)}
+                            aria-label="Edit stock"
+                            title="Update Stock Levels"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
                           </button>
-                          <button onClick={() => setToDelete(i)} aria-label="Delete stock record"
-                            className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400">
-                            <Trash2 className="h-4 w-4" />
+                          <button
+                            onClick={() => setToDelete(i)}
+                            aria-label="Delete stock record"
+                            title="Delete Stock Record"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
@@ -206,14 +279,18 @@ export default function StockPage() {
         )}
       </div>
 
-      <Modal open={modal !== null} title={modal === "new" ? "Add Stock" : "Edit Stock"} onClose={() => setModal(null)}>
+      <Modal
+        open={modal !== null}
+        title={modal === "new" ? "New Stock Record" : "Update Stock Levels"}
+        onClose={() => setModal(null)}
+      >
         {modal !== null && (
           <InventoryForm
             key={modal === "new" ? "new" : modal._id}
             initial={modal === "new" ? emptyInventoryForm : inventoryToForm(modal)}
             products={modal === "new" ? availableProducts : undefined}
             lockedProduct={modal === "new" ? undefined : productLabel(modal)}
-            submitLabel={modal === "new" ? "Create record" : "Save changes"}
+            submitLabel={modal === "new" ? "Create Record" : "Save Changes"}
             onSubmit={handleSave}
             onCancel={() => setModal(null)}
           />
@@ -222,9 +299,10 @@ export default function StockPage() {
 
       <ConfirmDialog
         open={Boolean(toDelete)}
-        title="Delete stock record?"
-        message={toDelete ? `The stock record for ${productLabel(toDelete)} will be permanently removed.` : ""}
+        title="Delete Stock Record"
+        message={toDelete ? `Are you sure you want to delete the stock record for ${productLabel(toDelete)}? Warehouse records will be removed.` : ""}
         loading={deleting}
+        confirmLabel="Confirm Deletion"
         onConfirm={confirmDelete}
         onCancel={() => setToDelete(null)}
       />

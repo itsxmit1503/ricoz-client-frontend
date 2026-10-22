@@ -1,68 +1,83 @@
-import { ArrowRight, Clock, FileText, Layers } from "lucide-react";
+import { ArrowRight, Clock, FileText, Layers, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default function OperationExecutionPage() {
   return (
-    <div className="ui-page-enter mx-auto max-w-4xl">
+    <div className="ui-page-enter mx-auto max-w-4xl space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Production Execution</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Operation Execution</h1>
-          <p className="mt-1 text-sm text-slate-400">Shop-floor workstation and job tracking console</p>
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+              <Layers className="h-4 w-4" />
+            </span>
+            <p className="text-xs font-medium text-blue-400">
+              Production
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Operation Execution
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            Workstation routing, operation stepping, and live task execution tracking
+          </p>
         </div>
       </div>
 
-      <div className="ui-section-enter mt-6 rounded-2xl border border-slate-800/90 bg-slate-900/80 p-8 text-center shadow-xl shadow-black/20 sm:p-12">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-500/30 bg-blue-500/10 text-blue-400 shadow-lg shadow-blue-950/20">
-          <Layers className="h-7 w-7" />
+      <div className="ui-section-enter rounded-xl border border-slate-800 bg-slate-900/95 p-8 text-center sm:p-12">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+          <Layers className="h-6 w-6" />
         </div>
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-medium text-amber-300">
+        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
           <Clock className="h-3.5 w-3.5" />
-          <span>Console Under Construction</span>
+          <span>Under Construction</span>
         </div>
 
-        <h2 className="mt-4 text-xl font-semibold text-slate-100">Operation Execution Placeholder</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-slate-400">
-          Workstation-level routing, operation stepping, and live machine execution tracking have not been
-          implemented in this version. Production activity is currently coordinated via production plans and
-          work orders.
+        <h2 className="mt-4 text-lg font-semibold text-slate-100">
+          Workstation Execution Console
+        </h2>
+        <p className="mx-auto mt-2 max-w-xl text-xs sm:text-sm leading-relaxed text-slate-400">
+          Workstation-level routing, operation stepping, and live machine execution tracking have not been implemented in this version. Production activity is coordinated via Production Plans and Work Orders.
         </p>
 
         <div className="mt-8 grid gap-4 text-left sm:grid-cols-2">
-          <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-5 transition hover:border-slate-700">
+          <div className="ui-card-interactive group rounded-xl p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400">
                 <FileText className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-slate-200">Work Orders</h3>
-                <p className="text-xs text-slate-500">Track batch quantities, release stages, and scrap</p>
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-blue-300 transition-colors">
+                  Production Work Orders
+                </h3>
+                <p className="text-[11px] text-slate-400">Track batch quantities, release stages, and scrap</p>
               </div>
             </div>
             <Link
               href="/production/work-orders"
-              className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition hover:text-blue-300"
             >
-              Go to Work Orders <ArrowRight className="h-3 w-3" />
+              Open Work Orders Console <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-5 transition hover:border-slate-700">
+          <div className="ui-card-interactive group rounded-xl p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
-                <FileText className="h-4 w-4" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400">
+                <Settings className="h-4 w-4" />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-slate-200">Production Plans</h3>
-                <p className="text-xs text-slate-500">Schedule manufacturing runs and target dates</p>
+                <h3 className="text-sm font-semibold text-slate-200 group-hover:text-blue-300 transition-colors">
+                  Production Plans
+                </h3>
+                <p className="text-[11px] text-slate-400">Schedule manufacturing runs and target dates</p>
               </div>
             </div>
             <Link
               href="/production/plans"
-              className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition hover:text-blue-300"
             >
-              Go to Production Plans <ArrowRight className="h-3 w-3" />
+              Open Plans Console <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

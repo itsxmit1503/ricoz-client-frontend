@@ -51,19 +51,22 @@ export default function RegisterPage() {
 
   if (sentTo) {
     return (
-      <AuthShell title="Check your email">
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 text-center">
-          <MailCheck className="mx-auto h-10 w-10 text-blue-400" />
-          <p className="mt-4 text-sm text-slate-300">
-            We sent a verification link to <span className="font-medium text-white">{sentTo}</span>.
-            Open it to activate your account, then sign in.
+      <AuthShell title="Verify Email">
+        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-6 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-400">
+            <MailCheck className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-base font-semibold text-slate-100">Verification Link Sent</h2>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            We sent an activation link to <span className="font-semibold text-slate-200">{sentTo}</span>.
+            Follow the instructions in your inbox to verify your account.
           </p>
         </div>
         <Link
           href="/login"
-          className="mt-6 block text-center text-sm font-medium text-blue-400 hover:text-blue-300"
+          className="mt-6 block text-center text-xs font-semibold uppercase tracking-wider text-blue-400 hover:text-blue-300"
         >
-          Back to sign in
+          Return to sign in
         </Link>
       </AuthShell>
     );
@@ -71,39 +74,70 @@ export default function RegisterPage() {
 
   return (
     <AuthShell
-      title="Create your account"
-      subtitle="Get started with Ricoz in a minute"
+      title="Create Account"
+      subtitle="Get started with your Ricoz manufacturing account"
       footer={
-        <>
+        <span>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-blue-400 hover:text-blue-300">
+          <Link href="/login" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors">
             Sign in
           </Link>
-        </>
+        </span>
       }
     >
       <form onSubmit={onSubmit} noValidate className="space-y-4">
-        <Input label="Full name" icon={User} placeholder="Jane Doe" autoComplete="name"
-          value={form.username} onChange={set("username")} error={errors.username} />
-        <Input label="Email" type="email" icon={Mail} placeholder="you@company.com" autoComplete="email"
-          value={form.email} onChange={set("email")} error={errors.email} />
-        <Input label="Password" type="password" icon={Lock} placeholder="At least 6 characters" autoComplete="new-password"
-          value={form.password} onChange={set("password")} error={errors.password} />
-        <Input label="Confirm password" type="password" icon={Lock} placeholder="Repeat password" autoComplete="new-password"
-          value={form.confirm} onChange={set("confirm")} error={errors.confirm} />
+        <Input
+          label="Full Name"
+          icon={User}
+          placeholder="Alex Vance"
+          autoComplete="name"
+          value={form.username}
+          onChange={set("username")}
+          error={errors.username}
+        />
+        <Input
+          label="Email Address"
+          type="email"
+          icon={Mail}
+          placeholder="alex@company.com"
+          autoComplete="email"
+          value={form.email}
+          onChange={set("email")}
+          error={errors.email}
+        />
+        <Input
+          label="Password"
+          type="password"
+          icon={Lock}
+          placeholder="At least 6 characters"
+          autoComplete="new-password"
+          value={form.password}
+          onChange={set("password")}
+          error={errors.password}
+        />
+        <Input
+          label="Confirm Password"
+          type="password"
+          icon={Lock}
+          placeholder="Repeat password"
+          autoComplete="new-password"
+          value={form.confirm}
+          onChange={set("confirm")}
+          error={errors.confirm}
+        />
 
         <Button type="submit" loading={submitting} className="mt-2">
-          Create account
+          Create Account
         </Button>
       </form>
 
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-500">
+      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-500">
         <span className="h-px flex-1 bg-slate-800" />
-        or
+        <span className="text-[11px] font-medium text-slate-500">Or single sign-on</span>
         <span className="h-px flex-1 bg-slate-800" />
       </div>
 
-      <GoogleButton label="Sign up with Google" />
+      <GoogleButton label="Continue with Google" />
     </AuthShell>
   );
 }

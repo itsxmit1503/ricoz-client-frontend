@@ -17,22 +17,26 @@ export default function Input({ label, error, icon: Icon, type = "text", classNa
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-slate-300">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={id} className="block text-xs font-medium text-slate-300">
+          {label}
+        </label>
+      )}
       <div className="relative">
-        {Icon && <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />}
+        {Icon && (
+          <Icon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 transition-colors" />
+        )}
         <input
           id={id}
           type={isPassword && show ? "text" : type}
           aria-invalid={Boolean(error)}
           aria-describedby={errorId}
-          className={`h-11 w-full rounded-lg border bg-slate-900 text-sm text-slate-100 placeholder:text-slate-500 transition duration-200 ease-out motion-reduce:transition-none focus:outline-none focus:ring-2 ${
-            Icon ? "pl-10" : "pl-3"
+          className={`h-10 w-full rounded-lg border bg-slate-950/70 text-sm text-slate-100 placeholder:text-slate-500 transition-colors duration-150 ease-out motion-reduce:transition-none focus:outline-none focus:ring-2 ${
+            Icon ? "pl-9" : "pl-3"
           } ${isPassword ? "pr-10" : "pr-3"} ${
             error
-              ? "border-red-500/70 focus:ring-red-500/40"
-              : "border-slate-700/90 focus:border-slate-500 focus:ring-slate-500/40"
+              ? "border-red-500/80 focus:border-red-500 focus:ring-red-500/25"
+              : "border-slate-800/90 hover:border-slate-700 focus:border-blue-500 focus:ring-blue-500/25"
           } ${className}`}
           {...rest}
         />
@@ -41,13 +45,13 @@ export default function Input({ label, error, icon: Icon, type = "text", classNa
             type="button"
             onClick={() => setShow((s) => !s)}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded text-slate-500 transition-colors duration-150 ease-out motion-reduce:transition-none hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 transition-colors duration-150 ease-out hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         )}
       </div>
-      {error && <p id={errorId} className="ui-feedback-enter text-xs text-red-400">{error}</p>}
+      {error && <p id={errorId} className="ui-feedback-enter text-xs font-medium text-red-400">{error}</p>}
     </div>
   );
 }

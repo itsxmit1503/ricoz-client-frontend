@@ -50,15 +50,28 @@ export default function MachineForm({ initial = EMPTY, submitLabel, onSubmit, on
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <Input label="Machine name" placeholder="e.g. CNC Lathe 1" value={form.name}
-        onChange={(e) => update("name", e.target.value)} error={errors.name} />
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <Input
+        label="Machine / Equipment Name"
+        placeholder="e.g. 5-Axis CNC Milling Center #1"
+        value={form.name}
+        onChange={(e) => update("name", e.target.value)}
+        error={errors.name}
+      />
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input label="Machine code" placeholder="e.g. CNC-01" className="uppercase" value={form.code}
-          onChange={(e) => update("code", e.target.value.toUpperCase())} error={errors.code} />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Input
+          label="Equipment Code / Tag"
+          placeholder="e.g. CNC-01"
+          className="uppercase font-mono"
+          value={form.code}
+          onChange={(e) => update("code", e.target.value.toUpperCase())}
+          error={errors.code}
+        />
         <div className="space-y-1.5">
-          <label className="block text-sm font-medium text-slate-300">Status</label>
+          <label className="block text-xs font-medium uppercase tracking-wider text-slate-300">
+            Initial Status
+          </label>
           <MachineStatusSelect
             value={form.status}
             options={MACHINE_STATUSES}
@@ -67,17 +80,31 @@ export default function MachineForm({ initial = EMPTY, submitLabel, onSubmit, on
         </div>
       </div>
 
-      <Input label="Location" placeholder="e.g. Shop floor A, Bay 3" value={form.location}
-        onChange={(e) => update("location", e.target.value)} />
+      <Input
+        label="Plant Floor Location / Bay"
+        placeholder="e.g. Shop Floor Alpha, Bay 04"
+        value={form.location}
+        onChange={(e) => update("location", e.target.value)}
+      />
 
-      <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/30 px-3 text-sm text-slate-200 transition duration-150 hover:border-slate-700 motion-reduce:transition-none">
-        <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)}
-          className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-blue-600" />
-        Active
+      <label className="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/40 px-3.5 text-xs font-medium text-slate-200 transition duration-150 hover:border-slate-700">
+        <input
+          type="checkbox"
+          checked={form.isActive}
+          onChange={(e) => update("isActive", e.target.checked)}
+          className="h-4 w-4 rounded border-slate-700 bg-slate-900 accent-blue-600 focus:ring-blue-500"
+        />
+        <span>Commissioned & Ready for Production Dispatch</span>
       </label>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/90 pt-5 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          className="sm:w-auto sm:px-6"
+          onClick={onCancel}
+          disabled={submitting}
+        >
           Cancel
         </Button>
         <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">

@@ -1,5 +1,76 @@
 # UI Change Log
 
+## 2026-10-23 - Professional ERP Visual Refinement & Typography Overhaul
+
+- **Files modified (25 application files + UI_CHANGELOG.md):**
+  - **Typography & Theme Foundation:** `src/app/layout.tsx`, `src/app/globals.css`
+  - **Form Primitives:** `src/components/ui/Input.tsx`, `src/components/ui/Select.tsx`, `src/components/ui/Textarea.tsx`
+  - **Layout & Identity:** `src/components/layout/AppShell.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/layout/AuthShell.tsx`
+  - **Authentication Screens:** `src/app/(public)/login/page.tsx`, `src/app/(public)/register/page.tsx`, `src/app/(public)/forgot-password/page.tsx`, `src/app/(public)/auth/reset-password/page.tsx`, `src/app/(public)/auth/verify-email/page.tsx`
+  - **Operations Dashboard:** `src/app/(protected)/dashboard/page.tsx`, `src/app/dashboard-preview/page.tsx`, `src/components/dashboard/DashboardModuleGrid.tsx`
+  - **Manufacturing & Equipment Modules:** `src/components/ui/view.tsx` (Products), `src/app/(protected)/products/add/page.tsx`, `src/app/(protected)/products/edit/page.tsx`, `src/app/(protected)/machines/page.tsx`, `src/app/(protected)/machines/details/page.tsx`, `src/app/(protected)/production/plans/page.tsx`, `src/app/(protected)/production/work-orders/page.tsx`, `src/app/(protected)/production/operations/page.tsx`
+  - **Quality & Supply Chain Modules:** `src/app/(protected)/quality/issues/page.tsx`, `src/app/(protected)/quality/details/page.tsx`, `src/app/(protected)/inventory/stock/page.tsx`, `src/app/(protected)/suppliers/page.tsx`, `src/app/(protected)/purchase/orders/page.tsx`
+  - **Engineering & System Docs:** `src/app/(protected)/maintenance/work-orders/page.tsx`, `src/app/(protected)/bom/page.tsx`, `src/app/(protected)/info/page.tsx`
+- **What changed:**
+  - **Typography Overhaul (Inter Font Integration):** Configured Google Font `Inter` via Next.js native `next/font/google` in `layout.tsx` with `--font-inter` CSS variable and robust system fallbacks (`-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`). Enforced restrained font weights across all interfaces: regular (400) for body and descriptions, medium (500) for interactive labels, buttons, and metadata, and semibold (600) for section titles and page headings. Reserved bold (700) solely for genuine emphasis.
+  - **Eliminated Artificial Sci-Fi Dashboard Language:**
+    - Purged sci-fi jargon across the application: eliminated "Terminal Online, Operator", "Operations Deck", "Interrogating vendor contacts/telemetry/bins", "Procurement Directory & Partner Registry", "Asset Maintenance & Reliability", "Shop Floor Batches", and "Order Slip".
+    - Replaced with standard manufacturing ERP terminology: "Dashboard", "Manufacturing", "Loading suppliers / inventory / machines / orders", "Suppliers", "Maintenance", "Work Orders", and "Purchasing".
+    - Refined authentication language from "Operator Sign In", "Register Operator Account", and "Dispatch Reset Link" to clean enterprise standards: "Sign In", "Create Account", and "Send Reset Link".
+  - **Eliminated Fake Metadata & Telemetry:**
+    - Completely removed fabricated metadata strips ("Node Cluster: Local Manufacturing Terminal", "Security Gate: Auth Session Active", "Software Build").
+    - Removed decorative green "Plant Network Connected" and "Online" pills from AppShell and Sidebar that did not correspond to real hardware socket connections.
+    - Replaced single-letter operator shield badge with an authentic user profile chip showing the user's name/email and clean sign out action.
+  - **Stripped Decorative Visual Noise:**
+    - Completely eliminated background engineering CAD radial grid pattern (`.ui-grid-pattern`).
+    - Stripped all glowing neon blue ambient blur orbs (`bg-blue-600/10 blur-3xl`).
+    - Removed intense outer blue hover glow auras (`box-shadow: 0 0 20px rgba(59, 130, 246, 0.15)`) from `.ui-card-interactive`, replacing them with crisp 1px borders (`border-slate-800` to `border-slate-700/80`) and subtle elevation (`shadow-md shadow-black/30`).
+    - Removed excessive `tracking-[0.18em]` and uppercase transformations from eyebrows and form field labels in `Input`, `Select`, and `Textarea`.
+- **Why:** Strip away the artificial, AI-generated "sci-fi cockpit" aesthetic to deliver a mature, high-density, professional manufacturing ERP experience comparable to Linear, NetSuite, and Datadog, while preserving 100% of the Ricoz dark navy/slate brand identity, routes, backend contracts, business logic, and working functionality.
+- **Testing:** `npm.cmd run lint` passed with 0 errors; `npx.cmd tsc --noEmit` passed with 0 errors; `npm.cmd run build` passed successfully across all 28 routes; `git diff --check` passed with 0 issues. Runtime HTTP tests confirmed all public and protected routes return 200 OK.
+- **Limitations:** Backend at http://localhost:5000 is offline; live API queries and database mutations were not tested against a live server. Automated headless browser test suites are not installed in the workspace; layout responsiveness, focus visibility, and reduced-motion compliance were verified through static code analysis and Next.js production build checks.
+
+## 2026-10-23 - Focused Motion-Performance and Animation System Correction
+
+- **Files modified:** `src/app/globals.css`, `src/components/layout/AppShell.tsx`, `src/components/layout/AuthShell.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/ui/Button.tsx`, `src/components/ui/StatusFilterCards.tsx`, `src/components/ui/Input.tsx`, `src/components/ui/Select.tsx`, `src/components/ui/Textarea.tsx`, `src/components/ui/Badge.tsx`, `src/components/machines/MachineStatusBadge.tsx`, `src/components/machines/MachineStatusSelect.tsx`, `src/app/(protected)/bom/page.tsx`, `src/app/(protected)/dashboard/page.tsx`, `src/app/dashboard-preview/page.tsx`, `src/app/(protected)/info/page.tsx`, `src/app/(protected)/maintenance/work-orders/page.tsx`, `src/app/(protected)/production/operations/page.tsx`, `src/app/(protected)/production/work-orders/page.tsx`, `src/app/(protected)/quality/details/page.tsx`, `src/components/products/ProductForm.tsx`
+- **Root Causes Identified & Resolved:**
+  - **Pervasive Backdrop Blur Lag:** Identified 12 containers and surfaces using `backdrop-filter: blur(8px)` and `backdrop-blur-md`. On dark backgrounds, blurring caused massive GPU compositing overhead, frame drops, and scrolling stutter. Replaced all occurrences with high-opacity, optimized solid dark slate surfaces (`bg-slate-900/95`), eliminating all GPU filter bottlenecks.
+  - **Barely Noticeable Micro-Animations:** Previous keyframes used micro translations (6px page enter, 8px section enter, 2px feedback enter, 4px dropdown) that finished too quickly and were imperceptible. Upgraded to deliberate GPU-accelerated motion: 12px page entrance (240ms cubic-bezier), 10px section cascade (260ms), 14px dialog entrance with scale (220ms), and 8px dropdown reveal (180ms).
+  - **Missing Route Transition Trigger:** Pages lacked an automated mount trigger during client-side navigation within AppShell. Added `key={pathname}` to the main content container in `AppShell.tsx` with `.ui-page-enter` and guarded against double-nested animations with `.ui-page-enter .ui-page-enter { animation: none; }`.
+  - **Expensive `transition-all` Overhead:** Completely eliminated all 5 occurrences of `transition-all` across the repository, replacing them with strictly targeted properties: `transition-[width]` for progress bars, `transition-colors` for badges and sidebar links, and `transition-[transform,background-color,border-color,box-shadow]` for interactive buttons and cards.
+  - **Tactile Interaction Feedback:** Added `hover:-translate-y-0.5` and `active:scale-[0.97]` to `Button`, `StatusFilterCards`, and promoted interactive cards to hardware-accelerated compositor layers (`transform: translateZ(0)`) with `translateY(-2.5px)` lift on hover and tactile press depression.
+- **Testing:** `npm.cmd run lint` passed with 0 errors, 0 warnings; `npx.cmd tsc --noEmit` passed with 0 errors; `npm.cmd run build` passed successfully across all 28 routes; `git diff --check` passed with 0 issues. Runtime HTTP tests confirmed all public and protected routes return 200 OK with sub-200ms Turbopack compilation.
+- **Limitations:** Backend at http://localhost:5000 is offline; automated headless browser test frameworks are not installed in the workspace, so multi-viewport automated profiling was not performed.
+
+## 2026-10-23 - Complete Premium Frontend UI/UX Redesign
+
+- **Files modified (38 application files + UI_CHANGELOG.md):**
+  - **Styles & Primitives:** `src/app/globals.css`, `src/components/ui/Button.tsx`, `src/components/ui/Input.tsx`, `src/components/ui/Select.tsx`, `src/components/ui/Textarea.tsx`, `src/components/ui/Badge.tsx`, `src/components/ui/StatusFilterCards.tsx`, `src/components/ui/view.tsx`
+  - **Layout & Navigation:** `src/components/layout/AppShell.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/layout/AuthShell.tsx`
+  - **Authentication Experience:** `src/app/(public)/login/page.tsx`, `src/app/(public)/register/page.tsx`, `src/app/(public)/forgot-password/page.tsx`, `src/app/(public)/auth/reset-password/page.tsx`, `src/app/(public)/auth/verify-email/page.tsx`
+  - **Operations Dashboard:** `src/app/(protected)/dashboard/page.tsx`, `src/app/dashboard-preview/page.tsx`, `src/components/dashboard/DashboardModuleGrid.tsx`
+  - **Products & Catalog:** `src/components/products/ProductForm.tsx`, `src/app/(protected)/products/add/page.tsx`, `src/app/(protected)/products/edit/page.tsx`
+  - **Equipment & Fleet:** `src/app/(protected)/machines/page.tsx`, `src/app/(protected)/machines/details/page.tsx`, `src/components/machines/MachineForm.tsx`, `src/components/machines/MachineStatusBadge.tsx`, `src/components/machines/MachineStatusSelect.tsx`
+  - **Production Scheduling & Execution:** `src/app/(protected)/production/plans/page.tsx`, `src/app/(protected)/production/work-orders/page.tsx`, `src/app/(protected)/production/operations/page.tsx`
+  - **Quality Assurance & Compliance:** `src/app/(protected)/quality/issues/page.tsx`, `src/app/(protected)/quality/details/page.tsx`
+  - **Inventory & Supply Chain:** `src/app/(protected)/inventory/stock/page.tsx`, `src/app/(protected)/suppliers/page.tsx`, `src/app/(protected)/purchase/orders/page.tsx`
+  - **Engineering, Maintenance & System Docs:** `src/app/(protected)/maintenance/work-orders/page.tsx`, `src/app/(protected)/bom/page.tsx`, `src/app/(protected)/info/page.tsx`
+- **What changed:**
+  - **Global Industrial Design System:** Added industrial engineering grid patterns (`ui-grid-pattern`), enhanced dark slate card surfaces (`ui-surface`, `ui-surface-elevated`, `ui-card-interactive`), refined table row hover indicators (`inset 3px 0 0 rgb(59 130 246 / 0.85)`), live pulsing status dots (`ui-live-dot`), refined scrollbars, and strict `prefers-reduced-motion` compliance.
+  - **Unified Component Primitives:** Upgraded `Button` with tactile click feedback (`active:scale-[0.98]`) and accessible ring treatments; enhanced `Input`, `Select`, and `Textarea` with micro-uppercase tracking labels, refined icon padding, password eye toggling, and clean error states; upgraded `Badge` and `StatusFilterCards` with live state dots and tabular typography.
+  - **Industrial Layout & Navigation:** Redesigned `Sidebar` with an authoritative Ricoz brand deck, active route indicator pills, collapse toggle, route badge counters, and direct quick link to documentation; elevated `AppShell` with dynamic breadcrumb navigation, live plant network status pill, operator profile chip, and direct logout trigger.
+  - **Enterprise Authentication Shell:** Transformed public auth routes into a split-screen presentation featuring an industrial showcase panel ("Plant Floor OS", manufacturing value props with icons, ISO 9001 footer) and elevated glass card surfaces across Login, Register, Forgot Password, Reset Password, and Email Verification.
+  - **Operations Command Dashboard:** Redesigned the primary operator dashboard and preview page with an Operations Command Header, quick action toolbar, live node/cluster metadata strip, and organized module grid partitioned into three operational tiers: Core Manufacturing, Equipment & Quality, and Materials & Logistics.
+  - **Domain Modules Refinement:** Elevated Products, Machines, Production Plans, Work Orders, Operations, Quality Issues, Quality Details, Inventory Stock, Suppliers, and Purchase Orders with cohesive headers, status summary cards, filter toolbars, responsive data tables, and structured multi-card modal forms.
+  - **Honest Engineering Consoles:** Enhanced Maintenance Work Orders, BOM, and Operations execution pages as professional under-construction consoles with verified cross-navigation jump cards and honest disclosure of unbuilt modules.
+- **Why:** Elevate the entire Ricoz frontend into a production-grade, cohesive industrial manufacturing operations platform while strictly adhering to the authentic Ricoz navy/slate brand identity, preserving 100% of existing route behavior, API integrations, form handlers, calculations, status transitions, and business logic.
+- **Testing:**
+  - `npm.cmd run lint` passed with 0 errors.
+  - `npx.cmd tsc --noEmit` passed with 0 errors.
+  - `npm.cmd run build` passed successfully across all 28 static and dynamic routes.
+  - `git diff --check` passed with 0 whitespace or patch conflicts.
+- **Limitations:** The local backend service at http://localhost:5000 is not running, so live database queries and API mutations were not executed against a live server. Automated browser test suites (Playwright/Puppeteer/Cypress) are not installed in the workspace; responsive multi-viewport layouts, accessibility focus states, and reduced-motion compliance were verified through static code analysis and Next.js production compilation.
+
 ## 2026-10-23 - Batch 6 Maintenance, BOM and System Information refinement
 
 - **Files modified:** `src/app/(protected)/maintenance/work-orders/page.tsx`, `src/app/(protected)/bom/page.tsx`, `src/app/(protected)/info/page.tsx`

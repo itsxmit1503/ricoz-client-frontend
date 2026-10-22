@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Pencil, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -24,30 +24,57 @@ function ProductPicker() {
   }, [products, search]);
 
   return (
-    <div className="ui-page-enter mx-auto max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Catalog</p>
-      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-50">Edit Product</h1>
-      <p className="mb-6 mt-1 text-sm text-slate-400">Choose the product you want to edit.</p>
+    <div className="ui-page-enter mx-auto max-w-3xl space-y-5">
+      <div>
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
+        </Link>
+        <div className="mt-3 flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+            <Pencil className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-xs font-medium text-blue-400">Products</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Select Product</h1>
+          </div>
+        </div>
+      </div>
 
-      <Input label="" aria-label="Search products" icon={Search} placeholder="Search by name or code…"
-        value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4">
+        <Input
+          label=""
+          aria-label="Search products"
+          icon={Search}
+          placeholder="Search by product name or code…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-      <div className="mt-5 divide-y divide-slate-800 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80">
+      <div className="divide-y divide-slate-800/80 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-black/20">
         {loading ? (
-          <div className="flex justify-center p-12"><Spinner /></div>
+          <div className="flex justify-center p-12"><Spinner className="h-6 w-6 text-blue-400" /></div>
         ) : error ? (
-          <p className="p-8 text-center text-red-400">{error}</p>
+          <p className="p-8 text-center text-xs text-red-400">{error}</p>
         ) : filtered.length === 0 ? (
-          <p className="p-8 text-center text-slate-400">No products found.</p>
+          <p className="p-8 text-center text-xs text-slate-400">No catalog products found matching your search.</p>
         ) : (
           filtered.map((p) => (
-            <Link key={p._id} href={`/products/edit?id=${p._id}`}
-              className="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors duration-150 hover:bg-slate-800/50 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-500">
+            <Link
+              key={p._id}
+              href={`/products/edit?id=${p._id}`}
+              className="ui-table-row flex items-center justify-between gap-4 px-5 py-3.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
               <div>
-                <p className="font-medium">{p.name}</p>
-                <p className="font-mono text-xs text-slate-400">{p.code}</p>
+                <p className="font-semibold text-sm text-slate-200">{p.name}</p>
+                <p className="font-mono text-xs text-blue-300">{p.code}</p>
               </div>
-              <span className="text-xs text-slate-400">{productTypeLabel(p.type)}</span>
+              <span className="rounded-md border border-slate-800 bg-slate-950/60 px-2.5 py-1 text-[11px] font-medium text-slate-400">
+                {productTypeLabel(p.type)}
+              </span>
             </Link>
           ))
         )}
@@ -85,24 +112,36 @@ function EditProduct({ id }: { id: string }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <Link href="/products" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white">
-        <ArrowLeft className="h-4 w-4" /> Back to products
-      </Link>
-      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.18em] text-blue-300">Catalog</p>
-      <h1 className="mb-6 mt-1 text-2xl font-semibold tracking-tight text-slate-50">Edit Product</h1>
+    <div className="ui-page-enter mx-auto max-w-3xl space-y-5">
+      <div>
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
+        </Link>
+        <div className="mt-3 flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+            <Pencil className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-xs font-medium text-blue-400">Products</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Edit Product</h1>
+          </div>
+        </div>
+      </div>
 
       {loading ? (
-        <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+        <div className="flex justify-center p-16"><Spinner className="h-7 w-7 text-blue-400" /></div>
       ) : error || !product ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-red-200">
-          {error ?? "Product not found."}{" "}
-          <Link href="/products/edit" className="font-medium underline">Choose another product</Link>
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-xs text-red-200">
+          {error ?? "Product specification not found."}{" "}
+          <Link href="/products/edit" className="font-semibold underline ml-1 text-red-300">
+            Choose another product
+          </Link>
         </div>
       ) : (
         <ProductForm
-          submitLabel="Save changes"
-          onSubmit={handleUpdate}
           initial={{
             name: product.name,
             code: product.code,
@@ -110,21 +149,21 @@ function EditProduct({ id }: { id: string }) {
             unit: product.unit,
             isActive: product.isActive,
           }}
+          submitLabel="Save Changes"
+          onSubmit={handleUpdate}
         />
       )}
     </div>
   );
 }
 
-function EditRouter() {
-  const id = useSearchParams().get("id");
-  return id ? <EditProduct key={id} id={id} /> : <ProductPicker />;
-}
-
 export default function EditProductPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   return (
-    <Suspense fallback={null}>
-      <EditRouter />
+    <Suspense fallback={<div className="flex justify-center p-16"><Spinner className="h-7 w-7 text-blue-400" /></div>}>
+      {id ? <EditProduct id={id} /> : <ProductPicker />}
     </Suspense>
   );
 }

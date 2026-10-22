@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -50,9 +49,9 @@ export default function InfoPage() {
         <div>
           <Link
             href="/dashboard"
-            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="mb-2 inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             Back to Dashboard
           </Link>
 
@@ -62,11 +61,13 @@ export default function InfoPage() {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">System Overview & Documentation</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-100">
+              <p className="text-xs font-medium text-blue-400">
+                System Documentation
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                 Application Information
               </h1>
-              <p className="mt-0.5 text-sm text-slate-400">
+              <p className="mt-0.5 text-xs sm:text-sm text-slate-400">
                 Architecture overview and business module directory
               </p>
             </div>
@@ -75,7 +76,7 @@ export default function InfoPage() {
 
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+          className="inline-flex items-center gap-2 rounded-lg border border-blue-500/60 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-blue-950/40 transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
         >
           <LayoutDashboard className="h-4 w-4" />
           Dashboard
@@ -83,12 +84,12 @@ export default function InfoPage() {
       </div>
 
       {/* Overview */}
-      <section className="ui-section-enter rounded-2xl border border-slate-800/90 bg-slate-900/80 p-6 shadow-lg shadow-slate-950/10 sm:p-8">
-        <h2 className="text-lg font-semibold text-slate-100">
+      <section className="ui-section-enter rounded-2xl border border-slate-800/90 bg-slate-900/95 p-6 shadow-xl shadow-black/20 sm:p-8">
+        <h2 className="text-base font-semibold text-slate-100 sm:text-lg">
           About Our Application
         </h2>
 
-        <p className="mt-3 text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p className="mt-3 text-xs leading-relaxed text-slate-300 sm:text-sm sm:leading-relaxed">
           Welcome to our application management platform. It provides a
           centralized dashboard for accessing business modules, managing
           operational workflows, and navigating application features.
@@ -98,8 +99,8 @@ export default function InfoPage() {
       </section>
 
       {/* Features */}
-      <section className="ui-section-enter">
-        <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+      <section className="ui-section-enter space-y-3">
+        <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400">
           Key Features
         </h2>
 
@@ -110,17 +111,17 @@ export default function InfoPage() {
             return (
               <article
                 key={feature.title}
-                className="rounded-xl border border-slate-800/90 bg-slate-900/80 p-5 shadow-sm shadow-slate-950/10 transition hover:border-slate-700"
+                className="ui-card-interactive rounded-xl p-5 shadow-sm"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-400">
                   <Icon className="h-5 w-5" />
                 </div>
 
-                <h3 className="font-medium text-slate-100">
+                <h3 className="text-sm font-semibold text-slate-100">
                   {feature.title}
                 </h3>
 
-                <p className="mt-2 text-sm leading-6 text-slate-400">
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
                   {feature.description}
                 </p>
               </article>
@@ -130,7 +131,7 @@ export default function InfoPage() {
       </section>
 
       {/* Technology */}
-      <section className="ui-section-enter rounded-2xl border border-slate-800/90 bg-slate-900/80 p-6 shadow-lg shadow-slate-950/10 sm:p-7">
+      <section className="ui-section-enter rounded-2xl border border-slate-800/90 bg-slate-900/95 p-6 shadow-xl shadow-black/20 sm:p-7">
         <div className="flex items-center gap-2.5">
           <Code2 className="h-5 w-5 text-blue-400" />
           <h2 className="text-base font-semibold text-slate-100">
@@ -145,7 +146,7 @@ export default function InfoPage() {
           {technologies.map((tech) => (
             <span
               key={tech}
-              className="rounded-lg border border-slate-700/80 bg-slate-950/40 px-3 py-1.5 text-xs font-medium text-slate-300"
+              className="rounded-lg border border-slate-700/80 bg-slate-950/60 px-3 py-1.5 font-mono text-xs font-medium text-slate-200"
             >
               {tech}
             </span>

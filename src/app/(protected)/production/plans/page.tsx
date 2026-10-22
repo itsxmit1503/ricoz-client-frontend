@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardList, FilePlus2, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { ClipboardList, FilePlus2, Pencil, Plus, RefreshCw, Search, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -88,40 +88,63 @@ export default function ProductionPlansPage() {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
+      {/* Header Deck */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Production Scheduling</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Production Plans</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {plans.loading ? "Loading…" : `${filtered.length} of ${plans.items.length} plans`}
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+              <ClipboardList className="h-4 w-4" />
+            </span>
+            <p className="text-xs font-medium text-blue-400">
+              Production
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Production Plans
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            {plans.loading ? "Loading plans…" : `${filtered.length} of ${plans.items.length} plans`}
           </p>
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex items-center gap-2.5">
           <button
             onClick={plans.reload}
-            aria-label="Refresh"
-            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            disabled={plans.loading}
+            aria-label="Refresh plans"
+            title="Refresh plans"
+            className="rounded-lg border border-slate-700/80 bg-slate-900/80 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${plans.loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={() => setModal("new")}
             disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" /> New Plan
           </button>
         </div>
       </div>
 
-      <div className="ui-section-enter mt-7">
-        <StatusFilterCards options={PLAN_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
-      </div>
+      {/* Status Filter Cards */}
+      <StatusFilterCards
+        options={PLAN_STATUSES}
+        counts={counts}
+        active={statusFilter}
+        onChange={setStatusFilter}
+      />
 
-      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter plans</p>
+      {/* Search & Priority Filter Strip */}
+      <div className="rounded-xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-sm sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Filter Manufacturing Plans
+            </h2>
+            <p className="text-[11px] text-slate-500">Filter by plan code, manufactured product, or scheduled priority</p>
+          </div>
           {(search || statusFilter || priorityFilter) && (
             <button
               type="button"
@@ -130,13 +153,14 @@ export default function ProductionPlansPage() {
                 setStatusFilter("");
                 setPriorityFilter("");
               }}
-              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              Clear filters
+              <X className="h-3.5 w-3.5" /> Clear active filters
             </button>
           )}
         </div>
-        <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+
+        <div className="mt-3.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
           <Input
             label=""
             aria-label="Search plans"
@@ -146,11 +170,12 @@ export default function ProductionPlansPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <Select
+            label=""
             aria-label="Filter by priority"
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
           >
-            <option value="">All priorities</option>
+            <option value="">All Priorities</option>
             {PRIORITIES.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
@@ -160,96 +185,120 @@ export default function ProductionPlansPage() {
         </div>
       </div>
 
-      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
+      {/* Plans Data Table */}
+      <div className="overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-xl shadow-black/20">
         {plans.loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex flex-col items-center justify-center p-16 text-slate-400">
+            <Spinner className="h-7 w-7 text-blue-400" />
+            <p className="mt-3 text-xs font-medium">Loading production plan records…</p>
+          </div>
         ) : plans.error ? (
           <div className="p-12 text-center">
-            <p className="text-red-400">{plans.error}</p>
-            <button onClick={plans.reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
+            <p className="text-sm font-medium text-red-400">{plans.error}</p>
+            <button onClick={plans.reload} className="mt-3 text-xs font-semibold text-blue-400 underline hover:text-blue-300">
+              Try again
+            </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
-            <ClipboardList className="h-10 w-10 text-slate-600" />
-            <p className="mt-4 text-slate-300">{plans.items.length ? "No plans match your filters." : "No production plans yet."}</p>
+          <div className="p-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-950/60 text-slate-500">
+              <ClipboardList className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold text-slate-200">No production plans found</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              {search || statusFilter || priorityFilter ? "No plans match your active filters." : "Start by scheduling your first production plan."}
+            </p>
             {!plans.items.length && ready && (
-              <button onClick={() => setModal("new")} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">
-                Create your first plan
+              <button
+                onClick={() => setModal("new")}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+              >
+                <Plus className="h-3.5 w-3.5" /> Create Production Plan
               </button>
             )}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-215 text-left text-sm">
-              <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-800/90 bg-slate-950/70 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Plan</th>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 text-right font-medium">Qty</th>
-                  <th className="px-5 py-3 font-medium">Start</th>
-                  <th className="px-5 py-3 font-medium">Due</th>
-                  <th className="px-5 py-3 font-medium">Priority</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                  <th className="px-5 py-3.5">Plan #</th>
+                  <th className="px-5 py-3.5">Product</th>
+                  <th className="px-5 py-3.5 text-right">Planned Qty</th>
+                  <th className="px-5 py-3.5">Start Date</th>
+                  <th className="px-5 py-3.5">Target Due</th>
+                  <th className="px-5 py-3.5">Priority</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-800/60">
                 {filtered.map((p) => {
                   const overdue = isOverdue(p.dueDate, p.status);
                   return (
-                    <tr key={p._id} className="ui-table-row hover:bg-slate-800/40">
-                      <td className="px-5 py-3.5 font-mono text-xs font-medium text-slate-200">{p.planNumber}</td>
+                    <tr key={p._id} className="ui-table-row">
+                      <td className="whitespace-nowrap px-5 py-3.5 font-mono font-semibold text-blue-300">
+                        {p.planNumber}
+                      </td>
                       <td className="px-5 py-3.5">
                         {p.product ? (
-                          <>
-                            <p className="font-medium text-slate-100">{p.product.name}</p>
-                            <p className="font-mono text-xs text-slate-400">{p.product.code}</p>
-                          </>
+                          <div>
+                            <p className="font-medium text-slate-200">{p.product.name}</p>
+                            <p className="font-mono text-[11px] text-slate-400">{p.product.code}</p>
+                          </div>
                         ) : (
                           <span className="text-slate-500">Deleted product</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums font-medium text-slate-200">{p.plannedQuantity.toLocaleString()}</td>
-                      <td className="px-5 py-3.5 text-slate-300">{formatDate(p.startDate)}</td>
-                      <td className="px-5 py-3.5">
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right tabular-nums font-mono font-semibold text-slate-100">
+                        {p.plannedQuantity.toLocaleString()}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 font-mono text-slate-400">
+                        {formatDate(p.startDate)}
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5">
                         <div className="flex items-center gap-2">
-                          <span className={overdue ? "font-medium text-red-400" : "text-slate-300"}>
+                          <span className={`font-mono ${overdue ? "font-semibold text-red-400" : "text-slate-300"}`}>
                             {formatDate(p.dueDate)}
                           </span>
                           {overdue && (
-                            <span className="rounded border border-red-500/20 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-red-300">
+                            <span className="rounded border border-red-500/30 bg-red-500/10 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider text-red-300">
                               Overdue
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-5 py-3.5"><Badge meta={findMeta(PRIORITIES, p.priority)} /></td>
-                      <td className="px-5 py-3.5"><Badge meta={findMeta(PLAN_STATUSES, p.status)} /></td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex justify-end gap-1">
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <Badge meta={findMeta(PRIORITIES, p.priority)} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <Badge meta={findMeta(PLAN_STATUSES, p.status)} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           <Link
                             href={`/production/work-orders?fromPlan=${p._id}`}
                             aria-label={`Create work order for ${p.planNumber}`}
-                            title="Create work order"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                            title="Generate Work Order from Plan"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                           >
-                            <FilePlus2 className="h-4 w-4" />
+                            <FilePlus2 className="h-3.5 w-3.5" />
                           </Link>
                           <button
                             onClick={() => setModal(p)}
                             aria-label={`Edit ${p.planNumber}`}
-                            title="Edit plan"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                            title="Edit Plan"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => setToDelete(p)}
                             aria-label={`Delete ${p.planNumber}`}
-                            title="Delete plan"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                            title="Delete Plan"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
@@ -262,14 +311,18 @@ export default function ProductionPlansPage() {
         )}
       </div>
 
-      <Modal open={modal !== null} wide onClose={() => setModal(null)}
-        title={modal === "new" ? "New Production Plan" : "Edit Production Plan"}>
+      <Modal
+        open={modal !== null}
+        wide
+        onClose={() => setModal(null)}
+        title={modal === "new" ? "New Production Plan" : "Edit Production Plan"}
+      >
         {modal !== null && (
           <ProductionPlanForm
             key={modal === "new" ? "new" : modal._id}
             initial={modal === "new" ? emptyPlanForm(suggestedNumber) : planToForm(modal)}
             products={products.items}
-            submitLabel={modal === "new" ? "Create plan" : "Save changes"}
+            submitLabel={modal === "new" ? "Create Plan" : "Save Changes"}
             onSubmit={handleSave}
             onCancel={() => setModal(null)}
           />
@@ -278,9 +331,10 @@ export default function ProductionPlansPage() {
 
       <ConfirmDialog
         open={Boolean(toDelete)}
-        title="Delete production plan?"
-        message={`${toDelete?.planNumber} will be permanently removed. Work orders created from it are kept.`}
+        title="Delete Production Plan"
+        message={`Are you sure you want to permanently delete plan ${toDelete?.planNumber}? Work orders already created from it will remain intact.`}
         loading={deleting}
+        confirmLabel="Confirm Deletion"
         onConfirm={confirmDelete}
         onCancel={() => setToDelete(null)}
       />

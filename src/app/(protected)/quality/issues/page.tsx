@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, RefreshCw, Search, ShieldCheck, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -101,40 +101,64 @@ export default function QualityIssuesPage() {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
+      {/* Header Deck */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Quality Assurance & Compliance</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Quality Issues</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {issues.loading ? "Loading…" : `${filtered.length} of ${issues.items.length} issues`}
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+              <ShieldCheck className="h-4 w-4" />
+            </span>
+            <p className="text-xs font-medium text-blue-400">
+              Quality
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Quality Issues
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            {issues.loading ? "Loading issues…" : `${filtered.length} of ${issues.items.length} quality issues`}
           </p>
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex items-center gap-2.5">
           <button
             onClick={issues.reload}
-            aria-label="Refresh"
-            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            disabled={issues.loading}
+            aria-label="Refresh quality log"
+            title="Refresh quality log"
+            className="rounded-lg border border-slate-700/80 bg-slate-900/80 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${issues.loading ? "animate-spin" : ""}`} />
           </button>
+
           <button
             onClick={() => setModal("new")}
             disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
-            <Plus className="h-4 w-4" /> New Issue
+            <Plus className="h-4 w-4" /> Log Issue
           </button>
         </div>
       </div>
 
-      <div className="ui-section-enter mt-7">
-        <StatusFilterCards options={ISSUE_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
-      </div>
+      {/* Status Filter Cards */}
+      <StatusFilterCards
+        options={ISSUE_STATUSES}
+        counts={counts}
+        active={statusFilter}
+        onChange={setStatusFilter}
+      />
 
-      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter quality issues</p>
+      {/* Search & Severity / Type Filter Strip */}
+      <div className="rounded-xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-sm sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Filter Quality Records
+            </h2>
+            <p className="text-[11px] text-slate-500">Search by ticket number, work order, defect type, or classification</p>
+          </div>
           {(search || statusFilter || severityFilter || typeFilter) && (
             <button
               type="button"
@@ -144,27 +168,29 @@ export default function QualityIssuesPage() {
                 setSeverityFilter("");
                 setTypeFilter("");
               }}
-              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              Clear filters
+              <X className="h-3.5 w-3.5" /> Clear active filters
             </button>
           )}
         </div>
-        <div className="grid gap-3 sm:grid-cols-[1fr_170px_190px]">
+
+        <div className="mt-3.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
           <Input
             label=""
             aria-label="Search issues"
             icon={Search}
-            placeholder="Search by issue, work order, product or defect…"
+            placeholder="Search by issue number, work order, product or defect…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <Select
+            label=""
             aria-label="Filter by severity"
             value={severityFilter}
             onChange={(e) => setSeverityFilter(e.target.value)}
           >
-            <option value="">All severities</option>
+            <option value="">All Severities</option>
             {SEVERITIES.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
@@ -172,11 +198,12 @@ export default function QualityIssuesPage() {
             ))}
           </Select>
           <Select
+            label=""
             aria-label="Filter by type"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
-            <option value="">All types</option>
+            <option value="">All Types</option>
             {QUALITY_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
                 {t.label}
@@ -186,52 +213,75 @@ export default function QualityIssuesPage() {
         </div>
       </div>
 
-      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
+      {/* Issues Data Table */}
+      <div className="overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-xl shadow-black/20">
         {issues.loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex flex-col items-center justify-center p-16 text-slate-400">
+            <Spinner className="h-7 w-7 text-blue-400" />
+            <p className="mt-3 text-xs font-medium">Loading quality issues…</p>
+          </div>
         ) : issues.error ? (
           <div className="p-12 text-center">
-            <p className="text-red-400">{issues.error}</p>
-            <button onClick={issues.reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
+            <p className="text-sm font-medium text-red-400">{issues.error}</p>
+            <button onClick={issues.reload} className="mt-3 text-xs font-semibold text-blue-400 underline hover:text-blue-300">
+              Try again
+            </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
-            <ShieldCheck className="h-10 w-10 text-slate-600" />
-            <p className="mt-4 text-slate-300">{issues.items.length ? "No issues match your filters." : "No quality issues yet."}</p>
+          <div className="p-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-950/60 text-slate-500">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold text-slate-200">No quality issues logged</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              {search || statusFilter || severityFilter || typeFilter ? "No issues matched your active filters." : "All production batches are currently passing inspection."}
+            </p>
+            {!issues.items.length && ready && (
+              <button
+                onClick={() => setModal("new")}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+              >
+                <Plus className="h-3.5 w-3.5" /> Log First Issue
+              </button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] text-left text-sm">
-              <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-800/90 bg-slate-950/70 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Issue</th>
-                  <th className="px-5 py-3 font-medium">Work order</th>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 font-medium">Type</th>
-                  <th className="px-5 py-3 text-right font-medium">Inspected / Pass / Fail</th>
-                  <th className="px-5 py-3 font-medium">Severity</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                  <th className="px-5 py-3.5">Ticket #</th>
+                  <th className="px-5 py-3.5">Work Order</th>
+                  <th className="px-5 py-3.5">Product</th>
+                  <th className="px-5 py-3.5">Classification</th>
+                  <th className="px-5 py-3.5 text-right">Inspected / Pass / Fail</th>
+                  <th className="px-5 py-3.5">Severity</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-800/60">
                 {filtered.map((i) => (
-                  <tr key={i._id} className="ui-table-row hover:bg-slate-800/40">
-                    <td className="px-5 py-3.5">
+                  <tr key={i._id} className="ui-table-row">
+                    <td className="whitespace-nowrap px-5 py-3.5">
                       <Link
                         href={`/quality/details?id=${i._id}`}
-                        className="font-mono text-xs font-medium text-blue-300 hover:text-blue-200 hover:underline"
+                        className="font-mono font-semibold text-blue-300 hover:text-blue-200 hover:underline"
                       >
                         {i.issueNumber}
                       </Link>
                       {i.defectType && (
-                        <p className="mt-0.5 max-w-[160px] truncate text-xs text-slate-400" title={i.defectType}>
+                        <p className="mt-0.5 max-w-[160px] truncate text-[11px] text-slate-400" title={i.defectType}>
                           {i.defectType}
                         </p>
                       )}
                     </td>
-                    <td className="px-5 py-3.5 font-mono text-xs text-slate-300">
-                      {i.workOrder?.workOrderNumber ?? <span className="text-slate-500">Deleted</span>}
+                    <td className="whitespace-nowrap px-5 py-3.5 font-mono text-slate-300">
+                      {i.workOrder?.workOrderNumber ? (
+                        <span>{i.workOrder.workOrderNumber}</span>
+                      ) : (
+                        <span className="text-slate-500">—</span>
+                      )}
                     </td>
                     <td className="px-5 py-3.5">
                       {i.product ? (
@@ -240,43 +290,49 @@ export default function QualityIssuesPage() {
                         <span className="text-slate-500">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-3.5"><Badge meta={findMeta(QUALITY_TYPES, i.type)} /></td>
-                    <td className="px-5 py-3.5 text-right font-mono text-xs tabular-nums">
-                      <span className="text-slate-200">{i.quantityInspected}</span>
-                      <span className="mx-1 text-slate-500">/</span>
-                      <span className="font-medium text-emerald-400">{i.quantityPassed}</span>
-                      <span className="mx-1 text-slate-500">/</span>
-                      <span className={i.quantityFailed > 0 ? "font-medium text-red-400" : "text-slate-400"}>
+                    <td className="whitespace-nowrap px-5 py-3.5">
+                      <Badge meta={findMeta(QUALITY_TYPES, i.type)} />
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-right font-mono tabular-nums">
+                      <span className="text-slate-300 font-semibold">{i.quantityInspected}</span>
+                      <span className="mx-1 text-slate-600">/</span>
+                      <span className="font-semibold text-emerald-400">{i.quantityPassed}</span>
+                      <span className="mx-1 text-slate-600">/</span>
+                      <span className={i.quantityFailed > 0 ? "font-semibold text-red-400" : "text-slate-500"}>
                         {i.quantityFailed}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5"><Badge meta={findMeta(SEVERITIES, i.severity)} /></td>
-                    <td className="px-5 py-3.5"><Badge meta={findMeta(ISSUE_STATUSES, i.status)} /></td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex justify-end gap-1">
+                    <td className="whitespace-nowrap px-5 py-3.5">
+                      <Badge meta={findMeta(SEVERITIES, i.severity)} />
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-3.5">
+                      <Badge meta={findMeta(ISSUE_STATUSES, i.status)} />
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         <Link
                           href={`/quality/details?id=${i._id}`}
                           aria-label={`View ${i.issueNumber}`}
-                          title="View details"
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                          title="Inspect Quality Breakdown"
+                          className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3.5 w-3.5" />
                         </Link>
                         <button
                           onClick={() => setModal(i)}
                           aria-label={`Edit ${i.issueNumber}`}
-                          title="Edit issue"
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                          title="Edit Quality Record"
+                          className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => setToDelete(i)}
                           aria-label={`Delete ${i.issueNumber}`}
-                          title="Delete issue"
-                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                          title="Delete Quality Record"
+                          className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </td>
@@ -288,14 +344,19 @@ export default function QualityIssuesPage() {
         )}
       </div>
 
-      <Modal open={modal !== null} wide title={modal === "new" ? "New Quality Issue" : "Edit Quality Issue"} onClose={() => setModal(null)}>
+      <Modal
+        open={modal !== null}
+        wide
+        onClose={() => setModal(null)}
+        title={modal === "new" ? "Log Quality Issue" : "Edit Quality Issue"}
+      >
         {modal !== null && (
           <QualityIssueForm
             key={modal === "new" ? "new" : modal._id}
             initial={modal === "new" ? emptyQualityForm(suggestedNumber) : qualityIssueToForm(modal)}
             workOrders={workOrders.items}
             products={products.items}
-            submitLabel={modal === "new" ? "Create issue" : "Save changes"}
+            submitLabel={modal === "new" ? "Submit Issue" : "Save Changes"}
             onSubmit={handleSave}
             onCancel={() => setModal(null)}
           />
@@ -304,9 +365,10 @@ export default function QualityIssuesPage() {
 
       <ConfirmDialog
         open={Boolean(toDelete)}
-        title="Delete quality issue?"
-        message={`${toDelete?.issueNumber} will be permanently removed. This can't be undone.`}
+        title="Delete Quality Issue"
+        message={`Are you sure you want to permanently delete ticket ${toDelete?.issueNumber}? Corrective action logs will be removed.`}
         loading={deleting}
+        confirmLabel="Confirm Deletion"
         onConfirm={confirmDelete}
         onCancel={() => setToDelete(null)}
       />

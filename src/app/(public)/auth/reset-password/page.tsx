@@ -24,16 +24,18 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <AuthShell
-        title="Invalid reset link"
+        title="Invalid Reset Link"
         footer={
-          <Link href="/forgot-password" className="font-medium text-blue-400 hover:text-blue-300">
-            Request a new link
+          <Link href="/forgot-password" className="font-semibold text-blue-400 hover:text-blue-300">
+            Request a new reset link
           </Link>
         }
       >
-        <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0" />
-          This reset link is missing its token. Please use the link from your email or request a new one.
+        <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-xs text-red-200">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+          <span>
+            This password reset link is invalid or has expired. Please request a new link.
+          </span>
         </div>
       </AuthShell>
     );
@@ -50,7 +52,7 @@ function ResetPasswordForm() {
     setSubmitting(true);
     try {
       await authService.resetPassword(token as string, password);
-      toast.success("Password reset! Please sign in.");
+      toast.success("Password reset successfully. Please sign in.");
       router.replace("/login");
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -60,23 +62,37 @@ function ResetPasswordForm() {
 
   return (
     <AuthShell
-      title="Set a new password"
-      subtitle="Choose a strong password you haven't used before."
+      title="Set New Password"
+      subtitle="Enter your new password below"
       footer={
-        <Link href="/login" className="font-medium text-blue-400 hover:text-blue-300">
+        <Link href="/login" className="font-semibold text-blue-400 hover:text-blue-300">
           Back to sign in
         </Link>
       }
     >
-      <form onSubmit={onSubmit} noValidate className="space-y-5">
-        <Input label="New password" type="password" icon={Lock} placeholder="At least 6 characters"
-          autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)}
-          error={errors.password} />
-        <Input label="Confirm new password" type="password" icon={Lock} placeholder="Repeat password"
-          autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
-          error={errors.confirm} />
-        <Button type="submit" loading={submitting}>
-          Reset password
+      <form onSubmit={onSubmit} noValidate className="space-y-4">
+        <Input
+          label="New Password"
+          type="password"
+          icon={Lock}
+          placeholder="At least 6 characters"
+          autoComplete="new-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password}
+        />
+        <Input
+          label="Confirm New Password"
+          type="password"
+          icon={Lock}
+          placeholder="Repeat password"
+          autoComplete="new-password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          error={errors.confirm}
+        />
+        <Button type="submit" loading={submitting} className="mt-2">
+          Update Password
         </Button>
       </form>
     </AuthShell>

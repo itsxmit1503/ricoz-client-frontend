@@ -49,58 +49,62 @@ function LoginForm() {
 
   return (
     <AuthShell
-      title="Welcome back"
-      subtitle="Sign in to your Ricoz account"
+      title="Sign In"
+      subtitle="Enter your credentials to access your account"
       footer={
-        <>
+        <span>
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-medium text-blue-400 hover:text-blue-300">
-            Create one
+          <Link href="/register" className="font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+            Register here
           </Link>
-        </>
+        </span>
       }
     >
-      <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Input
-          label="Email"
+          label="Email Address"
           type="email"
           icon={Mail}
-          placeholder="you@company.com"
+          placeholder="name@company.com"
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={errors.email}
         />
-        <div className="space-y-2">
+
+        <div className="space-y-1.5">
           <Input
             label="Password"
             type="password"
             icon={Lock}
-            placeholder="••••••••"
+            placeholder="••••••••••••"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             error={errors.password}
           />
-          <div className="text-right">
-            <Link href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
+          <div className="flex justify-end pt-1">
+            <Link
+              href="/forgot-password"
+              className="text-xs font-medium text-slate-400 hover:text-blue-400 transition-colors"
+            >
               Forgot password?
             </Link>
           </div>
         </div>
 
-        <Button type="submit" loading={submitting}>
-          Sign in
+        <Button type="submit" loading={submitting} className="mt-2">
+          Sign In
         </Button>
       </form>
 
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-500">
+      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wider text-slate-500">
         <span className="h-px flex-1 bg-slate-800" />
-        or
+        <span className="text-[11px] font-medium text-slate-500">Or continue with</span>
         <span className="h-px flex-1 bg-slate-800" />
       </div>
 
-      <GoogleButton />
+      <GoogleButton label="Continue with Google" />
     </AuthShell>
   );
 }

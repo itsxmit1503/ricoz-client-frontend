@@ -36,19 +36,22 @@ export default function ForgotPasswordPage() {
   }
 
   const backLink = (
-    <Link href="/login" className="inline-flex items-center gap-2 font-medium text-blue-400 hover:text-blue-300">
+    <Link href="/login" className="inline-flex items-center gap-1.5 font-semibold text-blue-400 hover:text-blue-300">
       <ArrowLeft className="h-4 w-4" /> Back to sign in
     </Link>
   );
 
   if (sent) {
     return (
-      <AuthShell title="Check your email" footer={backLink}>
-        <div className="rounded-xl border border-slate-800 bg-slate-900 p-6 text-center">
-          <MailCheck className="mx-auto h-10 w-10 text-blue-400" />
-          <p className="mt-4 text-sm text-slate-300">
-            We sent a password reset link to{" "}
-            <span className="font-medium text-white">{email.trim()}</span>. It expires in 15 minutes.
+      <AuthShell title="Check Your Inbox" footer={backLink}>
+        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-6 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-400">
+            <MailCheck className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-base font-semibold text-slate-100">Recovery Instructions Sent</h2>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            We sent a password reset token to{" "}
+            <span className="font-semibold text-slate-200">{email.trim()}</span>. The link will expire in 15 minutes.
           </p>
         </div>
       </AuthShell>
@@ -57,23 +60,24 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthShell
-      title="Forgot your password?"
-      subtitle="Enter your email and we'll send you a reset link."
+      title="Reset Password"
+      subtitle="Enter your email address to receive password reset instructions"
       footer={backLink}
     >
-      <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <form onSubmit={onSubmit} noValidate className="space-y-4">
         <Input
-          label="Email"
+          label="Email Address"
           type="email"
           icon={Mail}
-          placeholder="you@company.com"
+          placeholder="name@company.com"
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={error}
         />
-        <Button type="submit" loading={submitting}>
-          Send reset link
+
+        <Button type="submit" loading={submitting} className="mt-2">
+          Send Reset Link
         </Button>
       </form>
     </AuthShell>

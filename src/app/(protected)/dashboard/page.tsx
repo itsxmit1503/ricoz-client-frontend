@@ -1,6 +1,12 @@
 "use client";
 
-import { BadgeCheck, LogOut } from "lucide-react";
+import {
+  FilePlus2,
+  Info,
+  LogOut,
+  PackagePlus,
+} from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -13,17 +19,16 @@ export default function DashboardPage() {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const name = user ? user.username || user.email.split("@")[0] : "Guest";
+  const name = user ? user.username || user.email.split("@")[0] : "User";
 
   async function handleLogout() {
     setLoggingOut(true);
     try {
-      await logout(); // calls POST /auth/logout and clears the user in AuthContext
-      toast.success("Logged out");
+      await logout();
+      toast.success("Signed out successfully");
       router.replace("/login");
     } catch {
-      // the user is already cleared locally even if the API call failed
-      toast.error("Could not reach the server, but you were logged out here.");
+      toast.error("Could not reach server, session cleared locally.");
       router.replace("/login");
     } finally {
       setLoggingOut(false);
@@ -31,52 +36,63 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-4 sm:p-6">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
-              Operations workspace
-            </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
-                Welcome, {name} <span aria-hidden="true">👋</span>
-              </h1>
-              {user?.isemailVerified && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
-                  <BadgeCheck className="h-3.5 w-3.5" /> Verified
-                </span>
-              )}
-            </div>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:pr-4">
-              Keep production, inventory, and quality work moving from one place.
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
+      {/* Dashboard Header */}
+      <div className="rounded-xl border border-slate-800 bg-slate-900/90 p-5 sm:p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Dashboard
+            </h1>
+            <p className="text-sm text-slate-400">
+              Welcome back, {name}. Overview of production plans, equipment, inventory, and quality assurance.
             </p>
           </div>
 
-          {user && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              disabled={loggingOut}
-              className="inline-flex min-h-10 shrink-0 items-center gap-2 self-start rounded-lg border border-slate-700/80 bg-slate-900/60 px-4 py-2 text-sm font-medium text-slate-400 transition hover:border-slate-600 hover:bg-slate-800 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+          {/* Quick Actions */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              href="/production/work-orders"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              {loggingOut ? <Spinner className="h-4 w-4" /> : <LogOut className="h-4 w-4" />}
-              Logout
-            </button>
-          )}
+              <FilePlus2 className="h-3.5 w-3.5" />
+              <span>Work Orders</span>
+            </Link>
+
+            <Link
+              href="/products/add"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+            >
+              <PackagePlus className="h-3.5 w-3.5 text-blue-400" />
+              <span>New Product</span>
+            </Link>
+
+            <Link
+              href="/info"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              title="System Documentation"
+            >
+              <Info className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Info</span>
+            </Link>
+
+            {user && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                title="Sign out"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 disabled:opacity-50"
+              >
+                {loggingOut ? <Spinner className="h-3.5 w-3.5" /> : <LogOut className="h-3.5 w-3.5" />}
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mb-4 mt-7 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 sm:mt-8">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Workspace modules
-          </p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-100">Choose an area to explore</h2>
-        </div>
-        <p className="hidden text-sm text-slate-500 sm:block">Quick access to your modules</p>
-      </div>
-
+      {/* Main Module Grid */}
       <DashboardModuleGrid />
     </div>
   );

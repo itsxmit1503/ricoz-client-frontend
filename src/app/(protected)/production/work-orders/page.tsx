@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardList, Pencil, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { ClipboardList, FileText, Pencil, Plus, RefreshCw, Search, Trash2, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -102,7 +102,7 @@ function WorkOrdersContent() {
       await workOrderService.create({ ...values, createdBy: user?._id });
       toast.success(`${values.workOrderNumber} created`);
       closeAdd();
-      orders.reload();
+      orders.reload(); // reload so product and plan names come back populated
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not create work order."));
     }
@@ -127,7 +127,7 @@ function WorkOrdersContent() {
       toast.success(`${order.workOrderNumber} → ${findMeta(WORK_ORDER_STATUSES, to).label}`);
       orders.reload();
     } catch (err) {
-      toast.error(getErrorMessage(err, "Could not change status."));
+      toast.error(getErrorMessage(err, "Could not advance work order status."));
     } finally {
       setBusyId(null);
     }
@@ -149,40 +149,63 @@ function WorkOrdersContent() {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
+      {/* Header Deck */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Shop Floor Operations</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Work Orders</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            {orders.loading ? "Loading…" : `${filtered.length} of ${orders.items.length} work orders`}
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+              <FileText className="h-4 w-4" />
+            </span>
+            <p className="text-xs font-medium text-blue-400">
+              Production
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            Work Orders
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400">
+            {orders.loading ? "Loading work orders…" : `${filtered.length} of ${orders.items.length} work orders`}
           </p>
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex items-center gap-2.5">
           <button
             onClick={orders.reload}
-            aria-label="Refresh"
-            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            disabled={orders.loading}
+            aria-label="Refresh orders"
+            title="Refresh orders"
+            className="rounded-lg border border-slate-700/80 bg-slate-900/80 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${orders.loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={() => setAdding(true)}
             disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
           >
             <Plus className="h-4 w-4" /> New Work Order
           </button>
         </div>
       </div>
 
-      <div className="ui-section-enter mt-7">
-        <StatusFilterCards options={WORK_ORDER_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
-      </div>
+      {/* Status Filter Row */}
+      <StatusFilterCards
+        options={WORK_ORDER_STATUSES}
+        counts={counts}
+        active={statusFilter}
+        onChange={setStatusFilter}
+      />
 
-      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter work orders</p>
+      {/* Search & Priority Filter Strip */}
+      <div className="rounded-xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-sm sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Filter Work Orders
+            </h2>
+            <p className="text-[11px] text-slate-500">Search by job code, product specification, or associated production plan</p>
+          </div>
           {(search || statusFilter || priorityFilter) && (
             <button
               type="button"
@@ -191,27 +214,29 @@ function WorkOrdersContent() {
                 setStatusFilter("");
                 setPriorityFilter("");
               }}
-              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 transition hover:text-blue-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
-              Clear filters
+              <X className="h-3.5 w-3.5" /> Clear active filters
             </button>
           )}
         </div>
-        <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+
+        <div className="mt-3.5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
           <Input
             label=""
             aria-label="Search work orders"
             icon={Search}
-            placeholder="Search by number, product or plan…"
+            placeholder="Search by work order number, product name or plan…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <Select
+            label=""
             aria-label="Filter by priority"
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
           >
-            <option value="">All priorities</option>
+            <option value="">All Priorities</option>
             {PRIORITIES.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
@@ -221,122 +246,149 @@ function WorkOrdersContent() {
         </div>
       </div>
 
-      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
+      {/* Orders Data Table */}
+      <div className="overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-xl shadow-black/20">
         {orders.loading ? (
-          <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
+          <div className="flex flex-col items-center justify-center p-16 text-slate-400">
+            <Spinner className="h-7 w-7 text-blue-400" />
+            <p className="mt-3 text-xs font-medium">Loading shop-floor work orders…</p>
+          </div>
         ) : orders.error ? (
           <div className="p-12 text-center">
-            <p className="text-red-400">{orders.error}</p>
-            <button onClick={orders.reload} className="mt-3 text-sm font-medium text-blue-400 hover:text-blue-300">Try again</button>
+            <p className="text-sm font-medium text-red-400">{orders.error}</p>
+            <button onClick={orders.reload} className="mt-3 text-xs font-semibold text-blue-400 underline hover:text-blue-300">
+              Try again
+            </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
-            <ClipboardList className="h-10 w-10 text-slate-600" />
-            <p className="mt-4 text-slate-300">{orders.items.length ? "No work orders match your filters." : "No work orders yet."}</p>
+          <div className="p-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-slate-950/60 text-slate-500">
+              <ClipboardList className="h-6 w-6" />
+            </div>
+            <h3 className="mt-4 text-sm font-semibold text-slate-200">No work orders found</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              {search || statusFilter || priorityFilter ? "No orders match your active filters." : "Start by issuing your first shop-floor work order."}
+            </p>
+            {!orders.items.length && ready && (
+              <button
+                onClick={() => setAdding(true)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+              >
+                <Plus className="h-3.5 w-3.5" /> Dispatch Work Order
+              </button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-245 text-left text-sm">
-              <thead className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-800/90 bg-slate-950/70 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Work order</th>
-                  <th className="px-5 py-3 font-medium">Product</th>
-                  <th className="px-5 py-3 font-medium">Progress</th>
-                  <th className="px-5 py-3 font-medium">Due</th>
-                  <th className="px-5 py-3 font-medium">Priority</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 text-right font-medium">Actions</th>
+                  <th className="px-5 py-3.5">Work Order</th>
+                  <th className="px-5 py-3.5">Product</th>
+                  <th className="px-5 py-3.5">Production Progress</th>
+                  <th className="px-5 py-3.5">Target Due</th>
+                  <th className="px-5 py-3.5">Priority</th>
+                  <th className="px-5 py-3.5">Status</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-800/60">
                 {filtered.map((o) => {
                   const percent = Math.min(100, Math.round((o.producedQuantity / o.plannedQuantity) * 100));
                   const overdue = isOverdue(o.dueDate, o.status);
                   const next = NEXT_STEP[o.status];
                   const locked = LOCKED_FOR_DELETE.includes(o.status);
                   return (
-                    <tr key={o._id} className="ui-table-row hover:bg-slate-800/40">
-                      <td className="px-5 py-3.5">
-                        <p className="font-mono text-xs font-medium text-slate-200">{o.workOrderNumber}</p>
+                    <tr key={o._id} className="ui-table-row">
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <p className="font-mono font-semibold text-blue-300">{o.workOrderNumber}</p>
                         {o.productionPlan ? (
-                          <p className="mt-0.5 text-xs text-slate-400">Plan {o.productionPlan.planNumber}</p>
+                          <p className="mt-0.5 text-[11px] text-slate-400">
+                            Plan: <span className="font-mono text-slate-300">{o.productionPlan.planNumber}</span>
+                          </p>
                         ) : (
-                          <p className="mt-0.5 text-[11px] text-slate-500">Standalone</p>
+                          <p className="mt-0.5 text-[10px] uppercase font-semibold text-slate-400">Standalone</p>
                         )}
                       </td>
                       <td className="px-5 py-3.5">
                         {o.product ? (
-                          <>
-                            <p className="font-medium text-slate-100">{o.product.name}</p>
-                            <p className="font-mono text-xs text-slate-400">{o.product.code}</p>
-                          </>
+                          <div>
+                            <p className="font-medium text-slate-200">{o.product.name}</p>
+                            <p className="font-mono text-[11px] text-slate-400">{o.product.code}</p>
+                          </div>
                         ) : (
                           <span className="text-slate-500">Deleted product</span>
                         )}
                       </td>
-                      <td className="min-w-45 px-5 py-3.5">
-                        <div className="mb-1.5 flex items-center justify-between text-xs">
-                          <span className="tabular-nums font-medium text-slate-200">
+                      <td className="min-w-[180px] px-5 py-3.5">
+                        <div className="mb-1.5 flex items-center justify-between text-xs font-mono">
+                          <span className="font-semibold text-slate-200">
                             {o.producedQuantity.toLocaleString()} / {o.plannedQuantity.toLocaleString()}
                           </span>
-                          <span className="tabular-nums font-semibold text-blue-400">{percent}%</span>
+                          <span className={`font-bold ${percent >= 100 ? "text-emerald-400" : "text-blue-400"}`}>
+                            {percent}%
+                          </span>
                         </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-950/80 border border-slate-800">
                           <div
-                            className={`h-full rounded-full transition-all duration-300 ${
+                            className={`h-full rounded-full transition-[width] duration-300 ease-out ${
                               percent >= 100 ? "bg-emerald-500" : "bg-blue-500"
                             }`}
                             style={{ width: `${percent}%` }}
                           />
                         </div>
                         {o.rejectedQuantity > 0 && (
-                          <p className="mt-1 text-[11px] text-red-400">
-                            {o.rejectedQuantity.toLocaleString()} rejected
+                          <p className="mt-1 text-[10px] font-semibold text-red-400">
+                            ⚠ {o.rejectedQuantity.toLocaleString()} scrap rejected
                           </p>
                         )}
                       </td>
-                      <td className="px-5 py-3.5">
+                      <td className="whitespace-nowrap px-5 py-3.5">
                         <div className="flex items-center gap-2">
-                          <span className={overdue ? "font-medium text-red-400" : "text-slate-300"}>
+                          <span className={`font-mono ${overdue ? "font-semibold text-red-400" : "text-slate-300"}`}>
                             {formatDate(o.dueDate)}
                           </span>
                           {overdue && (
-                            <span className="rounded border border-red-500/20 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-red-300">
+                            <span className="rounded border border-red-500/30 bg-red-500/10 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider text-red-300">
                               Overdue
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-5 py-3.5"><Badge meta={findMeta(PRIORITIES, o.priority)} /></td>
-                      <td className="px-5 py-3.5"><Badge meta={findMeta(WORK_ORDER_STATUSES, o.status)} /></td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center justify-end gap-1">
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <Badge meta={findMeta(PRIORITIES, o.priority)} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5">
+                        <Badge meta={findMeta(WORK_ORDER_STATUSES, o.status)} />
+                      </td>
+                      <td className="whitespace-nowrap px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
                           {next && (
                             <button
                               onClick={() => advance(o, next.to)}
                               disabled={busyId === o._id}
-                              className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 text-xs font-medium text-blue-200 transition hover:bg-blue-500/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                              className="inline-flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-600/20 px-2.5 py-1 text-xs font-semibold text-blue-200 transition hover:bg-blue-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
                             >
                               {busyId === o._id && <Spinner className="h-3 w-3" />}
-                              {next.label}
+                              <span>{next.label}</span>
                             </button>
                           )}
                           <button
                             onClick={() => setEditing(o)}
                             aria-label={`Edit ${o.workOrderNumber}`}
-                            title="Edit work order"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                            title="Edit Work Order"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => setToDelete(o)}
                             disabled={locked}
+                            title={locked ? "Active and completed orders cannot be deleted" : "Delete Work Order"}
                             aria-label={`Delete ${o.workOrderNumber}`}
-                            title={locked ? "Can't delete after production has started" : "Delete work order"}
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                            className="rounded-lg border border-slate-800 bg-slate-900/80 p-1.5 text-slate-400 transition hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:opacity-30"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
@@ -349,25 +401,25 @@ function WorkOrdersContent() {
         )}
       </div>
 
-      <Modal open={adding && ready} wide title="New Work Order" onClose={closeAdd}>
+      <Modal open={adding} wide onClose={closeAdd} title="New Production Work Order">
         <WorkOrderForm
           initial={addInitial}
           products={products.items}
           plans={plans.items}
-          submitLabel="Create work order"
+          submitLabel="Release Work Order"
           onSubmit={handleCreate}
           onCancel={closeAdd}
         />
       </Modal>
 
-      <Modal open={Boolean(editing)} wide title="Edit Work Order" onClose={() => setEditing(null)}>
+      <Modal open={Boolean(editing)} wide onClose={() => setEditing(null)} title="Edit Work Order">
         {editing && (
           <WorkOrderForm
             key={editing._id}
             initial={workOrderToForm(editing)}
             products={products.items}
             plans={plans.items}
-            submitLabel="Save changes"
+            submitLabel="Save Changes"
             onSubmit={handleUpdate}
             onCancel={() => setEditing(null)}
           />
@@ -376,9 +428,10 @@ function WorkOrdersContent() {
 
       <ConfirmDialog
         open={Boolean(toDelete)}
-        title="Delete work order?"
-        message={`${toDelete?.workOrderNumber} will be permanently removed. This can't be undone.`}
+        title="Delete Work Order"
+        message={`Are you sure you want to permanently delete work order ${toDelete?.workOrderNumber}? Associated production logs will be removed.`}
         loading={deleting}
+        confirmLabel="Confirm Deletion"
         onConfirm={confirmDelete}
         onCancel={() => setToDelete(null)}
       />
@@ -388,7 +441,7 @@ function WorkOrdersContent() {
 
 export default function WorkOrdersPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="flex justify-center p-16"><Spinner className="h-7 w-7 text-blue-400" /></div>}>
       <WorkOrdersContent />
     </Suspense>
   );
