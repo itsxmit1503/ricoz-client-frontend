@@ -143,48 +143,151 @@ export default function WorkOrderForm({ initial, products, plans, submitLabel, o
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input label="Work order number" className="uppercase" value={form.workOrderNumber}
-          onChange={(e) => update("workOrderNumber", e.target.value)} error={errors.workOrderNumber} />
-        <Select label="Production plan (optional)" value={form.productionPlan} onChange={(e) => choosePlan(e.target.value)}>
-          <option value="">No plan</option>
-          {plans.map((p) => (
-            <option key={p._id} value={p._id}>
-              {p.planNumber}{p.product ? ` — ${p.product.name}` : ""}
-            </option>
-          ))}
-        </Select>
-
-        <div className="sm:col-span-2">
-          <ProductSelect products={products} value={form.product} onChange={(v) => update("product", v)} error={errors.product} />
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Order identification</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Link with a production plan or define a standalone shop-floor order.
+          </p>
         </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Input
+            label="Work order number"
+            placeholder="e.g. WO-001"
+            className="uppercase"
+            value={form.workOrderNumber}
+            onChange={(e) => update("workOrderNumber", e.target.value)}
+            error={errors.workOrderNumber}
+          />
+          <Select
+            label="Production plan (optional)"
+            value={form.productionPlan}
+            onChange={(e) => choosePlan(e.target.value)}
+          >
+            <option value="">No plan</option>
+            {plans.map((p) => (
+              <option key={p._id} value={p._id}>
+                {p.planNumber}{p.product ? ` — ${p.product.name}` : ""}
+              </option>
+            ))}
+          </Select>
 
-        <Input label="Planned quantity" type="number" min={1} step={1} value={form.plannedQuantity}
-          onChange={(e) => update("plannedQuantity", e.target.value)} error={errors.plannedQuantity} />
-        <Select label="Priority" value={form.priority} onChange={(e) => update("priority", e.target.value as Priority)}>
-          {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-        </Select>
+          <div className="sm:col-span-2">
+            <ProductSelect
+              products={products}
+              value={form.product}
+              onChange={(v) => update("product", v)}
+              error={errors.product}
+            />
+          </div>
 
-        <Input label="Produced quantity" type="number" min={0} step={1} value={form.producedQuantity}
-          onChange={(e) => update("producedQuantity", e.target.value)} error={errors.producedQuantity} />
-        <Input label="Rejected quantity" type="number" min={0} step={1} value={form.rejectedQuantity}
-          onChange={(e) => update("rejectedQuantity", e.target.value)} error={errors.rejectedQuantity} />
+          <div className="sm:col-span-2">
+            <Select
+              label="Priority"
+              value={form.priority}
+              onChange={(e) => update("priority", e.target.value as Priority)}
+            >
+              {PRIORITIES.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </div>
 
-        <Input label="Start date" type="date" value={form.startDate}
-          onChange={(e) => update("startDate", e.target.value)} />
-        <Input label="Due date" type="date" value={form.dueDate} min={form.startDate || undefined}
-          onChange={(e) => update("dueDate", e.target.value)} error={errors.dueDate} />
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Batch quantities & scrap</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Track planned volume alongside produced good units and recorded defect count.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-3">
+          <Input
+            label="Planned quantity"
+            type="number"
+            min={1}
+            step={1}
+            placeholder="e.g. 500"
+            value={form.plannedQuantity}
+            onChange={(e) => update("plannedQuantity", e.target.value)}
+            error={errors.plannedQuantity}
+          />
+          <Input
+            label="Produced quantity"
+            type="number"
+            min={0}
+            step={1}
+            value={form.producedQuantity}
+            onChange={(e) => update("producedQuantity", e.target.value)}
+            error={errors.producedQuantity}
+          />
+          <Input
+            label="Rejected quantity"
+            type="number"
+            min={0}
+            step={1}
+            value={form.rejectedQuantity}
+            onChange={(e) => update("rejectedQuantity", e.target.value)}
+            error={errors.rejectedQuantity}
+          />
+        </div>
+      </div>
 
-        <Select label="Status" value={form.status} onChange={(e) => update("status", e.target.value as WorkOrderStatus)}>
-          {WORK_ORDER_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-        </Select>
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Timeline & status</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Record targeted production dates and shop-floor execution stage.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Input
+            label="Start date"
+            type="date"
+            value={form.startDate}
+            onChange={(e) => update("startDate", e.target.value)}
+          />
+          <Input
+            label="Due date"
+            type="date"
+            value={form.dueDate}
+            min={form.startDate || undefined}
+            onChange={(e) => update("dueDate", e.target.value)}
+            error={errors.dueDate}
+          />
+
+          <div className="sm:col-span-2">
+            <Select
+              label="Status"
+              value={form.status}
+              onChange={(e) => update("status", e.target.value as WorkOrderStatus)}
+            >
+              {WORK_ORDER_STATUSES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>
+        <Button
+          type="button"
+          variant="outline"
+          className="sm:w-auto sm:px-6"
+          onClick={onCancel}
+          disabled={submitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">{submitLabel}</Button>
+        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">
+          {submitLabel}
+        </Button>
       </div>
     </form>
   );

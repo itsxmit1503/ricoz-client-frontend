@@ -101,44 +101,92 @@ export default function QualityIssuesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-6xl">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Quality Issues</h1>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Quality Assurance & Compliance</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Quality Issues</h1>
           <p className="mt-1 text-sm text-slate-400">
             {issues.loading ? "Loading…" : `${filtered.length} of ${issues.items.length} issues`}
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={issues.reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+          <button
+            onClick={issues.reload}
+            aria-label="Refresh"
+            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <RefreshCw className={`h-4 w-4 ${issues.loading ? "animate-spin" : ""}`} />
           </button>
-          <button onClick={() => setModal("new")} disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60">
+          <button
+            onClick={() => setModal("new")}
+            disabled={!ready}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <Plus className="h-4 w-4" /> New Issue
           </button>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="ui-section-enter mt-7">
         <StatusFilterCards options={ISSUE_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_170px_190px]">
-        <Input label="" aria-label="Search issues" icon={Search} placeholder="Search by issue, work order, product or defect…"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-        <Select aria-label="Filter by severity" value={severityFilter} onChange={(e) => setSeverityFilter(e.target.value)}>
-          <option value="">All severities</option>
-          {SEVERITIES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-        </Select>
-        <Select aria-label="Filter by type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-          <option value="">All types</option>
-          {QUALITY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-        </Select>
+      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter quality issues</p>
+          {(search || statusFilter || severityFilter || typeFilter) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("");
+                setSeverityFilter("");
+                setTypeFilter("");
+              }}
+              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_170px_190px]">
+          <Input
+            label=""
+            aria-label="Search issues"
+            icon={Search}
+            placeholder="Search by issue, work order, product or defect…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Select
+            aria-label="Filter by severity"
+            value={severityFilter}
+            onChange={(e) => setSeverityFilter(e.target.value)}
+          >
+            <option value="">All severities</option>
+            {SEVERITIES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </Select>
+          <Select
+            aria-label="Filter by type"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="">All types</option>
+            {QUALITY_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
         {issues.loading ? (
           <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
         ) : issues.error ? (
@@ -160,7 +208,7 @@ export default function QualityIssuesPage() {
                   <th className="px-5 py-3 font-medium">Work order</th>
                   <th className="px-5 py-3 font-medium">Product</th>
                   <th className="px-5 py-3 font-medium">Type</th>
-                  <th className="px-5 py-3 text-right font-medium">Inspected / pass / fail</th>
+                  <th className="px-5 py-3 text-right font-medium">Inspected / Pass / Fail</th>
                   <th className="px-5 py-3 font-medium">Severity</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 text-right font-medium">Actions</th>
@@ -168,34 +216,66 @@ export default function QualityIssuesPage() {
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {filtered.map((i) => (
-                  <tr key={i._id} className="hover:bg-slate-800/40">
+                  <tr key={i._id} className="ui-table-row hover:bg-slate-800/40">
                     <td className="px-5 py-3.5">
-                      <Link href={`/quality/details?id=${i._id}`} className="font-mono text-xs text-slate-300 hover:text-blue-300">
+                      <Link
+                        href={`/quality/details?id=${i._id}`}
+                        className="font-mono text-xs font-medium text-blue-300 hover:text-blue-200 hover:underline"
+                      >
                         {i.issueNumber}
                       </Link>
-                      {i.defectType && <p className="max-w-[160px] truncate text-xs text-slate-500" title={i.defectType}>{i.defectType}</p>}
+                      {i.defectType && (
+                        <p className="mt-0.5 max-w-[160px] truncate text-xs text-slate-400" title={i.defectType}>
+                          {i.defectType}
+                        </p>
+                      )}
                     </td>
-                    <td className="px-5 py-3.5 font-mono text-xs text-slate-300">{i.workOrder?.workOrderNumber ?? <span className="text-slate-500">Deleted</span>}</td>
-                    <td className="px-5 py-3.5">{i.product ? i.product.name : <span className="text-slate-500">—</span>}</td>
+                    <td className="px-5 py-3.5 font-mono text-xs text-slate-300">
+                      {i.workOrder?.workOrderNumber ?? <span className="text-slate-500">Deleted</span>}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      {i.product ? (
+                        <span className="font-medium text-slate-200">{i.product.name}</span>
+                      ) : (
+                        <span className="text-slate-500">—</span>
+                      )}
+                    </td>
                     <td className="px-5 py-3.5"><Badge meta={findMeta(QUALITY_TYPES, i.type)} /></td>
-                    <td className="px-5 py-3.5 text-right tabular-nums">
-                      {i.quantityInspected} / <span className="text-emerald-400">{i.quantityPassed}</span> /{" "}
-                      <span className={i.quantityFailed > 0 ? "text-red-400" : ""}>{i.quantityFailed}</span>
+                    <td className="px-5 py-3.5 text-right font-mono text-xs tabular-nums">
+                      <span className="text-slate-200">{i.quantityInspected}</span>
+                      <span className="mx-1 text-slate-500">/</span>
+                      <span className="font-medium text-emerald-400">{i.quantityPassed}</span>
+                      <span className="mx-1 text-slate-500">/</span>
+                      <span className={i.quantityFailed > 0 ? "font-medium text-red-400" : "text-slate-400"}>
+                        {i.quantityFailed}
+                      </span>
                     </td>
                     <td className="px-5 py-3.5"><Badge meta={findMeta(SEVERITIES, i.severity)} /></td>
                     <td className="px-5 py-3.5"><Badge meta={findMeta(ISSUE_STATUSES, i.status)} /></td>
                     <td className="px-5 py-3.5">
                       <div className="flex justify-end gap-1">
-                        <Link href={`/quality/details?id=${i._id}`} aria-label={`View ${i.issueNumber}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                        <Link
+                          href={`/quality/details?id=${i._id}`}
+                          aria-label={`View ${i.issueNumber}`}
+                          title="View details"
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                        >
                           <Eye className="h-4 w-4" />
                         </Link>
-                        <button onClick={() => setModal(i)} aria-label={`Edit ${i.issueNumber}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                        <button
+                          onClick={() => setModal(i)}
+                          aria-label={`Edit ${i.issueNumber}`}
+                          title="Edit issue"
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                        >
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => setToDelete(i)} aria-label={`Delete ${i.issueNumber}`}
-                          className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400">
+                        <button
+                          onClick={() => setToDelete(i)}
+                          aria-label={`Delete ${i.issueNumber}`}
+                          title="Delete issue"
+                          className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>

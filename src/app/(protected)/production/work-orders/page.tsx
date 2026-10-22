@@ -149,40 +149,79 @@ function WorkOrdersContent() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-6xl">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Work Orders</h1>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Shop Floor Operations</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Work Orders</h1>
           <p className="mt-1 text-sm text-slate-400">
             {orders.loading ? "Loading…" : `${filtered.length} of ${orders.items.length} work orders`}
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={orders.reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+          <button
+            onClick={orders.reload}
+            aria-label="Refresh"
+            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <RefreshCw className={`h-4 w-4 ${orders.loading ? "animate-spin" : ""}`} />
           </button>
-          <button onClick={() => setAdding(true)} disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60">
+          <button
+            onClick={() => setAdding(true)}
+            disabled={!ready}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <Plus className="h-4 w-4" /> New Work Order
           </button>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="ui-section-enter mt-7">
         <StatusFilterCards options={WORK_ORDER_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px]">
-        <Input label="" aria-label="Search work orders" icon={Search} placeholder="Search by number, product or plan…"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-        <Select aria-label="Filter by priority" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-          <option value="">All priorities</option>
-          {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-        </Select>
+      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter work orders</p>
+          {(search || statusFilter || priorityFilter) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("");
+                setPriorityFilter("");
+              }}
+              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+          <Input
+            label=""
+            aria-label="Search work orders"
+            icon={Search}
+            placeholder="Search by number, product or plan…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Select
+            aria-label="Filter by priority"
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+          >
+            <option value="">All priorities</option>
+            {PRIORITIES.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
         {orders.loading ? (
           <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
         ) : orders.error ? (
@@ -216,52 +255,87 @@ function WorkOrdersContent() {
                   const next = NEXT_STEP[o.status];
                   const locked = LOCKED_FOR_DELETE.includes(o.status);
                   return (
-                    <tr key={o._id} className="hover:bg-slate-800/40">
+                    <tr key={o._id} className="ui-table-row hover:bg-slate-800/40">
                       <td className="px-5 py-3.5">
-                        <p className="font-mono text-xs text-slate-300">{o.workOrderNumber}</p>
-                        {o.productionPlan && <p className="text-xs text-slate-500">Plan {o.productionPlan.planNumber}</p>}
+                        <p className="font-mono text-xs font-medium text-slate-200">{o.workOrderNumber}</p>
+                        {o.productionPlan ? (
+                          <p className="mt-0.5 text-xs text-slate-400">Plan {o.productionPlan.planNumber}</p>
+                        ) : (
+                          <p className="mt-0.5 text-[11px] text-slate-500">Standalone</p>
+                        )}
                       </td>
                       <td className="px-5 py-3.5">
                         {o.product ? (
                           <>
-                            <p className="font-medium">{o.product.name}</p>
-                            <p className="font-mono text-xs text-slate-500">{o.product.code}</p>
+                            <p className="font-medium text-slate-100">{o.product.name}</p>
+                            <p className="font-mono text-xs text-slate-400">{o.product.code}</p>
                           </>
                         ) : (
                           <span className="text-slate-500">Deleted product</span>
                         )}
                       </td>
                       <td className="min-w-45 px-5 py-3.5">
-                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
-                          <div className="h-full rounded-full bg-blue-500" style={{ width: `${percent}%` }} />
+                        <div className="mb-1.5 flex items-center justify-between text-xs">
+                          <span className="tabular-nums font-medium text-slate-200">
+                            {o.producedQuantity.toLocaleString()} / {o.plannedQuantity.toLocaleString()}
+                          </span>
+                          <span className="tabular-nums font-semibold text-blue-400">{percent}%</span>
                         </div>
-                        <p className="mt-1.5 text-xs text-slate-400">
-                          {o.producedQuantity.toLocaleString()} / {o.plannedQuantity.toLocaleString()} ({percent}%)
-                          {o.rejectedQuantity > 0 && <span className="ml-2 text-red-400">{o.rejectedQuantity} rejected</span>}
-                        </p>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              percent >= 100 ? "bg-emerald-500" : "bg-blue-500"
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                        {o.rejectedQuantity > 0 && (
+                          <p className="mt-1 text-[11px] text-red-400">
+                            {o.rejectedQuantity.toLocaleString()} rejected
+                          </p>
+                        )}
                       </td>
-                      <td className={`px-5 py-3.5 ${overdue ? "font-medium text-red-400" : "text-slate-300"}`}>
-                        {formatDate(o.dueDate)}
-                        {overdue && <span className="ml-2 text-xs">overdue</span>}
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <span className={overdue ? "font-medium text-red-400" : "text-slate-300"}>
+                            {formatDate(o.dueDate)}
+                          </span>
+                          {overdue && (
+                            <span className="rounded border border-red-500/20 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-red-300">
+                              Overdue
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-3.5"><Badge meta={findMeta(PRIORITIES, o.priority)} /></td>
                       <td className="px-5 py-3.5"><Badge meta={findMeta(WORK_ORDER_STATUSES, o.status)} /></td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-1">
                           {next && (
-                            <button onClick={() => advance(o, next.to)} disabled={busyId === o._id}
-                              className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800 disabled:opacity-50">
+                            <button
+                              onClick={() => advance(o, next.to)}
+                              disabled={busyId === o._id}
+                              className="mr-1 inline-flex items-center gap-1.5 rounded-lg border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 text-xs font-medium text-blue-200 transition hover:bg-blue-500/20 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                            >
                               {busyId === o._id && <Spinner className="h-3 w-3" />}
                               {next.label}
                             </button>
                           )}
-                          <button onClick={() => setEditing(o)} aria-label={`Edit ${o.workOrderNumber}`}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                          <button
+                            onClick={() => setEditing(o)}
+                            aria-label={`Edit ${o.workOrderNumber}`}
+                            title="Edit work order"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                          >
                             <Pencil className="h-4 w-4" />
                           </button>
-                          <button onClick={() => setToDelete(o)} disabled={locked} aria-label={`Delete ${o.workOrderNumber}`}
-                            title={locked ? "Can't delete after production has started" : "Delete"}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400">
+                          <button
+                            onClick={() => setToDelete(o)}
+                            disabled={locked}
+                            aria-label={`Delete ${o.workOrderNumber}`}
+                            title={locked ? "Can't delete after production has started" : "Delete work order"}
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>

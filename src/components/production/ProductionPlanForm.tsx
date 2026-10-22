@@ -96,32 +96,106 @@ export default function ProductionPlanForm({ initial, products, submitLabel, onS
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Input label="Plan number" className="uppercase" value={form.planNumber}
-          onChange={(e) => update("planNumber", e.target.value)} error={errors.planNumber} />
-        <ProductSelect products={products} value={form.product} onChange={(v) => update("product", v)} error={errors.product} />
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Plan overview</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Identify the production schedule and specify the target product and quantity.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Input
+            label="Plan number"
+            placeholder="e.g. PP-001"
+            className="uppercase"
+            value={form.planNumber}
+            onChange={(e) => update("planNumber", e.target.value)}
+            error={errors.planNumber}
+          />
+          <ProductSelect
+            products={products}
+            value={form.product}
+            onChange={(v) => update("product", v)}
+            error={errors.product}
+          />
 
-        <Input label="Planned quantity" type="number" min={1} step={1} placeholder="e.g. 500" value={form.plannedQuantity}
-          onChange={(e) => update("plannedQuantity", e.target.value)} error={errors.plannedQuantity} />
-        <Select label="Priority" value={form.priority} onChange={(e) => update("priority", e.target.value as Priority)}>
-          {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-        </Select>
+          <Input
+            label="Planned quantity"
+            type="number"
+            min={1}
+            step={1}
+            placeholder="e.g. 500"
+            value={form.plannedQuantity}
+            onChange={(e) => update("plannedQuantity", e.target.value)}
+            error={errors.plannedQuantity}
+          />
+          <Select
+            label="Priority"
+            value={form.priority}
+            onChange={(e) => update("priority", e.target.value as Priority)}
+          >
+            {PRIORITIES.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
+            ))}
+          </Select>
+        </div>
+      </div>
 
-        <Input label="Start date" type="date" value={form.startDate}
-          onChange={(e) => update("startDate", e.target.value)} error={errors.startDate} />
-        <Input label="Due date" type="date" value={form.dueDate} min={form.startDate || undefined}
-          onChange={(e) => update("dueDate", e.target.value)} error={errors.dueDate} />
+      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-200">Timeline & status</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Set operational start and due dates to monitor production delivery.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Input
+            label="Start date"
+            type="date"
+            value={form.startDate}
+            onChange={(e) => update("startDate", e.target.value)}
+            error={errors.startDate}
+          />
+          <Input
+            label="Due date"
+            type="date"
+            value={form.dueDate}
+            min={form.startDate || undefined}
+            onChange={(e) => update("dueDate", e.target.value)}
+            error={errors.dueDate}
+          />
 
-        <Select label="Status" value={form.status} onChange={(e) => update("status", e.target.value as PlanStatus)}>
-          {PLAN_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-        </Select>
+          <div className="sm:col-span-2">
+            <Select
+              label="Status"
+              value={form.status}
+              onChange={(e) => update("status", e.target.value as PlanStatus)}
+            >
+              {PLAN_STATUSES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>
+        <Button
+          type="button"
+          variant="outline"
+          className="sm:w-auto sm:px-6"
+          onClick={onCancel}
+          disabled={submitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">{submitLabel}</Button>
+        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">
+          {submitLabel}
+        </Button>
       </div>
     </form>
   );

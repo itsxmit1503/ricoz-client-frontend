@@ -88,40 +88,79 @@ export default function ProductionPlansPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="ui-page-enter mx-auto max-w-6xl">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Production Plans</h1>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300/80">Production Scheduling</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-100">Production Plans</h1>
           <p className="mt-1 text-sm text-slate-400">
             {plans.loading ? "Loading…" : `${filtered.length} of ${plans.items.length} plans`}
           </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={plans.reload} aria-label="Refresh"
-            className="rounded-lg border border-slate-700 p-2.5 text-slate-300 hover:bg-slate-800">
+          <button
+            onClick={plans.reload}
+            aria-label="Refresh"
+            className="rounded-lg border border-slate-700/90 bg-slate-900/70 p-2.5 text-slate-300 transition hover:border-slate-600 hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <RefreshCw className={`h-4 w-4 ${plans.loading ? "animate-spin" : ""}`} />
           </button>
-          <button onClick={() => setModal("new")} disabled={!ready}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-60">
+          <button
+            onClick={() => setModal("new")}
+            disabled={!ready}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-950/20 transition hover:bg-blue-500 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          >
             <Plus className="h-4 w-4" /> New Plan
           </button>
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="ui-section-enter mt-7">
         <StatusFilterCards options={PLAN_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_180px]">
-        <Input label="" aria-label="Search plans" icon={Search} placeholder="Search by plan number or product…"
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-        <Select aria-label="Filter by priority" value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)}>
-          <option value="">All priorities</option>
-          {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-        </Select>
+      <div className="ui-surface mt-4 rounded-xl p-3 sm:p-4">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Filter plans</p>
+          {(search || statusFilter || priorityFilter) && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("");
+                setPriorityFilter("");
+              }}
+              className="text-xs font-medium text-blue-400 transition hover:text-blue-300"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+          <Input
+            label=""
+            aria-label="Search plans"
+            icon={Search}
+            placeholder="Search by plan number or product…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Select
+            aria-label="Filter by priority"
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+          >
+            <option value="">All priorities</option>
+            {PRIORITIES.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
+            ))}
+          </Select>
+        </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="ui-section-enter mt-4 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-slate-950/10">
         {plans.loading ? (
           <div className="flex justify-center p-16"><Spinner className="h-7 w-7" /></div>
         ) : plans.error ? (
@@ -158,38 +197,58 @@ export default function ProductionPlansPage() {
                 {filtered.map((p) => {
                   const overdue = isOverdue(p.dueDate, p.status);
                   return (
-                    <tr key={p._id} className="hover:bg-slate-800/40">
-                      <td className="px-5 py-3.5 font-mono text-xs text-slate-300">{p.planNumber}</td>
+                    <tr key={p._id} className="ui-table-row hover:bg-slate-800/40">
+                      <td className="px-5 py-3.5 font-mono text-xs font-medium text-slate-200">{p.planNumber}</td>
                       <td className="px-5 py-3.5">
                         {p.product ? (
                           <>
-                            <p className="font-medium">{p.product.name}</p>
-                            <p className="font-mono text-xs text-slate-500">{p.product.code}</p>
+                            <p className="font-medium text-slate-100">{p.product.name}</p>
+                            <p className="font-mono text-xs text-slate-400">{p.product.code}</p>
                           </>
                         ) : (
                           <span className="text-slate-500">Deleted product</span>
                         )}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums">{p.plannedQuantity.toLocaleString()}</td>
+                      <td className="px-5 py-3.5 text-right tabular-nums font-medium text-slate-200">{p.plannedQuantity.toLocaleString()}</td>
                       <td className="px-5 py-3.5 text-slate-300">{formatDate(p.startDate)}</td>
-                      <td className={`px-5 py-3.5 ${overdue ? "font-medium text-red-400" : "text-slate-300"}`}>
-                        {formatDate(p.dueDate)}
-                        {overdue && <span className="ml-2 text-xs">overdue</span>}
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <span className={overdue ? "font-medium text-red-400" : "text-slate-300"}>
+                            {formatDate(p.dueDate)}
+                          </span>
+                          {overdue && (
+                            <span className="rounded border border-red-500/20 bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-red-300">
+                              Overdue
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-3.5"><Badge meta={findMeta(PRIORITIES, p.priority)} /></td>
                       <td className="px-5 py-3.5"><Badge meta={findMeta(PLAN_STATUSES, p.status)} /></td>
                       <td className="px-5 py-3.5">
                         <div className="flex justify-end gap-1">
-                          <Link href={`/production/work-orders?fromPlan=${p._id}`} aria-label={`Create work order for ${p.planNumber}`}
-                            title="Create work order" className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                          <Link
+                            href={`/production/work-orders?fromPlan=${p._id}`}
+                            aria-label={`Create work order for ${p.planNumber}`}
+                            title="Create work order"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                          >
                             <FilePlus2 className="h-4 w-4" />
                           </Link>
-                          <button onClick={() => setModal(p)} aria-label={`Edit ${p.planNumber}`}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white">
+                          <button
+                            onClick={() => setModal(p)}
+                            aria-label={`Edit ${p.planNumber}`}
+                            title="Edit plan"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+                          >
                             <Pencil className="h-4 w-4" />
                           </button>
-                          <button onClick={() => setToDelete(p)} aria-label={`Delete ${p.planNumber}`}
-                            className="rounded-lg p-2 text-slate-400 hover:bg-red-500/10 hover:text-red-400">
+                          <button
+                            onClick={() => setToDelete(p)}
+                            aria-label={`Delete ${p.planNumber}`}
+                            title="Delete plan"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
