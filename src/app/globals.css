@@ -1,8 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #020617;
+  --background: #090d16;
   --foreground: #f8fafc;
+  --surface-base: #0f1523;
+  --surface-elevated: #151c2d;
+  --surface-card: #121826;
+  --surface-hover: #1b2337;
+  --border-subtle: #1e293b;
+  --border-muted: #293548;
+  --border-prominent: #3b4961;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #ef4444;
 }
 
 @theme inline {
@@ -13,17 +28,17 @@
 }
 
 body {
-  background: #020617;
-  color: #f8fafc;
+  background: var(--background);
+  color: var(--text-primary);
   font-family: var(--font-inter), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Refined application scrollbar */
+/* Industrial Precision Scrollbar */
 .theme-scrollbar {
-  scrollbar-color: #334155 #0b1120;
+  scrollbar-color: #334155 #0b0f1a;
   scrollbar-width: thin;
 }
 
@@ -33,28 +48,27 @@ body {
 }
 
 .theme-scrollbar::-webkit-scrollbar-track {
-  background: #0b1120;
+  background: #0b0f1a;
 }
 
 .theme-scrollbar::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: #334155;
+  border-radius: 4px;
+  background: #2b384e;
 }
 
 .theme-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #3e4f6d;
 }
 
 /* -------------------------------------------------------------------------
    HIGH-PERFORMANCE MOTION SYSTEM (GPU-ACCELERATED)
-   - Uses transform and opacity for 60/120fps smoothness
-   - Snappy cubic-bezier curves without decorative lag
+   - Snappy industrial transitions with 0 sluggish lag
    ------------------------------------------------------------------------- */
 
 @keyframes ui-page-enter {
   0% {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   100% {
     opacity: 1;
@@ -65,80 +79,7 @@ body {
 @keyframes ui-section-enter {
   0% {
     opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes ui-subnav-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes ui-dropdown-open {
-  0% {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes ui-dialog-open {
-  0% {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes ui-dialog-close {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(8px) scale(0.97);
-  }
-}
-
-@keyframes ui-backdrop-open {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes ui-backdrop-close {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes ui-feedback-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(-3px);
+    transform: translateY(6px);
   }
   100% {
     opacity: 1;
@@ -151,150 +92,99 @@ body {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.4;
   }
 }
 
-/* Page entrance motion */
 .ui-page-enter {
-  animation: ui-page-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: ui-page-enter 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Prevent double-animation if nested within another page container */
-.ui-page-enter .ui-page-enter {
-  animation: none !important;
-}
-
-/* Section entrance motion */
 .ui-section-enter {
-  animation: ui-section-enter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Submenu dropdown inside navigation */
-.ui-subnav-enter {
-  animation: ui-subnav-enter 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Form feedback / error message entrance */
-.ui-feedback-enter {
-  animation: ui-feedback-enter 180ms ease-out both;
-}
-
-/* Floating select dropdown popover */
-.ui-dropdown-enter {
-  animation: ui-dropdown-open 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  transform-origin: top;
-}
-
-/* Modal and dialog panel animations */
-.ui-dialog-panel-enter {
-  animation: ui-dialog-open 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.ui-dialog-panel-exit {
-  animation: ui-dialog-close 160ms ease-in both;
-}
-
-.ui-dialog-backdrop-enter {
-  animation: ui-backdrop-open 180ms ease-out both;
-}
-
-.ui-dialog-backdrop-exit {
-  animation: ui-backdrop-close 160ms ease-in both;
+  animation: ui-section-enter 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* -------------------------------------------------------------------------
-   MATURE ENTERPRISE SURFACES & CARDS
-   - Crisp borders, disciplined dark backgrounds, subtle elevation
-   - Zero sci-fi neon or excessive glowing effects
+   SOLID INDUSTRIAL SURFACES & CARD SYSTEM
+   - Crisp 1px borders, solid graphite/navy backgrounds, zero gratuitous glow
    ------------------------------------------------------------------------- */
 
 .ui-surface {
-  border: 1px solid rgba(51, 65, 85, 0.5);
-  background: rgba(15, 23, 42, 0.95);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-muted);
+  background: var(--surface-base);
 }
 
 .ui-surface-elevated {
-  border: 1px solid rgba(71, 85, 105, 0.6);
-  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid var(--border-prominent);
+  background: var(--surface-elevated);
   box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.5);
 }
 
-/* Interactive card with clean professional hover state */
+/* Interactive Card: Crisp industrial response */
 .ui-card-interactive {
-  border: 1px solid rgba(51, 65, 85, 0.5);
-  background: rgba(15, 23, 42, 0.7);
-  transform: translateZ(0);
-  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 160ms ease,
-              border-color 160ms ease,
-              box-shadow 160ms ease;
+  border: 1px solid var(--border-muted);
+  background: var(--surface-card);
+  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ui-card-interactive:hover {
-  border-color: rgba(71, 85, 105, 0.8);
-  background: rgba(30, 41, 59, 0.6);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.45);
+  border-color: #3b82f6;
+  background: var(--surface-hover);
+  transform: translateY(-1px);
 }
 
 .ui-card-interactive:active {
-  transform: translateY(0) scale(0.995);
-  transition-duration: 80ms;
+  transform: translateY(0);
 }
 
-/* Clean, zero-reflow table rows */
+/* Industrial Data Table Rows */
 .ui-table-row {
-  transition: background-color 120ms ease-out;
+  border-bottom: 1px solid #1a2333;
+  transition: background-color 120ms ease;
 }
 
 .ui-table-row:hover {
-  background-color: rgba(30, 41, 59, 0.4);
+  background-color: rgba(30, 41, 59, 0.45);
 }
 
-/* Live status pulse */
+/* Live Status Dot */
 .ui-live-dot {
   animation: ui-pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Accessible focus outline */
-.ui-focus-ring {
-  outline: none;
-}
+/* Focus Ring */
 .ui-focus-ring:focus-visible {
   outline: none;
   ring: 2px;
-  --tw-ring-color: #3b82f6;
+  --tw-ring-color: #2563eb;
   --tw-ring-offset-width: 2px;
-  --tw-ring-offset-color: #020617;
+  --tw-ring-offset-color: #090d16;
 }
 
-/* Reduced motion support */
+/* Solid Industrial Panels */
+.industrial-card {
+  position: relative;
+  background: #0f1523;
+  border: 1px solid #232d3f;
+  border-radius: 0.75rem;
+}
+
+.industrial-card-elevated {
+  position: relative;
+  background: #141b2a;
+  border: 1px solid #2d3a50;
+  border-radius: 0.75rem;
+}
+
+/* Accessible Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .ui-page-enter,
-  .ui-page-enter .ui-page-enter,
   .ui-section-enter,
-  .ui-subnav-enter,
-  .ui-feedback-enter,
-  .ui-dropdown-enter,
-  .ui-live-dot,
-  .ui-dialog-panel-enter,
-  .ui-dialog-panel-exit,
-  .ui-dialog-backdrop-enter,
-  .ui-dialog-backdrop-exit {
+  .ui-card-interactive,
+  .ui-table-row,
+  .ui-live-dot {
     animation: none !important;
     transition: none !important;
     transform: none !important;
-  }
-
-  .ui-table-row,
-  .ui-table-row:hover,
-  .ui-card-interactive,
-  .ui-card-interactive:hover,
-  .ui-card-interactive:active {
-    transition: none !important;
-    transform: none !important;
-    box-shadow: none !important;
   }
 }

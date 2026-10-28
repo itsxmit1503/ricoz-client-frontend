@@ -1,14 +1,26 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-import { NextResponse, type NextRequest } from "next/server";
+export default clerkMiddleware(async (auth, req) => {
+  const pathname = req.nextUrl.pathname;
 
-export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/")
+  ) {
+    const { isAuthenticated, redirectToSignIn , } = await auth();
+
+    if (!isAuthenticated) {
+      return redirectToSignIn();
+    }
   }
-
-  return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
+
+    // Required by Clerk
+    '/__clerk/:path*',
+  ],
 };

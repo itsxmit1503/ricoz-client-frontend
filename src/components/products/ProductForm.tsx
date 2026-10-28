@@ -52,91 +52,44 @@ export default function ProductForm({ initial = EMPTY, submitLabel, onSubmit }: 
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="space-y-6 rounded-2xl border border-slate-800/90 bg-slate-900/95 p-5 shadow-xl shadow-black/20 sm:p-7"
-    >
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-            Product Specifications
-          </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Define item classification, identification SKU, and default inventory measuring units.
-          </p>
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-xl border border-slate-800/90 bg-[#0c111e] p-6 shadow-xl sm:p-7">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <Input label="Product name" placeholder="e.g. Steel Rod 10mm" value={form.name}
+            onChange={(e) => update("name", e.target.value)} error={errors.name} />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <Input
-              label="Product Name"
-              placeholder="e.g. High-Grade Aluminum Billet 50mm"
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              error={errors.name}
-            />
-          </div>
+        <Input label="Product code" placeholder="e.g. RM-001" className="uppercase" value={form.code}
+          onChange={(e) => update("code", e.target.value.toUpperCase())} error={errors.code} />
 
-          <Input
-            label="Product SKU Code"
-            placeholder="e.g. RM-ALU-001"
-            className="uppercase font-mono"
-            value={form.code}
-            onChange={(e) => update("code", e.target.value.toUpperCase())}
-            error={errors.code}
-          />
+        <Select label="Type" value={form.type} onChange={(e) => update("type", e.target.value as ProductInput["type"])}
+          error={errors.type}>
+          <option value="" disabled>Select type…</option>
+          {PRODUCT_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </Select>
 
-          <Select
-            label="Product Classification"
-            value={form.type}
-            onChange={(e) => update("type", e.target.value as ProductInput["type"])}
-            error={errors.type}
-          >
-            <option value="" disabled>Select classification…</option>
-            {PRODUCT_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </Select>
+        <div>
+          <Input label="Unit" list="unit-suggestions" placeholder="PCS" value={form.unit}
+            onChange={(e) => update("unit", e.target.value)} error={errors.unit} />
+          <datalist id="unit-suggestions">
+            {UNIT_SUGGESTIONS.map((u) => <option key={u} value={u} />)}
+          </datalist>
+        </div>
 
-          <div>
-            <Input
-              label="Measurement Unit"
-              list="unit-suggestions"
-              placeholder="PCS"
-              className="uppercase font-mono"
-              value={form.unit}
-              onChange={(e) => update("unit", e.target.value)}
-              error={errors.unit}
-            />
-            <datalist id="unit-suggestions">
-              {UNIT_SUGGESTIONS.map((u) => (
-                <option key={u} value={u} />
-              ))}
-            </datalist>
-          </div>
-
-          <div className="flex items-end">
-            <label className="flex min-h-10 w-full cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/40 px-3.5 text-xs font-medium text-slate-200 transition duration-150 hover:border-slate-700">
-              <input
-                type="checkbox"
-                checked={form.isActive}
-                onChange={(e) => update("isActive", e.target.checked)}
-                className="h-4 w-4 rounded border-slate-700 bg-slate-900 accent-blue-600 focus:ring-blue-500"
-              />
-              <span>Active in Manufacturing Operations</span>
-            </label>
-          </div>
+        <div className="flex items-end">
+          <label className="flex h-11 cursor-pointer items-center gap-3 text-sm font-medium text-slate-200">
+            <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)}
+              className="h-4 w-4 rounded border-slate-600 bg-[#090d16] accent-blue-600" />
+            Active
+          </label>
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:justify-end">
-        <Link
-          href="/products"
-          className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-700/80 bg-slate-900/60 px-5 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-        >
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-6 sm:flex-row sm:justify-end">
+        <Link href="/products"
+          className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-700 bg-[#0f1523] px-5 text-sm font-medium text-slate-200 hover:bg-slate-800 hover:text-white transition">
           Cancel
         </Link>
         <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">

@@ -131,165 +131,50 @@ export default function QualityIssueForm({ initial, workOrders, products, submit
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-200">Issue identification & context</h3>
-          <p className="mt-1 text-xs text-slate-500">
-            Link the quality issue to a work order and specify issue classification.
-          </p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Input
-            label="Issue number"
-            placeholder="e.g. QI-001"
-            className="uppercase"
-            value={form.issueNumber}
-            onChange={(e) => update("issueNumber", e.target.value)}
-            error={errors.issueNumber}
-          />
-          <Select
-            label="Work order"
-            value={form.workOrder}
-            onChange={(e) => chooseWorkOrder(e.target.value)}
-            error={errors.workOrder}
-          >
-            <option value="" disabled>Select work order…</option>
-            {workOrders.map((w) => (
-              <option key={w._id} value={w._id}>
-                {w.workOrderNumber}{w.product ? ` — ${w.product.name}` : ""}
-              </option>
-            ))}
-          </Select>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Input label="Issue number" className="uppercase" value={form.issueNumber}
+          onChange={(e) => update("issueNumber", e.target.value)} error={errors.issueNumber} />
+        <Select label="Work order" value={form.workOrder} onChange={(e) => chooseWorkOrder(e.target.value)} error={errors.workOrder}>
+          <option value="" disabled>Select work order…</option>
+          {workOrders.map((w) => (
+            <option key={w._id} value={w._id}>{w.workOrderNumber}{w.product ? ` — ${w.product.name}` : ""}</option>
+          ))}
+        </Select>
 
-          <div className="sm:col-span-2">
-            <ProductSelect
-              label="Product (optional)"
-              products={products}
-              value={form.product}
-              onChange={(v) => update("product", v)}
-            />
-          </div>
+        <ProductSelect label="Product (optional)" products={products} value={form.product} onChange={(v) => update("product", v)} />
+        <Select label="Type" value={form.type} onChange={(e) => update("type", e.target.value as QualityType)}>
+          {QUALITY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+        </Select>
 
-          <Select
-            label="Type"
-            value={form.type}
-            onChange={(e) => update("type", e.target.value as QualityType)}
-          >
-            {QUALITY_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </Select>
-
-          <Select
-            label="Severity"
-            value={form.severity}
-            onChange={(e) => update("severity", e.target.value as Severity)}
-          >
-            {SEVERITIES.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </Select>
-
-          <div className="sm:col-span-2">
-            <Select
-              label="Status"
-              value={form.status}
-              onChange={(e) => update("status", e.target.value as IssueStatus)}
-            >
-              {ISSUE_STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
+        <Select label="Severity" value={form.severity} onChange={(e) => update("severity", e.target.value as Severity)}>
+          {SEVERITIES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+        </Select>
+        <Select label="Status" value={form.status} onChange={(e) => update("status", e.target.value as IssueStatus)}>
+          {ISSUE_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+        </Select>
       </div>
 
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-200">Sample & inspection counts</h3>
-          <p className="mt-1 text-xs text-slate-500">
-            Record total units inspected alongside pass and defect volumes.
-          </p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-3">
-          <Input
-            label="Inspected"
-            type="number"
-            min={0}
-            step={1}
-            value={form.quantityInspected}
-            onChange={(e) => update("quantityInspected", e.target.value)}
-            error={errors.quantityInspected}
-          />
-          <Input
-            label="Passed"
-            type="number"
-            min={0}
-            step={1}
-            value={form.quantityPassed}
-            onChange={(e) => update("quantityPassed", e.target.value)}
-            error={errors.quantityPassed}
-          />
-          <Input
-            label="Failed"
-            type="number"
-            min={0}
-            step={1}
-            value={form.quantityFailed}
-            onChange={(e) => update("quantityFailed", e.target.value)}
-            error={errors.quantityFailed}
-          />
-        </div>
+      <div className="grid gap-5 sm:grid-cols-3">
+        <Input label="Inspected" type="number" min={0} step={1} value={form.quantityInspected}
+          onChange={(e) => update("quantityInspected", e.target.value)} error={errors.quantityInspected} />
+        <Input label="Passed" type="number" min={0} step={1} value={form.quantityPassed}
+          onChange={(e) => update("quantityPassed", e.target.value)} error={errors.quantityPassed} />
+        <Input label="Failed" type="number" min={0} step={1} value={form.quantityFailed}
+          onChange={(e) => update("quantityFailed", e.target.value)} error={errors.quantityFailed} />
       </div>
 
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-200">Defect analysis & resolution</h3>
-          <p className="mt-1 text-xs text-slate-500">
-            Document failure observations, defect classification, and corrective response.
-          </p>
-        </div>
-        <div className="space-y-4">
-          <Input
-            label="Defect type"
-            placeholder="e.g. Surface scratch, dimensional deviation"
-            value={form.defectType}
-            onChange={(e) => update("defectType", e.target.value)}
-          />
-          <Textarea
-            label="Description"
-            placeholder="Detail what non-conformance was observed…"
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-          />
-          <Textarea
-            label="Corrective action"
-            placeholder="Action taken or recommended to address root cause…"
-            value={form.correctiveAction}
-            onChange={(e) => update("correctiveAction", e.target.value)}
-          />
-        </div>
-      </div>
+      <Input label="Defect type" placeholder="e.g. Surface scratch, wrong dimension" value={form.defectType}
+        onChange={(e) => update("defectType", e.target.value)} />
+      <Textarea label="Description" placeholder="What was found?" value={form.description}
+        onChange={(e) => update("description", e.target.value)} />
+      <Textarea label="Corrective action" placeholder="What will be done about it?" value={form.correctiveAction}
+        onChange={(e) => update("correctiveAction", e.target.value)} />
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          className="sm:w-auto sm:px-6"
-          onClick={onCancel}
-          disabled={submitting}
-        >
+        <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>
           Cancel
         </Button>
-        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">
-          {submitLabel}
-        </Button>
+        <Button type="submit" loading={submitting} className="sm:w-auto sm:px-8">{submitLabel}</Button>
       </div>
     </form>
   );

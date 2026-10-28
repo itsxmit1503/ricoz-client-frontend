@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PackagePlus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -15,7 +15,7 @@ export default function AddProductPage() {
   async function handleCreate(values: ProductInput) {
     try {
       const product = await productService.create(values);
-      toast.success(`${product.code} registered to catalog`);
+      toast.success(`${product.code} created`);
       router.push("/products");
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not create product."));
@@ -23,26 +23,12 @@ export default function AddProductPage() {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-3xl space-y-5">
-      <div>
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Catalog
-        </Link>
-        <div className="mt-3 flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
-            <PackagePlus className="h-4 w-4" />
-          </span>
-          <div>
-            <p className="text-xs font-medium text-blue-400">Products</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">New Product</h1>
-          </div>
-        </div>
-      </div>
-
-      <ProductForm submitLabel="Create Product" onSubmit={handleCreate} />
+    <div className="mx-auto max-w-3xl">
+      <Link href="/products" className="inline-flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition">
+        <ArrowLeft className="h-4 w-4" /> Back to products
+      </Link>
+      <h1 className="mb-6 mt-3 text-2xl font-bold tracking-tight text-white">Add Product</h1>
+      <ProductForm submitLabel="Create product" onSubmit={handleCreate} />
     </div>
   );
 }

@@ -3,23 +3,33 @@ import type { ButtonHTMLAttributes } from "react";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
-  variant?: "primary" | "outline" | "danger" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost";
+  size?: "sm" | "md" | "lg";
 };
 
 const variants = {
   primary:
-    "border border-blue-500/80 bg-blue-600 text-white shadow-sm shadow-blue-950/40 hover:bg-blue-500 hover:border-blue-400 focus-visible:ring-blue-400 disabled:hover:bg-blue-600 disabled:hover:border-blue-500/80",
+    "border border-blue-600 bg-blue-600 text-white shadow-xs hover:bg-blue-500 hover:border-blue-500 focus-visible:ring-blue-400 active:bg-blue-700",
+  secondary:
+    "border border-slate-700 bg-slate-800 text-slate-100 shadow-xs hover:bg-slate-700 hover:border-slate-600 focus-visible:ring-slate-400 active:bg-slate-800",
   outline:
-    "border border-slate-700/80 bg-slate-900/80 text-slate-200 shadow-sm shadow-black/20 hover:bg-slate-800 hover:border-slate-600 hover:text-white focus-visible:ring-slate-400",
+    "border border-slate-700/80 bg-slate-900/90 text-slate-200 shadow-xs hover:bg-slate-800 hover:border-slate-600 hover:text-white focus-visible:ring-slate-400 active:bg-slate-900",
   danger:
-    "border border-red-500/70 bg-red-600/90 text-white shadow-sm shadow-red-950/40 hover:bg-red-500 hover:border-red-400 focus-visible:ring-red-400",
+    "border border-rose-600 bg-rose-600 text-white shadow-xs hover:bg-rose-500 hover:border-rose-500 focus-visible:ring-rose-400 active:bg-rose-700",
   ghost:
-    "border border-transparent bg-transparent text-slate-300 hover:bg-slate-800/60 hover:text-white focus-visible:ring-slate-400",
+    "border border-transparent bg-transparent text-slate-300 hover:bg-slate-800/70 hover:text-white focus-visible:ring-slate-400 active:bg-slate-800",
+};
+
+const sizes = {
+  sm: "h-8 px-3 text-xs gap-1.5",
+  md: "h-9.5 px-4 text-xs sm:text-sm gap-2",
+  lg: "h-11 px-5 text-sm sm:text-base gap-2.5",
 };
 
 export default function Button({
   loading = false,
   variant = "primary",
+  size = "md",
   className = "",
   children,
   disabled,
@@ -28,7 +38,7 @@ export default function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium tracking-tight transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] disabled:hover:translate-y-0 disabled:active:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg font-medium tracking-tight transition-all duration-150 ease-out active:scale-[0.98] disabled:active:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
       {...rest}
     >
       {loading && <LoaderCircle className="h-4 w-4 animate-spin shrink-0" />}

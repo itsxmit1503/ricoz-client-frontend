@@ -1,43 +1,27 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+"use client";
 
-export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api",
-  withCredentials: true, // send / receive the httpOnly auth cookies
-  headers: { "Content-Type": "application/json" },
-});
+import axios, { AxiosInstance } from "axios";
 
-type RetriableConfig = InternalAxiosRequestConfig & { _retry?: boolean };
+type TokenGetter = () => Promise<string | null>;
 
-// Registered by <AuthProvider> so the interceptor can tell the app the session is gone.
-let onSessionExpired: (() => void) | null = null;
-export function setSessionExpiredHandler(handler: (() => void) | null) {
-  onSessionExpired = handler;
+let getToken: TokenGetter = async () => null;
+
+/** Called by <AuthProvider> so every request can carry the current Clerk session token. */
+export function setTokenGetter(fn: TokenGetter) {
+  getToken = fn;
 }
 
-// One shared refresh request, so parallel 401s don't trigger parallel refreshes.
-let refreshPromise: Promise<unknown> | null = null;
-
-api.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const original = error.config as RetriableConfig | undefined;
-    const isAuthCall = original?.url?.startsWith("/auth/");
-
-    // Access token expired -> refresh once, then replay the original request.
-    if (error.response?.status === 401 && original && !original._retry && !isAuthCall) {
-      original._retry = true;
-      try {
-        refreshPromise ??= api.post("/auth/refresh").finally(() => {
-          refreshPromise = null;
-        });
-        await refreshPromise;
-        return api(original);
-      } catch (refreshError) {
-        onSessionExpired?.(); // AuthProvider clears the user -> guard redirects to /login
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
+export const api: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
   },
-);
+});
+
+// Clerk session tokens are short-lived; getToken() returns a fresh/cached one each time.
+api.interceptors.request.use(async (config) => {
+  const token = await getToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});

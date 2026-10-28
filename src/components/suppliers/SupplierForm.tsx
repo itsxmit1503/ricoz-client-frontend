@@ -61,13 +61,8 @@ export default function SupplierForm({ initial, submitLabel, onSubmit, onCancel 
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-200">Supplier details</h3>
-          <p className="mt-1 text-xs text-slate-500">Use a clear code so the supplier is easy to find in purchasing.</p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Input label="Supplier name" placeholder="e.g. Acme Steel Pvt Ltd" value={form.name}
           onChange={(e) => update("name", e.target.value)} error={errors.name} />
         <Input label="Supplier code" placeholder="e.g. SUP-001" className="uppercase" value={form.code}
@@ -76,22 +71,16 @@ export default function SupplierForm({ initial, submitLabel, onSubmit, onCancel 
           onChange={(e) => update("email", e.target.value)} error={errors.email} />
         <Input label="Phone" type="tel" placeholder="+91 …" value={form.phone}
           onChange={(e) => update("phone", e.target.value)} />
-        </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <h3 className="text-sm font-semibold text-slate-200">Contact and availability</h3>
-        <Textarea label="Address" placeholder="Street, city, state, PIN" value={form.address}
-          onChange={(e) => update("address", e.target.value)} />
-        <label className="mt-5 flex cursor-pointer items-center gap-3 text-sm text-slate-200">
-          <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)}
-            className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-blue-600" />
-          <span>
-            <span className="block">Active supplier</span>
-            <span className="text-xs text-slate-500">Inactive suppliers remain available in existing records.</span>
-          </span>
-        </label>
-      </div>
+      <Textarea label="Address" placeholder="Street, city, state, PIN" value={form.address}
+        onChange={(e) => update("address", e.target.value)} />
+
+      <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-200">
+        <input type="checkbox" checked={form.isActive} onChange={(e) => update("isActive", e.target.checked)}
+          className="h-4 w-4 rounded border-slate-600 bg-slate-800 accent-blue-600" />
+        Active
+      </label>
 
       <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>

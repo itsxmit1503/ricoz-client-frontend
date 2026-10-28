@@ -15,7 +15,6 @@ import { machineService } from "@/services/machine.service";
 import { getStatusMeta, MACHINE_STATUSES, type Machine, type MachineInput, type MachineStatus } from "@/types/machine";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
-/** /machines/details -> pick a machine.   /machines/details?id=<id> -> view / edit it. */
 function MachinePicker() {
   const { machines, loading, error } = useMachines();
   const [search, setSearch] = useState("");
@@ -26,52 +25,53 @@ function MachinePicker() {
   }, [machines, search]);
 
   return (
-    <div className="ui-page-enter mx-auto max-w-3xl space-y-5">
+    <div className="ui-page-enter mx-auto max-w-4xl space-y-6">
       <div>
-        <Link
-          href="/machines"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Equipment Fleet
-        </Link>
-        <div className="mt-3 flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-blue-400">
             <Cpu className="h-4 w-4" />
           </span>
-          <div>
-            <p className="text-xs font-medium text-blue-400">Equipment</p>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Select Machine</h1>
-          </div>
+          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
+            Diagnostics Matrix
+          </p>
         </div>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          Workstation & Machine Diagnostics
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-slate-300">
+          Select an equipment workstation to inspect operating telemetry, runtime history, and status.
+        </p>
       </div>
 
-      <div className="rounded-xl border border-slate-800/80 bg-slate-900/60 p-4">
+      <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4">
         <Input
           label=""
           aria-label="Search machines"
           icon={Search}
-          placeholder="Search by equipment name or code…"
+          placeholder="Search by equipment name or station code…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="divide-y divide-slate-800/80 overflow-hidden rounded-xl border border-slate-800/90 bg-slate-900/80 shadow-lg shadow-black/20">
+      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] shadow-xl divide-y divide-slate-800/80">
         {loading ? (
-          <div className="flex justify-center p-12"><Spinner className="h-6 w-6 text-blue-400" /></div>
+          <div className="flex justify-center p-16 text-slate-300">
+            <Spinner className="h-7 w-7 text-blue-400" />
+          </div>
         ) : error ? (
-          <p className="p-8 text-center text-xs text-red-400">{error}</p>
+          <p className="p-8 text-center text-rose-400">{error}</p>
         ) : filtered.length === 0 ? (
-          <p className="p-8 text-center text-xs text-slate-400">No equipment found matching your search.</p>
+          <p className="p-8 text-center text-slate-300">No equipment found matching your search.</p>
         ) : (
           filtered.map((m) => (
             <Link
               key={m._id}
               href={`/machines/details?id=${m._id}`}
-              className="ui-table-row flex items-center justify-between gap-4 px-5 py-3.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="flex items-center justify-between px-5 py-4 transition hover:bg-[#121826]"
             >
               <div>
-                <p className="font-semibold text-sm text-slate-200">{m.name}</p>
+                <p className="font-semibold text-white">{m.name}</p>
                 <p className="font-mono text-xs text-blue-300">{m.code}</p>
               </div>
               <MachineStatusBadge status={m.status} />
@@ -86,8 +86,8 @@ function MachinePicker() {
 function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</dt>
-      <dd className="mt-1 text-xs font-medium text-slate-200">{children}</dd>
+      <dt className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</dt>
+      <dd className="mt-1 text-sm font-medium text-white">{children}</dd>
     </div>
   );
 }
@@ -120,7 +120,7 @@ function MachineDetails({ id }: { id: string }) {
     try {
       const updated = await machineService.update(id, { status });
       setMachine(updated);
-      toast.success(`Operational status set to ${getStatusMeta(status).label}`);
+      toast.success(`Status set to ${getStatusMeta(status).label}`);
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not update status."));
     } finally {
@@ -133,7 +133,7 @@ function MachineDetails({ id }: { id: string }) {
       const updated = await machineService.update(id, values);
       setMachine(updated);
       setEditing(false);
-      toast.success(`${updated.code} profile updated`);
+      toast.success(`${updated.code} updated`);
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not update machine."));
     }
@@ -143,7 +143,7 @@ function MachineDetails({ id }: { id: string }) {
     setDeleting(true);
     try {
       await machineService.remove(id);
-      toast.success("Equipment decommissioned");
+      toast.success("Machine deleted");
       router.push("/machines");
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not delete machine."));
@@ -152,61 +152,52 @@ function MachineDetails({ id }: { id: string }) {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-3xl space-y-6">
-      <Link
-        href="/machines"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Machines
+    <div className="ui-page-enter mx-auto max-w-4xl space-y-6">
+      <Link href="/machines" className="inline-flex items-center gap-2 text-xs font-semibold text-blue-400 hover:text-blue-300">
+        <ArrowLeft className="h-3.5 w-3.5" /> Back to Fleet Registry
       </Link>
 
       {loading ? (
-        <div className="flex justify-center p-16"><Spinner className="h-7 w-7 text-blue-400" /></div>
+        <div className="flex justify-center p-16 text-slate-300">
+          <Spinner className="h-7 w-7 text-blue-400" />
+        </div>
       ) : error || !machine ? (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-xs text-red-200">
-          {error ?? "Equipment profile not found."}{" "}
-          <Link href="/machines/details" className="font-semibold underline ml-1 text-red-300">
-            Select another machine
-          </Link>
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-200">
+          {error ?? "Machine not found."}{" "}
+          <Link href="/machines/details" className="font-semibold underline ml-2">Select another machine</Link>
         </div>
       ) : (
         <>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-slate-800/80 pb-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700/60 bg-slate-800 text-blue-400">
-                  <Cpu className="h-4 w-4" />
-                </span>
-                <p className="text-xs font-medium text-blue-400">
-                  Equipment
-                </p>
-              </div>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">{machine.name}</h1>
-              <p className="mt-1 font-mono text-xs text-slate-400">Code: {machine.code}</p>
+              <span className="font-mono text-xs uppercase tracking-wider text-blue-400 font-bold">
+                Workstation Telemetry
+              </span>
+              <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">{machine.name}</h1>
+              <p className="mt-0.5 font-mono text-sm text-blue-300 font-bold">{machine.code}</p>
             </div>
-
             {!editing && (
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2.5">
                 <button
                   onClick={() => setEditing(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700/80 bg-slate-900/80 px-3.5 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#121826] px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-[#1a2336] hover:text-white"
                 >
-                  <Pencil className="h-3.5 w-3.5" /> Edit Machine
+                  <Pencil className="h-3.5 w-3.5" /> Edit Specs
                 </button>
                 <button
                   onClick={() => setConfirmOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3.5 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-rose-700/60 bg-rose-950/40 px-3.5 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-900/50"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Decommission
+                  <Trash2 className="h-3.5 w-3.5" /> Remove
                 </button>
               </div>
             )}
           </div>
 
           {editing ? (
-            <div className="rounded-2xl border border-slate-800/90 bg-slate-900/80 p-6 shadow-xl shadow-black/20">
+            <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-6 shadow-xl">
               <MachineForm
-                submitLabel="Save Changes"
+                submitLabel="Save changes"
                 onSubmit={handleUpdate}
                 onCancel={() => setEditing(false)}
                 initial={{
@@ -220,86 +211,60 @@ function MachineDetails({ id }: { id: string }) {
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Operating Status Control Section */}
-              <section className="rounded-2xl border border-slate-800/90 bg-slate-900/80 p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Live Operating State
-                    </h2>
-                    <p className="text-[11px] text-slate-500">
-                      Update operational availability for plant floor coordination
-                    </p>
-                  </div>
+              {/* Status Controller Card */}
+              <section className="rounded-xl border border-slate-800 bg-[#0c111e] p-5 sm:p-6 shadow-sm">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                  Real-time Operational State
+                </h2>
+                <div className="mt-3">
                   <MachineStatusBadge status={machine.status} />
                 </div>
-
-                <div className="mt-5 border-t border-slate-800/80 pt-4">
-                  <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                    Switch Machine State:
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {MACHINE_STATUSES.map((s) => {
-                      const current = s.value === machine.status;
-                      return (
-                        <button
-                          key={s.value}
-                          onClick={() => changeStatus(s.value)}
-                          disabled={current || savingStatus !== null}
-                          className={`inline-flex items-center justify-between rounded-lg border px-3 py-2 text-xs font-semibold transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:cursor-not-allowed ${
-                            current
-                              ? "border-blue-500/80 bg-blue-600/15 text-blue-200 shadow-xs"
-                              : "border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:bg-slate-900 hover:text-white disabled:opacity-40"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span className={`h-2 w-2 rounded-full ${s.dot}`} />
-                            {s.label}
-                          </span>
-                          {savingStatus === s.value && <Spinner className="h-3 w-3 text-blue-400" />}
-                          {current && (
-                            <span className="text-[10px] uppercase font-bold text-blue-400">Current</span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                <p className="mb-2.5 mt-5 text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Override Machine State
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {MACHINE_STATUSES.map((s) => {
+                    const current = s.value === machine.status;
+                    return (
+                      <button
+                        key={s.value}
+                        onClick={() => changeStatus(s.value)}
+                        disabled={current || savingStatus !== null}
+                        className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed ${
+                          current
+                            ? "border-blue-500 bg-blue-500/15 text-blue-200 font-bold"
+                            : "border-slate-700 bg-[#121826] text-slate-200 hover:border-slate-600 hover:bg-[#1a2336] hover:text-white disabled:opacity-40"
+                        }`}
+                      >
+                        {savingStatus === s.value ? (
+                          <Spinner className="h-3 w-3" />
+                        ) : (
+                          <span className={`h-2 w-2 rounded-full ${s.dot}`} />
+                        )}
+                        {s.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
 
-              {/* Physical & Technical Specs Card */}
-              <section className="rounded-2xl border border-slate-800/90 bg-slate-900/80 p-6 shadow-sm">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-4 pb-2 border-b border-slate-800/80">
-                  Deployment Specifications
+              {/* Specifications Card */}
+              <section className="rounded-xl border border-slate-800 bg-[#0c111e] p-5 sm:p-6 shadow-sm">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-4">
+                  Workstation Specifications
                 </h2>
-                <dl className="grid gap-5 sm:grid-cols-2">
-                  <Detail label="Plant Location / Bay">
+                <dl className="grid gap-4 sm:grid-cols-2">
+                  <Detail label="Station Identifier">{machine.code}</Detail>
+                  <Detail label="Workstation Name">{machine.name}</Detail>
+                  <Detail label="Shop Floor Location">
                     <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-slate-500" />
-                      {machine.location || "Unassigned"}
+                      <MapPin className="h-3.5 w-3.5 text-blue-400" />
+                      {machine.location || "Unassigned Zone"}
                     </span>
                   </Detail>
-                  <Detail label="Commissioning State">
-                    {machine.isActive ? (
-                      <span className="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                        Commissioned for Service
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 text-slate-500">
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
-                        Decommissioned / Standby
-                      </span>
-                    )}
-                  </Detail>
-                  <Detail label="Commission Date">
-                    <span className="font-mono text-slate-300">
-                      {new Date(machine.createdAt).toLocaleString()}
-                    </span>
-                  </Detail>
-                  <Detail label="Last Telemetry Update">
-                    <span className="font-mono text-slate-300">
-                      {new Date(machine.updatedAt).toLocaleString()}
+                  <Detail label="Line Availability">
+                    <span className={machine.isActive ? "text-emerald-400 font-bold" : "text-slate-400"}>
+                      {machine.isActive ? "Active on Production Line" : "Deregistered / Inactive"}
                     </span>
                   </Detail>
                 </dl>
@@ -309,10 +274,10 @@ function MachineDetails({ id }: { id: string }) {
 
           <ConfirmDialog
             open={confirmOpen}
-            title="Decommission Machine"
-            message={`Are you sure you want to decommission and permanently remove “${machine.name}” (${machine.code})? This action cannot be reversed.`}
+            title="Deregister Workstation?"
+            message={`Are you sure you want to remove ${machine.name} (${machine.code}) from active monitoring?`}
+            confirmLabel="Confirm Removal"
             loading={deleting}
-            confirmLabel="Confirm Decommission"
             onConfirm={handleDelete}
             onCancel={() => setConfirmOpen(false)}
           />
@@ -322,15 +287,13 @@ function MachineDetails({ id }: { id: string }) {
   );
 }
 
-function DetailsRouter() {
-  const id = useSearchParams().get("id");
-  return id ? <MachineDetails key={id} id={id} /> : <MachinePicker />;
-}
-
 export default function MachineDetailsPage() {
+  const params = useSearchParams();
+  const id = params.get("id");
+
   return (
-    <Suspense fallback={<div className="flex justify-center p-16"><Spinner className="h-7 w-7 text-blue-400" /></div>}>
-      <DetailsRouter />
+    <Suspense fallback={null}>
+      {id ? <MachineDetails id={id} /> : <MachinePicker />}
     </Suspense>
   );
 }

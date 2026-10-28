@@ -140,13 +140,8 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-200">Order details</h3>
-          <p className="mt-1 text-xs text-slate-500">Set the supplier, dates, and current purchasing status.</p>
-        </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <div className="grid gap-5 sm:grid-cols-2">
         <Input label="PO number" className="uppercase" value={form.poNumber}
           onChange={(e) => update("poNumber", e.target.value)} error={errors.poNumber} />
         <Select label="Supplier" value={form.supplier} onChange={(e) => update("supplier", e.target.value)} error={errors.supplier}>
@@ -164,22 +159,18 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
         <Select label="Status" value={form.status} onChange={(e) => update("status", e.target.value as PurchaseOrderStatus)}>
           {PO_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
         </Select>
-        </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800/90 bg-slate-950/35 p-4 sm:p-5">
+      <div>
         <div className="mb-2 flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-slate-200">Order items</h3>
-            <p className="mt-1 text-xs text-slate-500">Add each product and its agreed unit price.</p>
-          </div>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Items</h3>
           <button type="button" onClick={addItem}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-400 hover:text-blue-300">
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-300 transition">
             <Plus className="h-4 w-4" /> Add item
           </button>
         </div>
 
-        <div className="hidden gap-3 px-1 pb-1 text-xs uppercase tracking-wider text-slate-500 sm:grid sm:grid-cols-[1fr_90px_110px_100px_36px]">
+        <div className="hidden gap-3 px-1 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400 sm:grid sm:grid-cols-[1fr_90px_110px_100px_36px]">
           <span>Product</span><span>Qty</span><span>Unit price</span><span className="text-right">Line total</span><span />
         </div>
 
@@ -201,25 +192,25 @@ export default function PurchaseOrderForm({ initial, suppliers, products, submit
                   onChange={(e) => updateItem(item.key, "quantity", e.target.value)} error={err.quantity} />
                 <Input label="" aria-label="Unit price" type="number" min={0} step="any" placeholder="0.00" value={item.unitPrice}
                   onChange={(e) => updateItem(item.key, "unitPrice", e.target.value)} error={err.unitPrice} />
-                <p className="flex h-11 items-center justify-end text-sm tabular-nums text-slate-300">{formatMoney(line)}</p>
+                <p className="flex h-11 items-center justify-end text-sm font-semibold tabular-nums text-slate-200">{formatMoney(line)}</p>
                 <button type="button" onClick={() => removeItem(item.key)} disabled={form.items.length === 1}
                   aria-label="Remove item"
-                  className="flex h-11 items-center justify-center rounded-lg text-slate-500 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500">
+                  className="flex h-11 items-center justify-center rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-600 transition">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             );
           })}
         </div>
-        {errors.items && <p className="mt-2 text-xs text-red-400">{errors.items}</p>}
+        {errors.items && <p className="mt-2 text-xs text-rose-400">{errors.items}</p>}
 
-        <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-4">
-          <span className="text-sm text-slate-400">Order total</span>
-          <span className="text-lg font-semibold tabular-nums text-slate-100">{formatMoney(total)}</span>
+        <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-4">
+          <span className="text-sm font-medium text-slate-400">Order total</span>
+          <span className="text-lg font-bold tabular-nums text-white">{formatMoney(total)}</span>
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-slate-800 pt-5 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-slate-800/80 pt-5 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" className="sm:w-auto sm:px-6" onClick={onCancel} disabled={submitting}>
           Cancel
         </Button>

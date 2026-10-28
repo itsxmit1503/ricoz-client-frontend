@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth as useClerkAuth, useClerk } from "@clerk/nextjs";
 import {
   createContext,
   useCallback,
@@ -8,73 +9,60 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { setSessionExpiredHandler } from "@/services/api";
-import { authService } from "@/services/auth.service";
-import type { LoginPayload, RegisterPayload, User } from "@/types/auth";
+
+import { api, setTokenGetter } from "@/services/api";
+import type { User } from "@/types/auth";
 
 export interface AuthContextValue {
+  /** App user from the backend (has _id, role, ...). null until loaded. */
   user: User | null;
-  /** true while the initial session check is running */
+  /** true while Clerk or the backend profile is still loading */
   loading: boolean;
-  login: (data: LoginPayload) => Promise<User>;
-  register: (data: RegisterPayload) => Promise<string>;
   logout: () => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
+  const { signOut } = useClerk();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
-  // Restore the session on first load using the refreshToken cookie.
+  // Set during render (not in an effect) so child effects that fire API calls already have it.
+  setTokenGetter(() => getToken());
+
+  // Load / create the backend profile once Clerk says we are signed in.
   useEffect(() => {
+    // if (!isLoaded) return;
+    if (!isSignedIn) {
+      setUser(null);
+      setProfileLoading(false);
+      return;
+    }
     let active = true;
-    authService
-      .refresh()
-      .then((res) => active && setUser(res.user))
+    api
+      .get<{ user: User }>("/user/me")
+      .then((r) => active && setUser(r.data.user))
       .catch(() => active && setUser(null))
-      .finally(() => active && setLoading(false));
+      .finally(() => active && setProfileLoading(false));
     return () => {
       active = false;
     };
-  }, []);
-
-  // Refresh failed on a later request -> drop the user; <ProtectedShell> redirects to /login.
-  useEffect(() => {
-    setSessionExpiredHandler(() => setUser(null));
-    return () => setSessionExpiredHandler(null);
-  }, []);
-
-  const login = useCallback(async (data: LoginPayload) => {
-    const res = await authService.login(data);
-    setUser(res.user);
-    return res.user;
-  }, []);
-
-  const register = useCallback(async (data: RegisterPayload) => {
-    const res = await authService.register(data);
-    return res.message; // user must verify email before logging in
-  }, []);
+  }, [isLoaded, isSignedIn]);
 
   const logout = useCallback(async () => {
-    try {
-      await authService.logout();
-    } finally {
-      setUser(null);
-    }
-  }, []);
-
-  const loginWithGoogle = useCallback(async () => {
-    const res = await authService.googleStart();
-    window.location.href = res.url; // backend callback sets cookies, then redirects to /dashboard
-  }, []);
+    setUser(null);
+    await signOut({ redirectUrl: "/login" });
+  }, [signOut]);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, loginWithGoogle }),
-    [user, loading, login, register, logout, loginWithGoogle],
+    () => ({ user, loading: !isLoaded || profileLoading, logout }),
+    [user, isLoaded, profileLoading, logout],
   );
+
+  // Don't render pages (which call the API) until Clerk can hand out a token.
+  if (!isLoaded) return null;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
