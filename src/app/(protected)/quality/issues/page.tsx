@@ -131,14 +131,14 @@ export default function QualityIssuesPage() {
             disabled={issues.loading}
             aria-label="Refresh quality log"
             title="Refresh quality log"
-            className="rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
+            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${issues.loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={() => setModal("new")}
             disabled={!ready}
-            className="inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition disabled:opacity-60"
+            className="ui-pressable inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition disabled:opacity-60"
           >
             <Plus className="h-4 w-4" /> Log Quality Incident
           </button>
@@ -268,7 +268,7 @@ export default function QualityIssuesPage() {
                           onClick={() => setModal(i)}
                           aria-label="Edit issue"
                           title="Edit issue"
-                          className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
+                          className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
@@ -276,7 +276,7 @@ export default function QualityIssuesPage() {
                           onClick={() => setToDelete(i)}
                           aria-label="Delete issue"
                           title="Delete issue"
-                          className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400"
+                          className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>

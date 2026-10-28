@@ -9,13 +9,13 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants = {
   primary:
-    "border border-blue-600 bg-blue-600 text-white shadow-xs hover:bg-blue-500 hover:border-blue-500 focus-visible:ring-blue-400 active:bg-blue-700",
+    "border border-blue-600 bg-blue-600 text-white shadow-xs hover:bg-blue-500 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/20 focus-visible:ring-blue-400 active:bg-blue-700",
   secondary:
-    "border border-slate-700 bg-slate-800 text-slate-100 shadow-xs hover:bg-slate-700 hover:border-slate-600 focus-visible:ring-slate-400 active:bg-slate-800",
+    "border border-slate-700 bg-slate-800 text-slate-100 shadow-xs hover:bg-slate-700 hover:border-slate-600 hover:text-white focus-visible:ring-slate-400 active:bg-slate-800",
   outline:
     "border border-slate-700/80 bg-slate-900/90 text-slate-200 shadow-xs hover:bg-slate-800 hover:border-slate-600 hover:text-white focus-visible:ring-slate-400 active:bg-slate-900",
   danger:
-    "border border-rose-600 bg-rose-600 text-white shadow-xs hover:bg-rose-500 hover:border-rose-500 focus-visible:ring-rose-400 active:bg-rose-700",
+    "border border-rose-600 bg-rose-600 text-white shadow-xs hover:bg-rose-500 hover:border-rose-500 hover:shadow-md hover:shadow-rose-500/20 focus-visible:ring-rose-400 active:bg-rose-700",
   ghost:
     "border border-transparent bg-transparent text-slate-300 hover:bg-slate-800/70 hover:text-white focus-visible:ring-slate-400 active:bg-slate-800",
 };
@@ -38,7 +38,7 @@ export default function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center rounded-lg font-medium tracking-tight transition-all duration-150 ease-out active:scale-[0.98] disabled:active:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`ui-pressable inline-flex items-center justify-center rounded-lg font-medium tracking-tight transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#06090f] disabled:cursor-not-allowed disabled:opacity-50 disabled:transform-none ${variants[variant]} ${sizes[size]} ${className}`}
       {...rest}
     >
       {loading && <LoaderCircle className="h-4 w-4 animate-spin shrink-0" />}

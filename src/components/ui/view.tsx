@@ -88,14 +88,14 @@ export default function ProductListPage() {
             disabled={loading}
             aria-label="Refresh catalog"
             title="Refresh catalog"
-            className="rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
+            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </button>
 
           <Link
             href="/products/add"
-            className="inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition"
+            className="ui-pressable inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition"
           >
             <Plus className="h-4 w-4" /> Add Part
           </Link>
@@ -240,7 +240,7 @@ export default function ProductListPage() {
                             href={`/products/edit?id=${p._id}`}
                             aria-label={`Edit ${p.code}`}
                             title={`Edit ${p.code}`}
-                            className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
+                            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </Link>
@@ -248,7 +248,7 @@ export default function ProductListPage() {
                             onClick={() => setToDelete(p)}
                             aria-label={`Delete ${p.code}`}
                             title={`Delete ${p.code}`}
-                            className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400"
+                            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>

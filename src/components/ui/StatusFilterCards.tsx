@@ -14,14 +14,14 @@ export default function StatusFilterCards({ options, counts, active, onChange }:
       <button
         type="button"
         onClick={() => onChange("")}
-        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold font-mono transition ${
+        className={`ui-pressable inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold font-mono transition-all duration-150 ${
           active === ""
             ? "bg-blue-600 text-white shadow-xs"
             : "text-slate-300 hover:bg-[#121826] hover:text-white"
         }`}
       >
         <span>ALL</span>
-        <span className="rounded bg-black/30 px-1.5 py-0.2 text-[10px] tabular-nums">
+        <span className="rounded bg-black/30 px-1.5 py-0.2 text-[10px] tabular-nums transition-colors">
           {Object.values(counts).reduce((a, b) => a + b, 0)}
         </span>
       </button>
@@ -34,15 +34,15 @@ export default function StatusFilterCards({ options, counts, active, onChange }:
             key={o.value}
             type="button"
             onClick={() => onChange(isActive ? "" : o.value)}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+            className={`ui-pressable inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 ${
               isActive
-                ? "bg-[#162238] border border-blue-500/60 text-blue-200"
+                ? "bg-[#162238] border border-blue-500/60 text-blue-200 shadow-2xs shadow-blue-500/10"
                 : "text-slate-300 hover:bg-[#121826] hover:text-white border border-transparent"
             }`}
           >
-            <span className={`h-2 w-2 rounded-full ${o.dot}`} />
+            <span className={`h-2 w-2 rounded-full transition-transform duration-150 ${o.dot} ${isActive ? "scale-110" : ""}`} />
             <span>{o.label}</span>
-            <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded tabular-nums ${
+            <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded tabular-nums transition-colors duration-150 ${
               isActive ? "bg-blue-900/60 text-blue-200" : "bg-slate-800/80 text-slate-400"
             }`}>
               {count}

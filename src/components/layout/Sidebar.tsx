@@ -23,7 +23,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
           className="group flex items-center gap-3 rounded-lg p-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <span className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs transition group-hover:bg-blue-500">
+          <span className="flex h-8.5 w-8.5 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs transition-transform duration-150 group-hover:scale-105 group-active:scale-95">
             <Factory className="h-4 w-4" />
           </span>
           <div>
@@ -44,18 +44,18 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       <div className="theme-scrollbar flex-1 space-y-1.5 overflow-y-auto px-3 py-3">
         {/* Dashboard Command Link */}
         <div
-          className={`flex items-center rounded-lg border transition-colors duration-150 ${
+          className={`flex items-center rounded-lg border transition-all duration-150 ${
             dashActive
-              ? "border-blue-500/50 bg-[#162136] text-blue-200 shadow-2xs font-medium"
+              ? "border-blue-500/50 bg-[#162136] text-blue-200 shadow-xs font-medium"
               : "border-transparent text-slate-300 hover:border-slate-800 hover:bg-[#121826] hover:text-white"
           }`}
         >
           <Link
             href={dashboardItem.href}
             onClick={onNavigate}
-            className="flex min-h-9.5 flex-1 items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            className="ui-pressable flex min-h-9.5 flex-1 items-center gap-3 rounded-lg px-3 py-2 text-xs sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
-            <DashIcon className={`h-4 w-4 shrink-0 ${dashActive ? "text-blue-400" : "text-slate-400"}`} />
+            <DashIcon className={`h-4 w-4 shrink-0 transition-colors duration-150 ${dashActive ? "text-blue-400" : "text-slate-400"}`} />
             <span className="truncate">{dashboardItem.label}</span>
           </Link>
           <button
@@ -64,7 +64,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             aria-expanded={!hideAll}
             onClick={() => setHideAll((v) => !v)}
             title={hideAll ? "Expand all modules" : "Collapse all modules"}
-            className="mr-1 rounded p-1.5 text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            className="ui-pressable mr-1 rounded p-1.5 text-slate-400 transition-colors hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             <ChevronDown
               className={`h-3.5 w-3.5 transition-transform duration-200 ease-out ${
@@ -81,7 +81,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </p>
         </div>
 
-        {/* Nav Groups */}
+        {/* Nav Groups with Animated Accordions */}
         {navGroups.map((group) => {
           const Icon = group.icon;
           const groupActive = group.children.some((child) => child.href === pathname);
@@ -95,21 +95,22 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={() =>
                   setOpenGroups((s) => ({ ...s, [group.label]: !(s[group.label] ?? true) }))
                 }
-                className={`flex min-h-8.5 w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold tracking-wide transition-colors duration-150 hover:bg-[#121826] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                className={`ui-pressable flex min-h-8.5 w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold tracking-wide transition-all duration-150 hover:bg-[#121826] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
                   groupActive ? "text-white" : "text-slate-300"
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${groupActive ? "text-blue-400" : "text-slate-400"}`} />
+                <Icon className={`h-4 w-4 shrink-0 transition-colors duration-150 ${groupActive ? "text-blue-400" : "text-slate-400"}`} />
                 <span className="flex-1 truncate">{group.label}</span>
                 <ChevronDown
-                  className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 ${
+                  className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200 ease-out ${
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
               </button>
 
-              {isOpen && (
-                <div className="ml-3.5 space-y-0.5 border-l border-slate-800 pl-2.5">
+              {/* Animated Accordion Panel */}
+              <div className={`ui-accordion-grid ${isOpen ? "open" : ""}`}>
+                <div className="ui-accordion-inner ml-3.5 space-y-0.5 border-l border-slate-800 pl-2.5 pt-0.5">
                   {group.children.map((child) => {
                     const active = pathname === child.href;
                     return (
@@ -117,10 +118,10 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                         key={child.href}
                         href={child.href}
                         onClick={onNavigate}
-                        className={`flex min-h-8 items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                        className={`ui-pressable relative flex min-h-8 items-center gap-2 rounded-md py-1.5 text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
                           active
-                            ? "bg-[#162136] text-blue-300 font-semibold border-l-2 border-blue-500"
-                            : "text-slate-300 hover:bg-[#121826] hover:text-white"
+                            ? "bg-[#162136] text-blue-200 font-semibold border-l-2 border-blue-500 pl-2.5 shadow-xs"
+                            : "text-slate-300 hover:bg-[#121826] hover:text-white border-l-2 border-transparent pl-2.5"
                         }`}
                       >
                         <span className="truncate">{child.label}</span>
@@ -128,7 +129,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                     );
                   })}
                 </div>
-              )}
+              </div>
             </div>
           );
         })}
@@ -139,7 +140,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href="/info"
           onClick={onNavigate}
-          className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#121826] hover:text-slate-200"
+          className="ui-pressable flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-slate-400 hover:bg-[#121826] hover:text-slate-200"
         >
           <span>System Information</span>
           <span className="font-mono text-[10px] text-slate-400">v0.1.0</span>

@@ -15,11 +15,21 @@ import Sidebar from "./Sidebar";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMounted, setDrawerMounted] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (drawerOpen) {
+      setDrawerMounted(true);
+    } else {
+      const timer = window.setTimeout(() => setDrawerMounted(false), 240);
+      return () => window.clearTimeout(timer);
+    }
+  }, [drawerOpen]);
 
   const navItem = findNavItem(pathname);
   const breadcrumb = navItem
@@ -93,8 +103,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <Sidebar />
       </div>
 
-      {/* Mobile Drawer */}
-      {drawerOpen && (
+      {/* Mobile Drawer with Smooth Animated Entry and Exit */}
+      {drawerMounted && (
         <div
           ref={drawerRef}
           className="fixed inset-0 z-50 lg:hidden"
@@ -103,17 +113,23 @@ export default function AppShell({ children }: { children: ReactNode }) {
           aria-label="Navigation drawer"
         >
           <div
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs transition-opacity"
+            className={`ui-drawer-backdrop absolute inset-0 bg-slate-950/80 backdrop-blur-xs ${
+              drawerOpen ? "ui-drawer-backdrop-enter" : "ui-drawer-backdrop-exit"
+            }`}
             onClick={closeDrawer}
           />
-          <div className="relative h-full w-72 max-w-[85vw] shadow-2xl">
+          <div
+            className={`ui-drawer-panel relative h-full w-72 max-w-[85vw] shadow-2xl ${
+              drawerOpen ? "ui-drawer-panel-enter" : "ui-drawer-panel-exit"
+            }`}
+          >
             <Sidebar onNavigate={closeDrawer} />
             <button
               ref={closeButtonRef}
               type="button"
               aria-label="Close navigation"
               onClick={closeDrawer}
-              className="absolute -right-12 top-4 rounded-lg border border-slate-700 bg-slate-900 p-2 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="ui-pressable absolute -right-12 top-4 rounded-lg border border-slate-700 bg-slate-900 p-2 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
               <X className="h-5 w-5" />
             </button>
@@ -133,14 +149,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
               aria-label="Open navigation menu"
               aria-expanded={drawerOpen}
               onClick={() => setDrawerOpen(true)}
-              className="rounded-lg border border-slate-700 bg-[#121826] p-2 text-slate-300 transition hover:border-slate-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 lg:hidden"
+              className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-2 text-slate-300 transition hover:border-slate-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 lg:hidden"
             >
               <Menu className="h-4 w-4" />
             </button>
 
             {/* Mobile Brand Indicator */}
             <div className="flex items-center gap-2 lg:hidden">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm">
                 <Factory className="h-3.5 w-3.5" />
               </span>
               <span className="font-bold text-sm tracking-tight text-white">Ricoz</span>
@@ -150,13 +166,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <div className="hidden sm:flex items-center gap-2 text-xs font-medium">
               <span className="text-slate-400">Ricoz</span>
               <span className="text-slate-400">/</span>
-              <span className="text-slate-100 font-semibold truncate">{breadcrumb}</span>
+              <span className="text-slate-100 font-semibold truncate transition-colors duration-150">
+                {breadcrumb}
+              </span>
             </div>
           </div>
 
           {/* Right Header Status & Clerk Profile */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 transition-all duration-150">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Plant 01 Operational</span>
             </div>
@@ -165,9 +183,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        {/* Scrollable Page Body */}
+        {/* Scrollable Page Body with App Router Smooth Content Transition */}
         <main className="theme-scrollbar flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div key={pathname} className="ui-page-enter">
+          <div key={pathname} className="ui-page-transition">
             {children}
           </div>
         </main>

@@ -135,14 +135,14 @@ export default function OperationExecutionPage() {
             disabled={operations.loading}
             aria-label="Refresh operations"
             title="Refresh operations"
-            className="rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
+            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${operations.loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={() => setModal("new")}
             disabled={!ready}
-            className="inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition disabled:opacity-60"
+            className="ui-pressable inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition disabled:opacity-60"
           >
             <Plus className="h-4 w-4" /> New Operation
           </button>
@@ -271,7 +271,7 @@ export default function OperationExecutionPage() {
                             onClick={() => setModal(op)}
                             aria-label="Edit operation"
                             title="Edit operation"
-                            className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
+                            className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </button>

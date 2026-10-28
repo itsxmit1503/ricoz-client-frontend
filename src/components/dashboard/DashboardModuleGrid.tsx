@@ -30,18 +30,18 @@ function DomainRow({ title, code, statusBadge, description, href, icon: Icon }: 
   return (
     <Link
       href={href}
-      className="group flex flex-col sm:flex-row sm:items-center justify-between p-3.5 hover:bg-[#121929] transition-colors gap-2"
+      className="ui-pressable group flex flex-col sm:flex-row sm:items-center justify-between p-3.5 hover:bg-[#121929] transition-all duration-150 gap-2 border-l-2 border-transparent hover:border-blue-500"
     >
       <div className="flex items-center gap-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/80 bg-[#0d1320] text-blue-400 group-hover:text-white group-hover:border-blue-500/60 transition-colors shrink-0">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700/80 bg-[#0d1320] text-blue-400 group-hover:text-white group-hover:border-blue-500/60 group-hover:scale-105 transition-all duration-150 shrink-0">
           <Icon className="h-4 w-4" />
         </span>
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors">
+            <span className="text-xs font-bold text-white group-hover:text-blue-300 transition-colors duration-150">
               {title}
             </span>
-            <span className="font-mono text-[10px] text-slate-400 bg-slate-800/80 px-1.5 py-0.2 rounded">
+            <span className="font-mono text-[10px] text-slate-400 bg-slate-800/80 px-1.5 py-0.2 rounded transition-colors group-hover:bg-slate-800">
               {code}
             </span>
           </div>
@@ -52,10 +52,10 @@ function DomainRow({ title, code, statusBadge, description, href, icon: Icon }: 
       </div>
 
       <div className="flex items-center justify-between sm:justify-end gap-3 self-end sm:self-center font-mono text-xs">
-        <span className="text-[11px] text-slate-300 bg-[#090d16] border border-slate-800 px-2 py-0.5 rounded">
+        <span className="text-[11px] text-slate-300 bg-[#090d16] border border-slate-800 px-2 py-0.5 rounded transition-colors group-hover:border-slate-700">
           {statusBadge}
         </span>
-        <span className="text-blue-400 group-hover:translate-x-0.5 transition-transform">
+        <span className="text-blue-400 group-hover:translate-x-1.5 transition-transform duration-150">
           <ArrowRight className="h-3.5 w-3.5" />
         </span>
       </div>
@@ -65,7 +65,7 @@ function DomainRow({ title, code, statusBadge, description, href, icon: Icon }: 
 
 export default function DashboardModuleGrid() {
   return (
-    <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
+    <div className="ui-stagger-4 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
       <div className="px-5 py-4 border-b border-slate-800/80 bg-[#080d17] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">

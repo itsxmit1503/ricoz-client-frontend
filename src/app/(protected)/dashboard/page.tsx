@@ -25,7 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardModuleGrid from "@/components/dashboard/DashboardModuleGrid";
 import Spinner from "@/components/ui/Spinner";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,6 +34,13 @@ export default function DashboardPage() {
   const { user, logout } = useAuth();
   const [loggingOut, setLoggingOut] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedStage, setSelectedStage] = useState<number>(2);
+  const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const name = user ? user.username || user.email.split("@")[0] : "Floor Supervisor";
 
@@ -51,14 +58,18 @@ export default function DashboardPage() {
     setTimeout(() => setIsRefreshing(false), 600);
   }
 
+  function toggleAlertAck(id: string) {
+    setAcknowledgedAlerts((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       {/* 1. Integrated Plant Line Status Header */}
-      <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
+      <div className="ui-stagger-1 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg transition-all duration-200">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between p-5 sm:p-6 border-b border-slate-800/70 gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded transition-colors">
                 PLANT 01 // SECTOR A
               </span>
               <span className="text-slate-600 font-mono">•</span>
@@ -92,15 +103,15 @@ export default function DashboardPage() {
               onClick={handleRefresh}
               disabled={isRefreshing}
               title="Poll Sensor Network"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#121826] px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition disabled:opacity-50"
+              className="ui-pressable inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#121826] px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition disabled:opacity-50"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin text-blue-400" : ""}`} />
+              <RefreshCw className={`h-3.5 w-3.5 transition-transform duration-300 ${isRefreshing ? "animate-spin text-blue-400" : ""}`} />
               <span className="hidden sm:inline">Sync Floor</span>
             </button>
 
             <Link
               href="/production/work-orders"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition"
+              className="ui-pressable inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 hover:shadow-md hover:shadow-blue-500/20 transition"
             >
               <FilePlus2 className="h-3.5 w-3.5" />
               <span>Dispatch Order</span>
@@ -108,7 +119,7 @@ export default function DashboardPage() {
 
             <Link
               href="/products/add"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#141b2a] px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition"
+              className="ui-pressable inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#141b2a] px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition"
             >
               <PackagePlus className="h-3.5 w-3.5 text-blue-400" />
               <span>Catalog Part</span>
@@ -120,7 +131,7 @@ export default function DashboardPage() {
                 onClick={handleLogout}
                 disabled={loggingOut}
                 title="Sign out"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0d1320] px-3 py-2 text-xs font-medium text-slate-300 hover:border-rose-900 hover:bg-rose-950/40 hover:text-rose-400 transition disabled:opacity-50"
+                className="ui-pressable inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0d1320] px-3 py-2 text-xs font-medium text-slate-300 hover:border-rose-900 hover:bg-rose-950/40 hover:text-rose-400 transition disabled:opacity-50"
               >
                 {loggingOut ? <Spinner className="h-3.5 w-3.5" /> : <LogOut className="h-3.5 w-3.5" />}
                 <span className="hidden sm:inline">Logout</span>
@@ -132,7 +143,7 @@ export default function DashboardPage() {
         {/* Integrated Plant Telemetry Strip (4 Essential Operational Ratios) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/80 bg-[#080d17]">
           {/* Gauge 1: Floor Throughput */}
-          <div className="p-4 sm:p-5 space-y-1.5">
+          <div className="p-4 sm:p-5 space-y-1.5 hover:bg-[#0c1220]/60 transition-colors duration-150">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
               <span className="flex items-center gap-1.5">
                 <Activity className="h-3.5 w-3.5 text-blue-400" />
@@ -145,13 +156,16 @@ export default function DashboardPage() {
               <span className="text-xs font-mono text-slate-400">/ 2,000 units</span>
             </div>
             <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: "92%" }} />
+              <div
+                className="h-full bg-blue-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: mounted ? "92%" : "0%" }}
+              />
             </div>
             <p className="text-[11px] text-slate-400 font-mono">Cycle pace: 42s per part</p>
           </div>
 
           {/* Gauge 2: Equipment OEE */}
-          <div className="p-4 sm:p-5 space-y-1.5">
+          <div className="p-4 sm:p-5 space-y-1.5 hover:bg-[#0c1220]/60 transition-colors duration-150">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
               <span className="flex items-center gap-1.5">
                 <Gauge className="h-3.5 w-3.5 text-emerald-400" />
@@ -164,13 +178,16 @@ export default function DashboardPage() {
               <span className="text-xs font-mono text-emerald-300">Optimal Range</span>
             </div>
             <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full" style={{ width: "92.8%" }} />
+              <div
+                className="h-full bg-emerald-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: mounted ? "92.8%" : "0%" }}
+              />
             </div>
             <p className="text-[11px] text-slate-400 font-mono">1 machine in planned calibration</p>
           </div>
 
           {/* Gauge 3: Quality Yield */}
-          <div className="p-4 sm:p-5 space-y-1.5">
+          <div className="p-4 sm:p-5 space-y-1.5 hover:bg-[#0c1220]/60 transition-colors duration-150">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
@@ -183,13 +200,16 @@ export default function DashboardPage() {
               <span className="text-xs font-mono text-slate-300">2 flagged</span>
             </div>
             <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: "99.1%" }} />
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: mounted ? "99.1%" : "0%" }}
+              />
             </div>
             <p className="text-[11px] text-slate-400 font-mono">High precision tolerance intact</p>
           </div>
 
           {/* Gauge 4: Inventory Safety Buffers */}
-          <div className="p-4 sm:p-5 space-y-1.5">
+          <div className="p-4 sm:p-5 space-y-1.5 hover:bg-[#0c1220]/60 transition-colors duration-150">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
               <span className="flex items-center gap-1.5">
                 <Boxes className="h-3.5 w-3.5 text-rose-400" />
@@ -202,7 +222,10 @@ export default function DashboardPage() {
               <span className="text-xs font-mono text-slate-400">SKUs Tracked</span>
             </div>
             <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-              <div className="h-full bg-rose-500 rounded-full" style={{ width: "35%" }} />
+              <div
+                className="h-full bg-rose-500 rounded-full transition-all duration-700 ease-out"
+                style={{ width: mounted ? "35%" : "0%" }}
+              />
             </div>
             <p className="text-[11px] text-slate-400 font-mono">PO-9042 submitted for reorder</p>
           </div>
@@ -214,7 +237,7 @@ export default function DashboardPage() {
         {/* Left Column (8 cols): Work Order Stage Dispatch & Fleet Telemetry */}
         <div className="lg:col-span-8 space-y-6">
           {/* Panel 1: Live Multi-Stage Work Order Pipeline */}
-          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+          <div className="ui-stagger-2 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
               <div className="flex items-center gap-2">
                 <Layers className="h-4 w-4 text-blue-400" />
@@ -224,7 +247,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/production/work-orders"
-                className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
+                className="ui-pressable text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
               >
                 <span>View All 18 Orders</span>
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -232,8 +255,8 @@ export default function DashboardPage() {
             </div>
 
             <div className="divide-y divide-slate-800/60">
-              {/* Order Item 1 */}
-              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+              {/* Order Item 1 - Interactive Stage Pipeline */}
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition-colors duration-150 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
@@ -247,35 +270,70 @@ export default function DashboardPage() {
                     </p>
                   </div>
 
-                  <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded border border-blue-500/40 bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-300">
+                  <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded border border-blue-500/40 bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-300 shadow-2xs">
                     <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-                    STAGE 2: CNC MILLING (78%)
+                    STAGE {selectedStage}: {selectedStage === 1 ? "MATERIAL PREP" : selectedStage === 2 ? "CNC MILLING (78%)" : selectedStage === 3 ? "CMM SCAN QUEUE" : "FINAL PACK"}
                   </span>
                 </div>
 
-                {/* Visual Multi-Station Progress Pipeline */}
-                <div className="grid grid-cols-4 gap-2 pt-1 text-[11px] font-mono">
-                  <div className="rounded bg-emerald-950/60 border border-emerald-800/50 p-2 text-center text-emerald-300">
+                {/* Visual Multi-Station Progress Pipeline (Interactive) */}
+                <div className="grid grid-cols-4 gap-2 pt-1 text-[11px] font-mono select-none">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStage(1)}
+                    className={`ui-pressable rounded p-2 text-center transition-all duration-150 ${
+                      selectedStage === 1
+                        ? "bg-emerald-900/90 border border-emerald-400 text-white ring-2 ring-emerald-500/30"
+                        : "bg-emerald-950/60 border border-emerald-800/50 text-emerald-300 hover:bg-emerald-900/40"
+                    }`}
+                  >
                     <span className="block font-bold">1. Material Staged</span>
                     <span className="text-[10px] text-emerald-400">PASSED 06:15</span>
-                  </div>
-                  <div className="rounded bg-blue-950/80 border border-blue-500/60 p-2 text-center text-blue-200 ring-1 ring-blue-500/30">
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStage(2)}
+                    className={`ui-pressable rounded p-2 text-center transition-all duration-150 ${
+                      selectedStage === 2
+                        ? "bg-blue-900/90 border border-blue-400 text-white ring-2 ring-blue-500/30"
+                        : "bg-blue-950/80 border border-blue-500/60 text-blue-200 hover:bg-blue-900/40"
+                    }`}
+                  >
                     <span className="block font-bold">2. 5-Axis Milling</span>
                     <span className="text-[10px] text-blue-300 animate-pulse">CYCLE: 840/1200</span>
-                  </div>
-                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStage(3)}
+                    className={`ui-pressable rounded p-2 text-center transition-all duration-150 ${
+                      selectedStage === 3
+                        ? "bg-slate-800 border border-slate-600 text-white ring-2 ring-slate-500/30"
+                        : "bg-[#0e1422] border border-slate-800 text-slate-400 hover:bg-slate-800/40"
+                    }`}
+                  >
                     <span className="block font-bold">3. CMM Scan</span>
                     <span className="text-[10px] text-slate-400">PENDING QUEUE</span>
-                  </div>
-                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStage(4)}
+                    className={`ui-pressable rounded p-2 text-center transition-all duration-150 ${
+                      selectedStage === 4
+                        ? "bg-slate-800 border border-slate-600 text-white ring-2 ring-slate-500/30"
+                        : "bg-[#0e1422] border border-slate-800 text-slate-400 hover:bg-slate-800/40"
+                    }`}
+                  >
                     <span className="block font-bold">4. Final Pack</span>
                     <span className="text-[10px] text-slate-400">PENDING</span>
-                  </div>
+                  </button>
                 </div>
               </div>
 
               {/* Order Item 2 */}
-              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition-colors duration-150 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
@@ -316,7 +374,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Order Item 3 */}
-              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition-colors duration-150 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
@@ -359,7 +417,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Panel 2: Shop Floor Equipment Telemetry Matrix */}
-          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+          <div className="ui-stagger-3 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
               <div className="flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-emerald-400" />
@@ -369,7 +427,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/machines"
-                className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
+                className="ui-pressable text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
               >
                 <span>View Complete Fleet (15)</span>
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -378,7 +436,7 @@ export default function DashboardPage() {
 
             <div className="p-4 sm:p-5 space-y-3">
               {/* Machine Row 1 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+              <div className="ui-hover-card flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                   <div>
@@ -406,7 +464,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Machine Row 2 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+              <div className="ui-hover-card flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                   <div>
@@ -434,7 +492,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Machine Row 3 */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+              <div className="ui-hover-card flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
                 <div className="flex items-center gap-3">
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-400 shrink-0" />
                   <div>
@@ -467,7 +525,7 @@ export default function DashboardPage() {
         {/* Right Column (4 cols): Floor Triage & Quick Routing Matrix */}
         <div className="lg:col-span-4 space-y-6">
           {/* Panel 3: Floor Exceptions & Action Triage */}
-          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+          <div className="ui-stagger-3 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-rose-400" />
@@ -479,12 +537,22 @@ export default function DashboardPage() {
 
             <div className="p-4 space-y-3">
               {/* Alert 1 */}
-              <div className="rounded-lg border border-rose-900/60 bg-rose-950/20 p-3.5 space-y-1.5">
+              <div className={`ui-hover-card rounded-lg border p-3.5 space-y-1.5 transition-all duration-200 ${
+                acknowledgedAlerts["alert-1"]
+                  ? "border-slate-800 bg-[#090d16] opacity-60"
+                  : "border-rose-900/60 bg-rose-950/20"
+              }`}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-200 border border-rose-700/50">
                     LOW BUFFER • REORDER
                   </span>
-                  <span className="text-[11px] font-mono text-rose-300">Inventory</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleAlertAck("alert-1")}
+                    className="ui-pressable text-[10px] font-mono text-slate-400 hover:text-white"
+                  >
+                    {acknowledgedAlerts["alert-1"] ? "Acknowledged ✓" : "Mark read"}
+                  </button>
                 </div>
                 <p className="text-xs font-bold text-slate-100">
                   Titanium Alloy Rods (10mm) at 12 PCS
@@ -494,7 +562,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/purchase/orders"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-rose-300 hover:text-white pt-1"
+                  className="ui-pressable inline-flex items-center gap-1 text-xs font-semibold text-rose-300 hover:text-white pt-1"
                 >
                   <span>Review Purchase Orders</span>
                   <ArrowRight className="h-3 w-3" />
@@ -502,12 +570,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Alert 2 */}
-              <div className="rounded-lg border border-amber-900/60 bg-amber-950/20 p-3.5 space-y-1.5">
+              <div className={`ui-hover-card rounded-lg border p-3.5 space-y-1.5 transition-all duration-200 ${
+                acknowledgedAlerts["alert-2"]
+                  ? "border-slate-800 bg-[#090d16] opacity-60"
+                  : "border-amber-900/60 bg-amber-950/20"
+              }`}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-900/60 text-amber-200 border border-amber-700/50">
                     QA DEVIATION • REVIEW
                   </span>
-                  <span className="text-[11px] font-mono text-amber-300">Quality</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleAlertAck("alert-2")}
+                    className="ui-pressable text-[10px] font-mono text-slate-400 hover:text-white"
+                  >
+                    {acknowledgedAlerts["alert-2"] ? "Acknowledged ✓" : "Mark read"}
+                  </button>
                 </div>
                 <p className="text-xs font-bold text-slate-100">
                   Inspection Non-Conformance QI-0038
@@ -517,7 +595,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/quality/issues"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-amber-300 hover:text-white pt-1"
+                  className="ui-pressable inline-flex items-center gap-1 text-xs font-semibold text-amber-300 hover:text-white pt-1"
                 >
                   <span>Open Quality Incident</span>
                   <ArrowRight className="h-3 w-3" />
@@ -525,12 +603,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Alert 3 */}
-              <div className="rounded-lg border border-blue-900/60 bg-blue-950/20 p-3.5 space-y-1.5">
+              <div className={`ui-hover-card rounded-lg border p-3.5 space-y-1.5 transition-all duration-200 ${
+                acknowledgedAlerts["alert-3"]
+                  ? "border-slate-800 bg-[#090d16] opacity-60"
+                  : "border-blue-900/60 bg-blue-950/20"
+              }`}>
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-200 border border-blue-700/50">
                     PLANNED PM DUE • 48H
                   </span>
-                  <span className="text-[11px] font-mono text-blue-300">Maintenance</span>
+                  <button
+                    type="button"
+                    onClick={() => toggleAlertAck("alert-3")}
+                    className="ui-pressable text-[10px] font-mono text-slate-400 hover:text-white"
+                  >
+                    {acknowledgedAlerts["alert-3"] ? "Acknowledged ✓" : "Mark read"}
+                  </button>
                 </div>
                 <p className="text-xs font-bold text-slate-100">
                   Hydraulic Fluid & Filter Flush on Press 04
@@ -540,7 +628,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/maintenance/work-orders"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-300 hover:text-white pt-1"
+                  className="ui-pressable inline-flex items-center gap-1 text-xs font-semibold text-blue-300 hover:text-white pt-1"
                 >
                   <span>Dispatch Maintenance WO</span>
                   <ArrowRight className="h-3 w-3" />
@@ -550,7 +638,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Panel 4: Active Crew & Shift Handover */}
-          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md p-4 space-y-3">
+          <div className="ui-stagger-4 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
                 Shift 1 Handover Log
@@ -580,7 +668,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 3. High-Density Operations Console Directory (Replacing generic cards) */}
+      {/* 3. High-Density Operations Console Directory */}
       <DashboardModuleGrid />
     </div>
   );

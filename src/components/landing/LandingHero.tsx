@@ -41,7 +41,7 @@ export default function LandingHero() {
           {/* Left Column (7 cols): Editorial Manufacturing Manifesto */}
           <div className="lg:col-span-7 space-y-6">
             {/* Live Operational Status Capsule */}
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-slate-700/80 bg-[#0b101c] px-3.5 py-1.5 text-xs font-mono text-slate-200 shadow-sm">
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-slate-700/80 bg-[#0b101c] px-3.5 py-1.5 text-xs font-mono text-slate-200 shadow-sm transition-all duration-150">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
@@ -63,15 +63,15 @@ export default function LandingHero() {
 
             {/* Technical Manufacturing Credential Chips */}
             <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-              <div className="inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300">
+              <div className="ui-pressable inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300 hover:border-slate-700">
                 <Activity className="h-3.5 w-3.5 text-emerald-400" />
                 <span>Line Pace: <strong className="text-white">42s / Unit</strong></span>
               </div>
-              <div className="inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300">
+              <div className="ui-pressable inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300 hover:border-slate-700">
                 <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
                 <span>Tolerance: <strong className="text-white">±0.005mm</strong></span>
               </div>
-              <div className="inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300">
+              <div className="ui-pressable inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300 hover:border-slate-700">
                 <Zap className="h-3.5 w-3.5 text-amber-400" />
                 <span>Fleet OEE: <strong className="text-white">92.8%</strong></span>
               </div>
@@ -81,32 +81,33 @@ export default function LandingHero() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/sign-up"
-                className="group inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:bg-blue-500 transition duration-150"
+                className="ui-pressable group inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-md hover:bg-blue-500 hover:shadow-blue-500/25 transition duration-150"
               >
                 <span>Launch Ricoz Platform</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1.5" />
               </Link>
 
               <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-[#121826] px-6 py-3.5 text-sm font-bold text-slate-200 hover:border-slate-600 hover:bg-[#1a2236] hover:text-white transition duration-150"
+                href="/dashboard"
+                className="ui-pressable inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-[#121826] px-5 py-3.5 text-sm font-semibold text-slate-200 shadow-xs hover:border-slate-600 hover:bg-slate-800 hover:text-white transition duration-150"
               >
-                <span>Sign In to Console</span>
+                <span>Live Factory Cockpit</span>
               </Link>
 
-              <Link
+              <a
                 href="#capabilities"
-                className="inline-flex items-center gap-1.5 rounded-lg px-4 py-3.5 text-sm font-semibold text-slate-300 hover:text-white transition duration-150"
+                className="ui-pressable inline-flex items-center gap-1.5 text-sm font-semibold text-slate-400 hover:text-slate-100 px-3 py-2 transition"
               >
-                <span>Digital Twin Preview ↓</span>
-              </Link>
+                <span>Explore Workstations</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
             </div>
           </div>
 
-          {/* Right Column (5 cols): Integrated Machine Sensor Console */}
-          <div className="relative lg:col-span-5">
-            <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-2xl">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800/80 bg-[#080d17]">
+          {/* Right Column (5 cols): Live Machine Sensory Console Widget */}
+          <div className="lg:col-span-5">
+            <div className="ui-hover-card rounded-xl border border-slate-800 bg-[#0b101c] shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-800 bg-[#080d17] px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
@@ -128,7 +129,7 @@ export default function LandingHero() {
                     </span>
                   </div>
                   <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: "78%" }} />
+                    <div className="h-full bg-blue-500 rounded-full transition-all duration-700" style={{ width: "78%" }} />
                   </div>
                   <div className="flex justify-between text-[11px] font-mono text-slate-400">
                     <span>Target: 1,200 Units</span>
@@ -138,12 +139,12 @@ export default function LandingHero() {
 
                 {/* Spindle Load & Temperature Telemetry Strip */}
                 <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                  <div className="rounded-lg border border-slate-800 bg-[#080d17] p-3">
+                  <div className="rounded-lg border border-slate-800 bg-[#080d17] p-3 hover:bg-[#0c1322] transition-colors">
                     <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Spindle RPM</span>
                     <span className="text-white text-base font-black">12,400</span>
                     <span className="text-[10px] text-emerald-400 block mt-0.5">84% rated load</span>
                   </div>
-                  <div className="rounded-lg border border-slate-800 bg-[#080d17] p-3">
+                  <div className="rounded-lg border border-slate-800 bg-[#080d17] p-3 hover:bg-[#0c1322] transition-colors">
                     <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Thermal Index</span>
                     <span className="text-white text-base font-black">48.2°C</span>
                     <span className="text-[10px] text-emerald-400 block mt-0.5">Within ±2°C envelope</span>
@@ -191,10 +192,10 @@ export default function LandingHero() {
               <button
                 type="button"
                 onClick={() => setActiveTab("execution")}
-                className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition ${
+                className={`ui-pressable flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition-all duration-150 ${
                   activeTab === "execution"
                     ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 }`}
               >
                 <Cpu className="h-3.5 w-3.5" />
@@ -203,10 +204,10 @@ export default function LandingHero() {
               <button
                 type="button"
                 onClick={() => setActiveTab("equipment")}
-                className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition ${
+                className={`ui-pressable flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition-all duration-150 ${
                   activeTab === "equipment"
                     ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 }`}
               >
                 <Wrench className="h-3.5 w-3.5" />
@@ -215,10 +216,10 @@ export default function LandingHero() {
               <button
                 type="button"
                 onClick={() => setActiveTab("quality")}
-                className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition ${
+                className={`ui-pressable flex items-center gap-1.5 rounded-md px-3.5 py-1.5 font-bold transition-all duration-150 ${
                   activeTab === "quality"
                     ? "bg-blue-600 text-white shadow-xs"
-                    : "text-slate-400 hover:text-white"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 }`}
               >
                 <ShieldCheck className="h-3.5 w-3.5" />
@@ -227,55 +228,51 @@ export default function LandingHero() {
             </div>
           </div>
 
-          {/* Dynamic Cockpit Content */}
-          <div className="p-5 sm:p-6">
+          {/* Dynamic Cockpit Content with Smooth Tab Transitions */}
+          <div className="p-5 sm:p-6 min-h-[220px]">
             {activeTab === "execution" && (
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div key="execution" className="ui-tab-fade grid gap-4 lg:grid-cols-3">
                 {/* Batch Status */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
                     Work Order Queue
                   </span>
                   <p className="text-sm font-bold text-white">WO-8821 // Turbine Impeller B7</p>
                   <p className="text-xs text-slate-300">Station 01: 5-Axis Vertical Milling Center</p>
-                  <div className="space-y-1 font-mono text-xs pt-1">
-                    <div className="flex justify-between text-slate-200">
+                  <div className="space-y-1.5 text-xs font-mono pt-1">
+                    <div className="flex justify-between text-slate-300">
                       <span>Batch Completed</span>
-                      <span className="text-white font-bold">840 / 1,200 (70.0%)</span>
+                      <span className="font-bold text-blue-400">936 / 1,200 Units (78%)</span>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-                      <div className="h-full bg-blue-600 rounded-full" style={{ width: "70%" }} />
+                      <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: "78%" }} />
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between border-t border-slate-800 pt-2 text-[11px] font-mono text-slate-300">
-                    <span>Target Finish: 17:30 UTC</span>
-                    <span className="text-emerald-400 font-bold">On Schedule</span>
                   </div>
                 </div>
 
-                {/* Production Plan Dispatch */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                {/* Material Stock */}
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
-                    Master Plan Schedule
+                    BOM Allocation
                   </span>
-                  <p className="text-sm font-bold text-white">PLAN-Q4-LINE-02</p>
-                  <p className="text-xs text-slate-300">Weekly Target: 12,000 Units Across 3 Lines</p>
-                  <div className="space-y-2 text-xs pt-1">
+                  <p className="text-sm font-bold text-white">Inconel 718 Round Bar (60mm)</p>
+                  <p className="text-xs text-slate-300">Lot: LOT-2026-X12 • Bin: A3-04</p>
+                  <div className="space-y-2 text-xs font-mono pt-1">
                     <div className="flex items-center justify-between rounded bg-[#0e1422] p-2 border border-slate-800">
-                      <span className="text-slate-300">Active Work Orders</span>
-                      <span className="font-mono font-bold text-white">6 Released</span>
+                      <span className="text-slate-300">Reserved For Order</span>
+                      <span className="font-bold text-white">480 kg</span>
                     </div>
                     <div className="flex items-center justify-between rounded bg-[#0e1422] p-2 border border-slate-800">
-                      <span className="text-slate-300">Scrap Variance</span>
-                      <span className="font-mono font-bold text-emerald-400">-0.12% Below Budget</span>
+                      <span className="text-slate-300">Warehouse Balance</span>
+                      <span className="font-bold text-emerald-400">1,240 kg (Sufficient)</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Operation Execution */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                {/* Real-time Operation Step */}
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
-                    Routing Sequence
+                    Routing Stage
                   </span>
                   <p className="text-sm font-bold text-white">Step 03 // Precision Finish</p>
                   <p className="text-xs text-slate-300">Operator: Station Cell Alpha</p>
@@ -298,9 +295,9 @@ export default function LandingHero() {
             )}
 
             {activeTab === "equipment" && (
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div key="equipment" className="ui-tab-fade grid gap-4 lg:grid-cols-3">
                 {/* Machine Diagnostics */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">
                     Operating State
                   </span>
@@ -319,7 +316,7 @@ export default function LandingHero() {
                 </div>
 
                 {/* Maintenance Work Orders */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">
                     Maintenance Queue
                   </span>
@@ -338,7 +335,7 @@ export default function LandingHero() {
                 </div>
 
                 {/* Machine Fleet Registry */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider font-bold">
                     Fleet Utilization
                   </span>
@@ -350,7 +347,7 @@ export default function LandingHero() {
                       <span className="text-emerald-400 font-bold">92.8% OEE</span>
                     </div>
                     <div className="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: "92.8%" }} />
+                      <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: "92.8%" }} />
                     </div>
                   </div>
                   <div className="border-t border-slate-800 pt-2 text-[11px] font-mono text-slate-300">
@@ -361,9 +358,9 @@ export default function LandingHero() {
             )}
 
             {activeTab === "quality" && (
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div key="quality" className="ui-tab-fade grid gap-4 lg:grid-cols-3">
                 {/* Tolerance & Specifications */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
                     Inspection Checkpoints
                   </span>
@@ -382,7 +379,7 @@ export default function LandingHero() {
                 </div>
 
                 {/* Quality Defect Log */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
                     Defect Classification
                   </span>
@@ -401,7 +398,7 @@ export default function LandingHero() {
                 </div>
 
                 {/* BOM Compliance */}
-                <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
+                <div className="ui-hover-card rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-2">
                   <span className="font-mono text-[10px] text-blue-400 uppercase tracking-wider font-bold">
                     Multi-Level Traceability
                   </span>

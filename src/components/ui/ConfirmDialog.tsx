@@ -85,7 +85,13 @@ export default function ConfirmDialog({
     };
 
     document.addEventListener("keydown", onKeyDown);
-    requestAnimationFrame(() => focusWithoutScroll(getFocusableElements(dialogRef.current!)[0] ?? dialogRef.current));
+    requestAnimationFrame(() => {
+      const dialog = dialogRef.current;
+      if (dialog) {
+        const focusable = getFocusableElements(dialog);
+        if (focusable.length) focusWithoutScroll(focusable[0]);
+      }
+    });
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
@@ -110,17 +116,17 @@ export default function ConfirmDialog({
       tabIndex={-1}
     >
       <div
-        className={`ui-dialog-backdrop absolute inset-0 bg-black/70 ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
+        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
         onClick={loading ? undefined : onCancel}
       />
-      <div className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-slate-900/95 p-5 shadow-xl shadow-black/20 sm:p-6`}>
+      <div className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-[#0c111e] p-5 shadow-2xl shadow-black/60 sm:p-6`}>
         <div className="flex items-start gap-4">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
             <TriangleAlert className="h-5 w-5" />
           </span>
           <div>
-            <h2 id={titleId} className="font-semibold">{title}</h2>
-            <p className="mt-1 text-sm text-slate-400">{message}</p>
+            <h2 id={titleId} className="font-semibold text-white tracking-tight">{title}</h2>
+            <p className="mt-1 text-sm text-slate-300">{message}</p>
           </div>
         </div>
         <div className="mt-6 flex justify-end gap-3">
