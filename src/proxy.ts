@@ -1,19 +1,31 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse, type NextRequest, type NextFetchEvent } from "next/server";
 
-export default clerkMiddleware(async (auth, req) => {
-  const pathname = req.nextUrl.pathname;
+const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
-  if (
-    pathname === "/dashboard" ||
-    pathname.startsWith("/dashboard/")
-  ) {
-    const { isAuthenticated, redirectToSignIn , } = await auth();
+const clerkHandler = hasClerkKey
+  ? clerkMiddleware(async (auth, req) => {
+      const pathname = req.nextUrl.pathname;
 
-    if (!isAuthenticated) {
-      return redirectToSignIn();
-    }
+      if (
+        pathname === "/dashboard" ||
+        pathname.startsWith("/dashboard/")
+      ) {
+        const { isAuthenticated, redirectToSignIn } = await auth();
+
+        if (!isAuthenticated) {
+          return redirectToSignIn();
+        }
+      }
+    })
+  : null;
+
+export default function middleware(req: NextRequest, evt: NextFetchEvent) {
+  if (!clerkHandler) {
+    return NextResponse.next();
   }
-});
+  return clerkHandler(req, evt);
+}
 
 export const config = {
   matcher: [

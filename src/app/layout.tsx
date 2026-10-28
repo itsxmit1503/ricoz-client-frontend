@@ -13,16 +13,22 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ricoz",
-  description: "Manufacturing management dashboard",
+  title: "Ricoz | Manufacturing Operations ERP",
+  description: "Manufacturing operations management, shop-floor dispatch, and machine telemetry cockpit.",
 };
+
+const hasClerkKey = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className={`${inter.className} min-h-screen antialiased bg-slate-950 text-slate-100 theme-scrollbar`}>
         <Suspense fallback={<div>Page is Loading</div>}>
-          <ClerkProvider>{children}</ClerkProvider>
+          {hasClerkKey ? (
+            <ClerkProvider>{children}</ClerkProvider>
+          ) : (
+            children
+          )}
         </Suspense>
 
         <Toaster
