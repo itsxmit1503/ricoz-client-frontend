@@ -121,24 +121,22 @@ export default function PurchaseOrdersPage() {
   }
 
   return (
-    <div className="ui-page-enter mx-auto max-w-7xl space-y-6">
-      {/* Header Deck */}
+    <div className="ui-page-enter mx-auto max-w-7xl space-y-5">
+      {/* Header Toolbar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-blue-400">
-              <ShoppingCart className="h-4 w-4" />
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded">
+              PROCUREMENT // PURCHASE ORDERS
             </span>
-            <p className="text-xs font-semibold text-blue-400 uppercase tracking-wider">
-              Procurement & Orders
-            </p>
+            <span className="text-slate-600 font-mono">•</span>
+            <span className="font-mono text-xs text-slate-300 font-semibold">
+              {orders.loading ? "Loading…" : `${filtered.length} of ${orders.items.length} orders tracked`}
+            </span>
           </div>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Purchase Orders (PO)
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-white sm:text-3xl">
+            Material Procurement & Purchase Orders
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-300">
-            {orders.loading ? "Loading purchase orders…" : `${filtered.length} of ${orders.items.length} orders tracked`}
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -147,160 +145,132 @@ export default function PurchaseOrdersPage() {
             disabled={orders.loading}
             aria-label="Refresh orders"
             title="Refresh orders"
-            className="rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:border-slate-600 hover:bg-[#192235] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-50"
+            className="rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${orders.loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={() => setModal("new")}
             disabled={!ready}
-            className="inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:opacity-60"
+            className="inline-flex min-h-9.5 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition disabled:opacity-60"
           >
             <Plus className="h-4 w-4" /> New Purchase Order
           </button>
         </div>
       </div>
 
-      {/* Filter Cards */}
-      <StatusFilterCards options={PO_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
+      {/* Unified Procurement Console */}
+      <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-xl">
+        {/* Integrated Command Strip: Filter pills + Search */}
+        <div className="p-4 border-b border-slate-800/80 bg-[#080d17] flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <StatusFilterCards options={PO_STATUSES} counts={counts} active={statusFilter} onChange={setStatusFilter} />
 
-      {/* Search Input */}
-      <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4">
-        <Input
-          label=""
-          aria-label="Search purchase orders"
-          icon={Search}
-          placeholder="Search by PO code, vendor name, or component product…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+          <div className="w-full md:w-80">
+            <Input
+              label=""
+              aria-label="Search purchase orders"
+              icon={Search}
+              placeholder="Search PO code, vendor, SKU…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
 
-      {/* Purchase Orders Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] shadow-xl">
+        {/* Data Table */}
         {orders.loading ? (
           <div className="flex flex-col items-center justify-center p-16 text-slate-300">
             <Spinner className="h-7 w-7 text-blue-400" />
-            <p className="mt-3 text-xs font-medium">Loading purchase order log…</p>
+            <p className="mt-3 text-xs font-semibold">Querying procurement orders…</p>
           </div>
         ) : orders.error ? (
-          <div className="p-12 text-center">
-            <p className="text-sm font-medium text-rose-400">{orders.error}</p>
-            <button
-              onClick={orders.reload}
-              className="mt-3 text-xs font-semibold text-blue-400 underline hover:text-blue-300"
-            >
-              Retry loading
-            </button>
-          </div>
+          <div className="p-12 text-center text-rose-400">{orders.error}</div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center p-16 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-[#080d17] text-slate-400">
-              <ShoppingCart className="h-6 w-6" />
-            </div>
-            <h3 className="mt-4 text-sm font-semibold text-white">No purchase orders found</h3>
-            <p className="mt-1 text-xs text-slate-300">
-              {orders.items.length ? "No orders match your filter criteria." : "Issue your first material purchase order to a certified vendor."}
-            </p>
-            {!orders.items.length && ready && (
-              <button
-                onClick={() => setModal("new")}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
-              >
-                <Plus className="h-3.5 w-3.5" /> Create first PO
-              </button>
-            )}
-          </div>
+          <div className="p-16 text-center text-slate-400">No purchase orders matching criteria.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-[#080d17] text-xs font-semibold uppercase tracking-wider text-slate-300">
-                <tr>
-                  <th className="w-10 px-3 py-3.5" />
-                  <th className="px-5 py-3.5">PO Number</th>
-                  <th className="px-5 py-3.5">Certified Supplier</th>
-                  <th className="px-5 py-3.5 text-right">Items</th>
-                  <th className="px-5 py-3.5 text-right">Order Total</th>
-                  <th className="px-5 py-3.5">Issued Date</th>
-                  <th className="px-5 py-3.5">Expected Receipt</th>
-                  <th className="px-5 py-3.5">Order Status</th>
-                  <th className="px-5 py-3.5 text-right">Actions</th>
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-800/80 bg-[#080d17] text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <th className="py-3 px-5">Purchase Order</th>
+                  <th className="py-3 px-5">Certified Vendor</th>
+                  <th className="py-3 px-5">Order Date</th>
+                  <th className="py-3 px-5">Expected Delivery</th>
+                  <th className="py-3 px-5 text-right">Total Value</th>
+                  <th className="py-3 px-5">Procurement State</th>
+                  <th className="py-3 px-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
-                {filtered.map((o) => {
-                  const open = expanded === o._id;
-                  const overdue = isOverdue(o.expectedDate, o.status);
-                  const next = NEXT_STEP[o.status];
-                  const locked = LOCKED_FOR_DELETE.includes(o.status);
+              <tbody className="divide-y divide-slate-800/60 font-mono">
+                {filtered.map((po) => {
+                  const isExp = expanded === po._id;
+                  const step = NEXT_STEP[po.status];
+                  const overdue = isOverdue(po.expectedDate, po.status);
+                  const canDelete = !LOCKED_FOR_DELETE.includes(po.status);
+                  const isBusy = busyId === po._id;
+
                   return (
-                    <Fragment key={o._id}>
-                      <tr className="ui-table-row">
-                        <td className="px-3 py-3.5">
+                    <Fragment key={po._id}>
+                      <tr className="hover:bg-slate-800/30 transition-colors">
+                        <td className="py-3.5 px-5 font-bold text-white">
                           <button
-                            onClick={() => setExpanded(open ? null : o._id)}
-                            aria-label={open ? "Hide items" : "Show items"}
-                            aria-expanded={open}
-                            className="rounded p-1 text-slate-400 hover:bg-[#151c2d] hover:text-white"
+                            type="button"
+                            onClick={() => setExpanded(isExp ? null : po._id)}
+                            className="flex items-center gap-2 hover:text-blue-400 transition"
                           >
-                            <ChevronRight className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} />
+                            <ChevronRight
+                              className={`h-4 w-4 text-blue-400 transition-transform ${isExp ? "rotate-90" : ""}`}
+                            />
+                            <span>{po.poNumber}</span>
                           </button>
                         </td>
-                        <td className="px-5 py-3.5 font-mono font-bold text-blue-300">
-                          {o.poNumber}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {o.supplier ? (
-                            <>
-                              <p className="font-semibold text-white">{o.supplier.name}</p>
-                              <p className="font-mono text-xs text-blue-300">{o.supplier.code}</p>
-                            </>
+                        <td className="py-3.5 px-5 font-sans font-semibold text-slate-100">
+                          {po.supplier ? (
+                            <div>
+                              <p className="font-semibold text-white">{po.supplier.name}</p>
+                              <p className="font-mono text-xs text-blue-400">{po.supplier.code}</p>
+                            </div>
                           ) : (
-                            <span className="text-slate-400 font-medium">Deleted supplier reference</span>
+                            <span className="text-slate-400">Deleted vendor</span>
                           )}
                         </td>
-                        <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-200">
-                          {o.items.length}
+                        <td className="py-3.5 px-5 text-slate-300">
+                          {formatDate(po.orderDate)}
                         </td>
-                        <td className="px-5 py-3.5 text-right font-mono font-bold text-white">
-                          {formatMoney(orderTotal(o.items))}
+                        <td className={`py-3.5 px-5 ${overdue ? "text-rose-400 font-bold" : "text-slate-300"}`}>
+                          {formatDate(po.expectedDate)}
                         </td>
-                        <td className="px-5 py-3.5 font-mono text-slate-300">
-                          {formatDate(o.orderDate)}
+                        <td className="py-3.5 px-5 text-right font-bold text-white">
+                          {formatMoney(orderTotal(po.items))}
                         </td>
-                        <td className={`px-5 py-3.5 font-mono ${overdue ? "font-bold text-rose-400" : "text-slate-200"}`}>
-                          {formatDate(o.expectedDate)}
-                          {overdue && <span className="ml-2 text-[10px] uppercase tracking-wider text-rose-400 bg-rose-500/10 px-1 rounded border border-rose-500/20 font-sans">overdue</span>}
+                        <td className="py-3.5 px-5 font-sans">
+                          <Badge meta={findMeta(PO_STATUSES, po.status)} />
                         </td>
-                        <td className="px-5 py-3.5">
-                          <Badge meta={findMeta(PO_STATUSES, o.status)} />
-                        </td>
-                        <td className="px-5 py-3.5 text-right">
+                        <td className="py-3.5 px-5 text-right font-sans">
                           <div className="flex items-center justify-end gap-1.5">
-                            {next && (
+                            {step && (
                               <button
-                                onClick={() => advance(o, next.to)}
-                                disabled={busyId === o._id}
-                                className="mr-1 inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-700 bg-[#121826] px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:text-white disabled:opacity-50"
+                                onClick={() => advance(po, step.to)}
+                                disabled={isBusy}
+                                className="rounded border border-blue-500/50 bg-blue-600/20 px-2.5 py-1 text-xs font-bold text-blue-300 hover:bg-blue-600 hover:text-white transition disabled:opacity-50"
                               >
-                                {busyId === o._id && <Spinner className="h-3 w-3" />}
-                                {next.label}
+                                {isBusy ? <Spinner className="h-3 w-3" /> : step.label}
                               </button>
                             )}
                             <button
-                              onClick={() => setModal(o)}
-                              aria-label={`Edit ${o.poNumber}`}
-                              title="Edit purchase order"
+                              onClick={() => setModal(po)}
+                              aria-label="Edit order"
+                              title="Edit order"
                               className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-slate-600 hover:text-white"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
                             <button
-                              onClick={() => setToDelete(o)}
-                              disabled={locked}
-                              aria-label={`Delete ${o.poNumber}`}
-                              title={locked ? "Received orders cannot be deleted" : "Delete order"}
-                              className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                              onClick={() => setToDelete(po)}
+                              disabled={!canDelete}
+                              aria-label="Delete order"
+                              title={canDelete ? "Delete order" : "Cannot delete received orders"}
+                              className="rounded-lg border border-slate-700 bg-[#121826] p-1.5 text-slate-300 transition hover:border-rose-600 hover:bg-rose-950/40 hover:text-rose-400 disabled:opacity-30 disabled:cursor-not-allowed"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
@@ -308,47 +278,49 @@ export default function PurchaseOrdersPage() {
                         </td>
                       </tr>
 
-                      {open && (
-                        <tr className="bg-[#080d17]">
-                          <td />
-                          <td colSpan={8} className="px-5 py-4">
+                      {isExp && (
+                        <tr className="bg-[#070b14]/90">
+                          <td colSpan={7} className="px-5 py-4">
                             <div className="rounded-lg border border-slate-800 bg-[#0e1422] p-4 max-w-3xl">
                               <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200 mb-2">
-                                Ordered Line Items ({o.items.length} parts)
+                                Line Item Breakdown ({po.items.length} items)
                               </h4>
                               <table className="w-full text-xs">
                                 <thead className="border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                                   <tr>
-                                    <th className="pb-2 text-left">Component Part</th>
-                                    <th className="pb-2 text-right">Order Qty</th>
-                                    <th className="pb-2 text-right">Contract Unit Price</th>
-                                    <th className="pb-2 text-right">Line Total</th>
+                                    <th className="pb-2 text-left">Part Name & Code</th>
+                                    <th className="pb-2 text-right">Quantity</th>
+                                    <th className="pb-2 text-right">Unit Price</th>
+                                    <th className="pb-2 text-right">Total Cost</th>
                                   </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800/60 font-mono">
-                                  {o.items.map((i, idx) => (
-                                    <tr key={i._id ?? idx}>
-                                      <td className="py-2 text-slate-200 font-sans">
-                                        {i.product ? (
-                                          <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-white">{i.product.name}</span>
-                                            <span className="font-mono text-xs text-blue-300">[{i.product.code}]</span>
-                                          </div>
-                                        ) : (
-                                          <span className="text-slate-400">Deleted component</span>
-                                        )}
-                                      </td>
-                                      <td className="py-2 text-right text-slate-100 font-bold">
-                                        {i.quantity.toLocaleString()} <span className="text-xs font-normal text-slate-300 font-sans">{i.product?.unit}</span>
-                                      </td>
-                                      <td className="py-2 text-right text-slate-300">
-                                        {formatMoney(i.unitPrice)}
-                                      </td>
-                                      <td className="py-2 text-right text-white font-bold">
-                                        {formatMoney(i.quantity * i.unitPrice)}
-                                      </td>
-                                    </tr>
-                                  ))}
+                                  {po.items.map((i, idx) => {
+                                    const total = (Number(i.quantity) || 0) * (Number(i.unitPrice) || 0);
+                                    return (
+                                      <tr key={i._id ?? idx}>
+                                        <td className="py-2 text-slate-200 font-sans">
+                                          {i.product ? (
+                                            <div className="flex items-center gap-2">
+                                              <span className="font-semibold text-white">{i.product.name}</span>
+                                              <span className="font-mono text-xs text-blue-300">[{i.product.code}]</span>
+                                            </div>
+                                          ) : (
+                                            <span className="text-slate-400">Deleted product</span>
+                                          )}
+                                        </td>
+                                        <td className="py-2 text-right font-bold text-white">
+                                          {i.quantity.toLocaleString()} <span className="text-xs font-normal text-slate-300 font-sans">{i.product?.unit ?? "units"}</span>
+                                        </td>
+                                        <td className="py-2 text-right text-slate-300">
+                                          {formatMoney(i.unitPrice)}
+                                        </td>
+                                        <td className="py-2 text-right text-white font-bold">
+                                          {formatMoney(total)}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
                                 </tbody>
                               </table>
                             </div>
@@ -364,24 +336,30 @@ export default function PurchaseOrdersPage() {
         )}
       </div>
 
-      <Modal open={modal !== null} wide title={modal === "new" ? "New Purchase Order" : "Edit Purchase Order"} onClose={() => setModal(null)}>
-        {modal !== null && (
+      {/* Modal */}
+      {modal && (
+        <Modal
+          open
+          wide
+          title={modal === "new" ? "Create Purchase Order" : `Edit ${modal.poNumber}`}
+          onClose={() => setModal(null)}
+        >
           <PurchaseOrderForm
-            key={modal === "new" ? "new" : modal._id}
             initial={modal === "new" ? emptyPurchaseOrderForm(suggestedNumber) : purchaseOrderToForm(modal)}
             suppliers={suppliers.items}
             products={products.items}
-            submitLabel={modal === "new" ? "Issue order" : "Save changes"}
+            submitLabel={modal === "new" ? "Create order" : "Save changes"}
             onSubmit={handleSave}
             onCancel={() => setModal(null)}
           />
-        )}
-      </Modal>
+        </Modal>
+      )}
 
+      {/* Delete Dialog */}
       <ConfirmDialog
         open={Boolean(toDelete)}
-        title="Delete Purchase Order?"
-        message={`${toDelete?.poNumber} will be permanently removed. This action cannot be reversed.`}
+        title="Delete Purchase Order"
+        message={`Are you sure you want to delete ${toDelete?.poNumber}? Vendor procurement records associated with this order will be permanently removed.`}
         confirmLabel="Confirm Deletion"
         loading={deleting}
         onConfirm={confirmDelete}

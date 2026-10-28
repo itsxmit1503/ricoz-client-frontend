@@ -2,19 +2,25 @@
 
 import {
   Activity,
+  AlertTriangle,
   ArrowRight,
   Boxes,
   CheckCircle2,
+  ChevronRight,
   Clock,
   Cpu,
+  Factory,
+  FileCheck2,
   FilePlus2,
   Gauge,
-  Info,
+  Layers,
   LogOut,
-  Package,
   PackagePlus,
+  RefreshCw,
   ShieldAlert,
   ShieldCheck,
+  TrendingUp,
+  Truck,
   Wrench,
   Zap,
 } from "lucide-react";
@@ -27,8 +33,9 @@ import { useAuth } from "@/hooks/useAuth";
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const name = user ? user.username || user.email.split("@")[0] : "Operations Lead";
+  const name = user ? user.username || user.email.split("@")[0] : "Floor Supervisor";
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -39,55 +46,72 @@ export default function DashboardPage() {
     }
   }
 
+  function handleRefresh() {
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 600);
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      {/* 1. Command Header Bar */}
-      <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-5 sm:p-6 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="font-mono text-xs uppercase tracking-wider text-blue-400">
-                Facility // Sector 01
+      {/* 1. Integrated Plant Line Status Header */}
+      <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between p-5 sm:p-6 border-b border-slate-800/70 gap-4">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded">
+                PLANT 01 // SECTOR A
               </span>
-              <span className="text-slate-600">•</span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Live Floor Telemetry Online
+              <span className="text-slate-600 font-mono">•</span>
+              <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-emerald-400 bg-emerald-950/50 border border-emerald-800/40 px-2.5 py-0.5 rounded-full">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                CONTINUOUS RUNNING • SHIFT 1
+              </span>
+              <span className="text-slate-600 font-mono hidden sm:inline">•</span>
+              <span className="font-mono text-xs text-slate-400 hidden sm:inline">
+                06:00 – 14:00 UTC
               </span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              Manufacturing Operations Control, {name}
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300">
-              Synchronized production scheduling, line execution, equipment health, and quality assurance.
+
+            <div className="flex items-baseline gap-3">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                Operations Command Cockpit
+              </h1>
+              <span className="text-xs font-mono text-slate-400 hidden md:inline">
+                Operator: <span className="text-slate-200 font-semibold">{name}</span>
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-300 max-w-3xl">
+              Live shop-floor dispatch, automated machine telemetry, quality gates, and inventory safety stock monitoring.
             </p>
           </div>
 
-          {/* Direct Quick Actions */}
+          {/* Quick Action Header Controls */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              title="Poll Sensor Network"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#121826] px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition disabled:opacity-50"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin text-blue-400" : ""}`} />
+              <span className="hidden sm:inline">Sync Floor</span>
+            </button>
+
             <Link
               href="/production/work-orders"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-500 transition"
             >
               <FilePlus2 className="h-3.5 w-3.5" />
-              <span>New Work Order</span>
+              <span>Dispatch Order</span>
             </Link>
 
             <Link
               href="/products/add"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#141b2a] px-3.5 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#141b2a] px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition"
             >
               <PackagePlus className="h-3.5 w-3.5 text-blue-400" />
               <span>Catalog Part</span>
-            </Link>
-
-            <Link
-              href="/info"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0d1320] px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-700 hover:bg-slate-800 hover:text-white"
-              title="System Documentation"
-            >
-              <Info className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Info</span>
             </Link>
 
             {user && (
@@ -96,257 +120,467 @@ export default function DashboardPage() {
                 onClick={handleLogout}
                 disabled={loggingOut}
                 title="Sign out"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0d1320] px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-rose-900 hover:bg-rose-950/40 hover:text-rose-400 focus-visible:outline-none disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0d1320] px-3 py-2 text-xs font-medium text-slate-300 hover:border-rose-900 hover:bg-rose-950/40 hover:text-rose-400 transition disabled:opacity-50"
               >
                 {loggingOut ? <Spinner className="h-3.5 w-3.5" /> : <LogOut className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">Sign out</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             )}
           </div>
         </div>
-      </div>
 
-      {/* 2. Live Operational KPI Deck (4 Metric Cards) */}
-      <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Metric 1 */}
-        <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4 transition hover:border-slate-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Active Orders
-            </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              <Activity className="h-3.5 w-3.5" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-white font-mono">18</span>
-            <span className="text-xs font-medium text-emerald-400">94.2% on target</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-400">
-            12 in active cycle, 6 staged for line release
-          </p>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full rounded-full bg-blue-500" style={{ width: "75%" }} />
-          </div>
-        </div>
-
-        {/* Metric 2 */}
-        <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4 transition hover:border-slate-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Fleet OEE / Availability
-            </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <Gauge className="h-3.5 w-3.5" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-white font-mono">92.8%</span>
-            <span className="text-xs font-medium text-emerald-400">+1.4% vs target</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-400">
-            14 machines online, 1 scheduled maintenance
-          </p>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: "92.8%" }} />
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4 transition hover:border-slate-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              First-Pass Yield (FPY)
-            </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <ShieldCheck className="h-3.5 w-3.5" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-white font-mono">99.1%</span>
-            <span className="text-xs font-medium text-slate-300">Tolerance ±0.005mm</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-400">
-            2 minor non-conformances logged today
-          </p>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full rounded-full bg-amber-500" style={{ width: "99.1%" }} />
-          </div>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="rounded-xl border border-slate-800 bg-[#0c111e] p-4 transition hover:border-slate-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Inventory & Reorders
-            </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <Boxes className="h-3.5 w-3.5" />
-            </span>
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-white font-mono">248</span>
-            <span className="text-xs font-medium text-rose-300">3 SKUs low</span>
-          </div>
-          <p className="mt-1 text-xs text-slate-400">
-            Safety stock buffers intact across active BOMs
-          </p>
-          <div className="mt-3 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full rounded-full bg-rose-500" style={{ width: "45%" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Live Floor Work Order Queue & Machine Health Split */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* Left Column (7 cols): Priority Work Order Queue */}
-        <div className="lg:col-span-7 rounded-xl border border-slate-800 bg-[#0c111e] p-4 sm:p-5">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-blue-400" />
-              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-200">
-                Priority Production Queue
-              </h3>
+        {/* Integrated Plant Telemetry Strip (4 Essential Operational Ratios) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-800/80 bg-[#080d17]">
+          {/* Gauge 1: Floor Throughput */}
+          <div className="p-4 sm:p-5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Activity className="h-3.5 w-3.5 text-blue-400" />
+                Shift Throughput
+              </span>
+              <span className="font-mono text-emerald-400 font-semibold">+4.2% pace</span>
             </div>
-            <Link
-              href="/production/work-orders"
-              className="text-xs font-medium text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
-            >
-              <span>All Orders</span>
-              <ArrowRight className="h-3 w-3" />
-            </Link>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black font-mono text-white tracking-tight">1,840</span>
+              <span className="text-xs font-mono text-slate-400">/ 2,000 units</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 rounded-full" style={{ width: "92%" }} />
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono">Cycle pace: 42s per part</p>
           </div>
 
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-800/80 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  <th className="py-2.5 pr-3">Batch Order</th>
-                  <th className="py-2.5 px-3">Part Name</th>
-                  <th className="py-2.5 px-3 text-right">Units</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 pl-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-2.5 pr-3 font-semibold text-slate-200">WO-8821</td>
-                  <td className="py-2.5 px-3 font-sans text-slate-300">Turbine Impeller B7</td>
-                  <td className="py-2.5 px-3 text-right text-slate-200">1,200</td>
-                  <td className="py-2.5 px-3 font-sans">
-                    <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-300 border border-blue-500/30">
-                      <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
-                      In Cycle
-                    </span>
-                  </td>
-                  <td className="py-2.5 pl-3 text-right font-sans">
-                    <Link href="/production/work-orders" className="text-blue-400 hover:text-blue-300 font-medium">
-                      Inspect
-                    </Link>
-                  </td>
-                </tr>
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-2.5 pr-3 font-semibold text-slate-200">WO-8824</td>
-                  <td className="py-2.5 px-3 font-sans text-slate-300">Hydraulic Manifold Block</td>
-                  <td className="py-2.5 px-3 text-right text-slate-200">450</td>
-                  <td className="py-2.5 px-3 font-sans">
-                    <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 border border-emerald-500/30">
-                      <CheckCircle2 className="h-3 w-3" />
-                      Final Q/A
-                    </span>
-                  </td>
-                  <td className="py-2.5 pl-3 text-right font-sans">
-                    <Link href="/production/work-orders" className="text-blue-400 hover:text-blue-300 font-medium">
-                      Inspect
-                    </Link>
-                  </td>
-                </tr>
-                <tr className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-2.5 pr-3 font-semibold text-slate-200">WO-8829</td>
-                  <td className="py-2.5 px-3 font-sans text-slate-300">Titanium Flange Housing</td>
-                  <td className="py-2.5 px-3 text-right text-slate-200">800</td>
-                  <td className="py-2.5 px-3 font-sans">
-                    <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 border border-amber-500/30">
-                      <Clock className="h-3 w-3" />
-                      Scheduled
-                    </span>
-                  </td>
-                  <td className="py-2.5 pl-3 text-right font-sans">
-                    <Link href="/production/work-orders" className="text-blue-400 hover:text-blue-300 font-medium">
-                      Inspect
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          {/* Gauge 2: Equipment OEE */}
+          <div className="p-4 sm:p-5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Gauge className="h-3.5 w-3.5 text-emerald-400" />
+                Fleet OEE / Health
+              </span>
+              <span className="font-mono text-emerald-400 font-semibold">14/15 Live</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black font-mono text-white tracking-tight">92.8%</span>
+              <span className="text-xs font-mono text-emerald-300">Optimal Range</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full" style={{ width: "92.8%" }} />
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono">1 machine in planned calibration</p>
+          </div>
+
+          {/* Gauge 3: Quality Yield */}
+          <div className="p-4 sm:p-5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
+                First-Pass Yield
+              </span>
+              <span className="font-mono text-slate-300 font-semibold">±0.005mm</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black font-mono text-white tracking-tight">99.1%</span>
+              <span className="text-xs font-mono text-slate-300">2 flagged</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full" style={{ width: "99.1%" }} />
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono">High precision tolerance intact</p>
+          </div>
+
+          {/* Gauge 4: Inventory Safety Buffers */}
+          <div className="p-4 sm:p-5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Boxes className="h-3.5 w-3.5 text-rose-400" />
+                Material Stock
+              </span>
+              <span className="font-mono text-rose-300 font-semibold">3 Low Buffer</span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black font-mono text-white tracking-tight">248</span>
+              <span className="text-xs font-mono text-slate-400">SKUs Tracked</span>
+            </div>
+            <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-rose-500 rounded-full" style={{ width: "35%" }} />
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono">PO-9042 submitted for reorder</p>
           </div>
         </div>
+      </div>
 
-        {/* Right Column (5 cols): Live Machine Floor Strip */}
-        <div className="lg:col-span-5 rounded-xl border border-slate-800 bg-[#0c111e] p-4 sm:p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      {/* 2. Asymmetric 2-Column Operational Cockpit Grid */}
+      <div className="grid gap-6 lg:grid-cols-12 items-start">
+        {/* Left Column (8 cols): Work Order Stage Dispatch & Fleet Telemetry */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Panel 1: Live Multi-Stage Work Order Pipeline */}
+          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
               <div className="flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-emerald-400" />
-                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-200">
-                  Shop Floor Fleet State
-                </h3>
+                <Layers className="h-4 w-4 text-blue-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                  Active Work Order Pipeline & Stage Dispatch
+                </h2>
               </div>
               <Link
-                href="/machines"
-                className="text-xs font-medium text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
+                href="/production/work-orders"
+                className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
               >
-                <span>View All Fleet</span>
-                <ArrowRight className="h-3 w-3" />
+                <span>View All 18 Orders</span>
+                <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
-            <div className="mt-3 space-y-2.5">
-              <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#101625] px-3 py-2 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="divide-y divide-slate-800/60">
+              {/* Order Item 1 */}
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold text-slate-200">5-Axis CNC Mill #01</p>
-                    <p className="font-mono text-[11px] text-slate-400">12,400 RPM • Load 84%</p>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
+                        WO-8821
+                      </span>
+                      <h3 className="text-sm font-bold text-white">Turbine Impeller B7 (Inconel 718)</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      Batch: 1,200 Units • Target Deadline: Today 17:00 • Assigned: 5-Axis Mill 01
+                    </p>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded border border-blue-500/40 bg-blue-500/10 px-2.5 py-1 text-xs font-bold text-blue-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    STAGE 2: CNC MILLING (78%)
+                  </span>
+                </div>
+
+                {/* Visual Multi-Station Progress Pipeline */}
+                <div className="grid grid-cols-4 gap-2 pt-1 text-[11px] font-mono">
+                  <div className="rounded bg-emerald-950/60 border border-emerald-800/50 p-2 text-center text-emerald-300">
+                    <span className="block font-bold">1. Material Staged</span>
+                    <span className="text-[10px] text-emerald-400">PASSED 06:15</span>
+                  </div>
+                  <div className="rounded bg-blue-950/80 border border-blue-500/60 p-2 text-center text-blue-200 ring-1 ring-blue-500/30">
+                    <span className="block font-bold">2. 5-Axis Milling</span>
+                    <span className="text-[10px] text-blue-300 animate-pulse">CYCLE: 840/1200</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">3. CMM Scan</span>
+                    <span className="text-[10px] text-slate-400">PENDING QUEUE</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">4. Final Pack</span>
+                    <span className="text-[10px] text-slate-400">PENDING</span>
                   </div>
                 </div>
-                <span className="font-mono text-xs font-semibold text-emerald-400">RUNNING</span>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#101625] px-3 py-2 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              {/* Order Item 2 */}
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold text-slate-200">Robotic Welding Cell A</p>
-                    <p className="font-mono text-[11px] text-slate-400">Cycle: 42s • Temp 68°C</p>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
+                        WO-8824
+                      </span>
+                      <h3 className="text-sm font-bold text-white">Hydraulic Manifold Block (Alloy 6061)</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      Batch: 450 Units • Target Deadline: Today 19:30 • Assigned: Robotic Cell A
+                    </p>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    STAGE 3: CMM INSPECT (95%)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 pt-1 text-[11px] font-mono">
+                  <div className="rounded bg-emerald-950/60 border border-emerald-800/50 p-2 text-center text-emerald-300">
+                    <span className="block font-bold">1. Material Staged</span>
+                    <span className="text-[10px] text-emerald-400">PASSED</span>
+                  </div>
+                  <div className="rounded bg-emerald-950/60 border border-emerald-800/50 p-2 text-center text-emerald-300">
+                    <span className="block font-bold">2. CNC & Welding</span>
+                    <span className="text-[10px] text-emerald-400">PASSED</span>
+                  </div>
+                  <div className="rounded bg-emerald-950/80 border border-emerald-500/60 p-2 text-center text-emerald-200 ring-1 ring-emerald-500/30">
+                    <span className="block font-bold">3. CMM Scan</span>
+                    <span className="text-[10px] text-emerald-300">428/450 VERIFIED</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">4. Final Pack</span>
+                    <span className="text-[10px] text-slate-400">STAGED</span>
                   </div>
                 </div>
-                <span className="font-mono text-xs font-semibold text-emerald-400">RUNNING</span>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#101625] px-3 py-2 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <span className="h-2 w-2 rounded-full bg-amber-400" />
+              {/* Order Item 3 */}
+              <div className="p-4 sm:p-5 hover:bg-slate-800/20 transition space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <p className="font-semibold text-slate-200">Automated CMM Scanner</p>
-                    <p className="font-mono text-[11px] text-slate-400">Calibrating optics</p>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
+                        WO-8829
+                      </span>
+                      <h3 className="text-sm font-bold text-white">Titanium Flange Housing (Grade 5)</h3>
+                    </div>
+                    <p className="text-xs text-slate-400 font-mono mt-0.5">
+                      Batch: 800 Units • Target Deadline: Tomorrow 08:00 • Assigned: Stamping Press 04
+                    </p>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-300">
+                    <Clock className="h-3.5 w-3.5 text-amber-400" />
+                    STAGE 1: MATERIAL STAGED
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 pt-1 text-[11px] font-mono">
+                  <div className="rounded bg-amber-950/80 border border-amber-500/60 p-2 text-center text-amber-200 ring-1 ring-amber-500/30">
+                    <span className="block font-bold">1. Material Staged</span>
+                    <span className="text-[10px] text-amber-300">LOAD CONFIRMED</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">2. Stamping</span>
+                    <span className="text-[10px] text-slate-400">QUEUED 14:15</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">3. QA Inspect</span>
+                    <span className="text-[10px] text-slate-400">PENDING</span>
+                  </div>
+                  <div className="rounded bg-[#0e1422] border border-slate-800 p-2 text-center text-slate-400">
+                    <span className="block font-bold">4. Final Pack</span>
+                    <span className="text-[10px] text-slate-400">PENDING</span>
                   </div>
                 </div>
-                <span className="font-mono text-xs font-semibold text-amber-400">STANDBY</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-3.5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-            <span>Overall Telemetry Health: <strong className="text-slate-200 font-mono">Normal</strong></span>
-            <Link href="/machines/details" className="text-blue-400 hover:text-blue-300 font-medium">
-              Sensor Matrix →
-            </Link>
+          {/* Panel 2: Shop Floor Equipment Telemetry Matrix */}
+          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
+              <div className="flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-emerald-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                  Shop Floor Machine Telemetry & Real-Time Sensors
+                </h2>
+              </div>
+              <Link
+                href="/machines"
+                className="text-xs font-semibold text-blue-400 hover:text-blue-300 inline-flex items-center gap-1"
+              >
+                <span>View Complete Fleet (15)</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-3">
+              {/* Machine Row 1 */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white">CNC-MILL-01</span>
+                      <span className="text-xs font-bold text-slate-200">5-Axis Vertical Milling Center</span>
+                    </div>
+                    <span className="font-mono text-[11px] text-slate-400">Workstation: Sector A • Part: WO-8821</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs font-mono">
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">SPINDLE LOAD</span>
+                    <span className="text-emerald-400 font-bold">12,400 RPM (84%)</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">TEMP</span>
+                    <span className="text-slate-200 font-bold">48.2°C</span>
+                  </div>
+                  <span className="rounded bg-emerald-950/60 border border-emerald-800/50 px-2 py-1 text-[10px] font-bold text-emerald-300">
+                    OPTIMAL
+                  </span>
+                </div>
+              </div>
+
+              {/* Machine Row 2 */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white">ROBOT-CELL-A</span>
+                      <span className="text-xs font-bold text-slate-200">6-Axis Robotic TIG Welding Cell</span>
+                    </div>
+                    <span className="font-mono text-[11px] text-slate-400">Workstation: Sector B • Part: WO-8824</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs font-mono">
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">ARC TIME</span>
+                    <span className="text-emerald-400 font-bold">184h (Feed 12m/m)</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">TEMP</span>
+                    <span className="text-slate-200 font-bold">68.5°C</span>
+                  </div>
+                  <span className="rounded bg-emerald-950/60 border border-emerald-800/50 px-2 py-1 text-[10px] font-bold text-emerald-300">
+                    OPTIMAL
+                  </span>
+                </div>
+              </div>
+
+              {/* Machine Row 3 */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-lg border border-slate-800 bg-[#080d17] gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400 shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-white">SCAN-CMM-01</span>
+                      <span className="text-xs font-bold text-slate-200">Automated Coordinate Optical Scanner</span>
+                    </div>
+                    <span className="font-mono text-[11px] text-slate-400">Workstation: QA Lab • Calibrating Optics</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs font-mono">
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">PROBE DEV</span>
+                    <span className="text-amber-300 font-bold">±0.0008mm</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-slate-400 text-[10px] block">LASER</span>
+                    <span className="text-slate-200 font-bold">READY</span>
+                  </div>
+                  <span className="rounded bg-amber-950/60 border border-amber-800/50 px-2 py-1 text-[10px] font-bold text-amber-300">
+                    CALIBRATING
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column (4 cols): Floor Triage & Quick Routing Matrix */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Panel 3: Floor Exceptions & Action Triage */}
+          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-800/80 bg-[#080d17]">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-rose-400" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                  Floor Action Triage (3 Alerts)
+                </h2>
+              </div>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {/* Alert 1 */}
+              <div className="rounded-lg border border-rose-900/60 bg-rose-950/20 p-3.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-200 border border-rose-700/50">
+                    LOW BUFFER • REORDER
+                  </span>
+                  <span className="text-[11px] font-mono text-rose-300">Inventory</span>
+                </div>
+                <p className="text-xs font-bold text-slate-100">
+                  Titanium Alloy Rods (10mm) at 12 PCS
+                </p>
+                <p className="text-[11px] text-slate-300">
+                  Reorder trigger is 25 PCS. 3 scheduled work orders require this material by end of week.
+                </p>
+                <Link
+                  href="/purchase/orders"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-rose-300 hover:text-white pt-1"
+                >
+                  <span>Review Purchase Orders</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+
+              {/* Alert 2 */}
+              <div className="rounded-lg border border-amber-900/60 bg-amber-950/20 p-3.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-900/60 text-amber-200 border border-amber-700/50">
+                    QA DEVIATION • REVIEW
+                  </span>
+                  <span className="text-[11px] font-mono text-amber-300">Quality</span>
+                </div>
+                <p className="text-xs font-bold text-slate-100">
+                  Inspection Non-Conformance QI-0038
+                </p>
+                <p className="text-[11px] text-slate-300">
+                  Flange bore dimension measured +0.008mm above specification on initial sample pass.
+                </p>
+                <Link
+                  href="/quality/issues"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-amber-300 hover:text-white pt-1"
+                >
+                  <span>Open Quality Incident</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+
+              {/* Alert 3 */}
+              <div className="rounded-lg border border-blue-900/60 bg-blue-950/20 p-3.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-200 border border-blue-700/50">
+                    PLANNED PM DUE • 48H
+                  </span>
+                  <span className="text-[11px] font-mono text-blue-300">Maintenance</span>
+                </div>
+                <p className="text-xs font-bold text-slate-100">
+                  Hydraulic Fluid & Filter Flush on Press 04
+                </p>
+                <p className="text-[11px] text-slate-300">
+                  Standard 250-hour operational service window reached. Parts in stock.
+                </p>
+                <Link
+                  href="/maintenance/work-orders"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-300 hover:text-white pt-1"
+                >
+                  <span>Dispatch Maintenance WO</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel 4: Active Crew & Shift Handover */}
+          <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-md p-4 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                Shift 1 Handover Log
+              </span>
+              <span className="font-mono text-[11px] text-emerald-400">ACTIVE</span>
+            </div>
+
+            <div className="space-y-2 text-xs font-mono">
+              <div className="flex justify-between py-1 border-b border-slate-800/40">
+                <span className="text-slate-400">Supervisor:</span>
+                <span className="text-white font-semibold">J. Smith (Machining)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-800/40">
+                <span className="text-slate-400">Active Operators:</span>
+                <span className="text-white font-semibold">18 on floor</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-800/40">
+                <span className="text-slate-400">Target Shift Output:</span>
+                <span className="text-emerald-400 font-semibold">2,000 units</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-slate-400">Next Shift Briefing:</span>
+                <span className="text-slate-200">13:45 UTC</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 4. Categorized Industrial Module Grid */}
+      {/* 3. High-Density Operations Console Directory (Replacing generic cards) */}
       <DashboardModuleGrid />
     </div>
   );

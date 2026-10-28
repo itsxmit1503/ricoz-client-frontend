@@ -7,10 +7,25 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-/** Row of count cards; clicking one filters the list, clicking again clears it. */
+/** Integrated industrial filter bar with dot indicators and live counts. */
 export default function StatusFilterCards({ options, counts, active, onChange }: Props) {
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-6">
+    <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-lg border border-slate-800 bg-[#080d17]">
+      <button
+        type="button"
+        onClick={() => onChange("")}
+        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold font-mono transition ${
+          active === ""
+            ? "bg-blue-600 text-white shadow-xs"
+            : "text-slate-300 hover:bg-[#121826] hover:text-white"
+        }`}
+      >
+        <span>ALL</span>
+        <span className="rounded bg-black/30 px-1.5 py-0.2 text-[10px] tabular-nums">
+          {Object.values(counts).reduce((a, b) => a + b, 0)}
+        </span>
+      </button>
+
       {options.map((o) => {
         const isActive = active === o.value;
         const count = counts[o.value] ?? 0;
@@ -19,29 +34,19 @@ export default function StatusFilterCards({ options, counts, active, onChange }:
             key={o.value}
             type="button"
             onClick={() => onChange(isActive ? "" : o.value)}
-            className={`group relative rounded-xl border p-3 text-left transition-all duration-150 ease-out active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
+            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
               isActive
-                ? "border-blue-500/80 bg-blue-600/15 shadow-xs"
-                : "border-slate-800 bg-[#0d131f] hover:border-slate-700 hover:bg-[#131b2c]"
+                ? "bg-[#162238] border border-blue-500/60 text-blue-200"
+                : "text-slate-300 hover:bg-[#121826] hover:text-white border border-transparent"
             }`}
           >
-            <div className="flex items-center justify-between gap-1.5">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-slate-200">
-                <span className={`h-2 w-2 rounded-full ${o.dot}`} />
-                <span className="truncate">{o.label}</span>
-              </span>
-              {isActive && (
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 ring-2 ring-blue-400/30" />
-              )}
-            </div>
-            <div className="mt-2.5 flex items-baseline justify-between">
-              <span className={`text-xl font-semibold tabular-nums tracking-tight ${isActive ? "text-blue-200" : "text-white"}`}>
-                {count}
-              </span>
-              <span className="text-[10px] font-medium uppercase tracking-wider text-slate-400 group-hover:text-slate-300">
-                Filter
-              </span>
-            </div>
+            <span className={`h-2 w-2 rounded-full ${o.dot}`} />
+            <span>{o.label}</span>
+            <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded tabular-nums ${
+              isActive ? "bg-blue-900/60 text-blue-200" : "bg-slate-800/80 text-slate-400"
+            }`}>
+              {count}
+            </span>
           </button>
         );
       })}
