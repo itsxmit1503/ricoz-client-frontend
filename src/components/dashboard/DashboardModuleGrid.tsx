@@ -65,18 +65,18 @@ function DomainRow({ title, code, statusBadge, description, href, icon: Icon }: 
 
 export default function DashboardModuleGrid() {
   return (
-    <div className="ui-stagger-4 border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
+    <div className="border border-slate-800/90 bg-[#0b101c] rounded-xl overflow-hidden shadow-lg">
       <div className="px-5 py-4 border-b border-slate-800/80 bg-[#080d17] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
-            Operations Console Directory (12 Workstations)
+            Operations Console Directory
           </h2>
           <p className="text-[11px] text-slate-400 mt-0.5">
             Synchronized manufacturing execution, plant assets, inventory, and engineering specifications.
           </p>
         </div>
-        <span className="font-mono text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full self-start sm:self-auto">
-          ALL 4 DOMAINS ONLINE
+        <span className="font-mono text-[11px] text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
+          12 WORKSPACES CONFIGURED
         </span>
       </div>
 
@@ -85,13 +85,13 @@ export default function DashboardModuleGrid() {
         <div className="divide-y divide-slate-800/60">
           <div className="bg-[#0e1424] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center justify-between">
             <span>Domain 1: Shop Floor Execution</span>
-            <span className="font-mono text-[10px] text-slate-400">DISPATCH & WORK ORDERS</span>
+            <span className="font-mono text-[10px] text-slate-400">DISPATCH & PLANS</span>
           </div>
 
           <DomainRow
             title="Production Work Orders"
             code="WO-CORE"
-            statusBadge="18 Active Orders"
+            statusBadge="Dispatch & Batches"
             description="Manage batch runs, schedule line releases, and record completed vs scrap parts."
             href="/production/work-orders"
             icon={FileText}
@@ -99,7 +99,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Production Plans"
             code="PLAN-MRP"
-            statusBadge="6 Staged Plans"
+            statusBadge="Master Schedule"
             description="High-level production schedule, shift targets, and multi-line capacity planning."
             href="/production/plans"
             icon={Layers}
@@ -107,7 +107,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Workstation Operations"
             code="OP-EXEC"
-            statusBadge="42 Workstations"
+            statusBadge="Step Execution"
             description="Machine-level operation dispatching, cycle timer logs, and operator assignments."
             href="/production/operations"
             icon={Activity}
@@ -115,13 +115,13 @@ export default function DashboardModuleGrid() {
 
           <div className="bg-[#0e1424] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center justify-between">
             <span>Domain 2: Equipment & Plant Assets</span>
-            <span className="font-mono text-[10px] text-slate-400">FLEET TELEMETRY & PM</span>
+            <span className="font-mono text-[10px] text-slate-400">MACHINERY & SENSORS</span>
           </div>
 
           <DomainRow
             title="Machine Fleet Directory"
             code="FLEET-01"
-            statusBadge="15 Machines (93.3% Online)"
+            statusBadge="Equipment Registry"
             description="Plant equipment registry, capacity limits, power consumption, and location tags."
             href="/machines"
             icon={Cpu}
@@ -129,7 +129,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Live Machine Telemetry"
             code="SENS-IO"
-            statusBadge="Real-Time Feed"
+            statusBadge="Sensor Console"
             description="Spindle speeds, hydraulic pressure curves, temperature telemetry, and vibration."
             href="/machines/details"
             icon={Gauge}
@@ -137,7 +137,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Maintenance Work Orders"
             code="MAINT-PM"
-            statusBadge="1 Scheduled PM"
+            statusBadge="PM & Repair"
             description="Preventive maintenance schedules, breakdown tickets, technician assignments."
             href="/maintenance/work-orders"
             icon={Wrench}
@@ -154,7 +154,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Inventory & Stock Balances"
             code="INV-BAL"
-            statusBadge="248 SKUs (3 Low Buffer)"
+            statusBadge="Warehouse Bins"
             description="Warehouse balances, safety stock alerts, location bins, and reserved materials."
             href="/inventory/stock"
             icon={Boxes}
@@ -162,7 +162,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Supplier & Vendor Registry"
             code="VEND-MGMT"
-            statusBadge="12 Active Suppliers"
+            statusBadge="Vendor Accounts"
             description="Certified vendor contacts, lead times, payment terms, and vendor quality ratings."
             href="/suppliers"
             icon={Truck}
@@ -170,7 +170,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Purchase Orders"
             code="PO-TRACK"
-            statusBadge="4 Orders Staged"
+            statusBadge="Procurement"
             description="Raw material purchase orders, expected delivery dates, invoices, and line items."
             href="/purchase/orders"
             icon={ShoppingCart}
@@ -178,13 +178,13 @@ export default function DashboardModuleGrid() {
 
           <div className="bg-[#0e1424] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center justify-between">
             <span>Domain 4: Engineering & Quality Assurance</span>
-            <span className="font-mono text-[10px] text-slate-400">BOM RECIPES & QA LAB</span>
+            <span className="font-mono text-[10px] text-slate-400">SPECIFICATIONS & QA</span>
           </div>
 
           <DomainRow
             title="Product Master Catalog"
             code="PART-CAT"
-            statusBadge="36 Catalog Parts"
+            statusBadge="Part Specifications"
             description="Finished goods, sub-assemblies, raw stock codes, and engineering specifications."
             href="/products"
             icon={Package}
@@ -192,7 +192,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Bills of Materials (BOM)"
             code="BOM-SPEC"
-            statusBadge="18 Active Recipes"
+            statusBadge="Assembly Recipes"
             description="Hierarchical part trees, component ratios, and manufacturing assembly steps."
             href="/bom"
             icon={FileSpreadsheet}
@@ -200,7 +200,7 @@ export default function DashboardModuleGrid() {
           <DomainRow
             title="Quality Control & Incidents"
             code="QA-LAB"
-            statusBadge="99.1% Yield (2 Flags)"
+            statusBadge="Inspection Logs"
             description="Inspection sampling, non-conformance logs, defect types, and corrective actions."
             href="/quality/issues"
             icon={ShieldCheck}

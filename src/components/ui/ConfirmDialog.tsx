@@ -29,17 +29,21 @@ export default function ConfirmDialog({
   const onCancelRef = useRef(onCancel);
   const loadingRef = useRef(Boolean(loading));
   const titleId = useId();
+
   const [mounted, setMounted] = useState(open);
+  const [renderedTitle, setRenderedTitle] = useState(title);
+  const [renderedMessage, setRenderedMessage] = useState(message);
 
   useEffect(() => {
     if (open) {
-      const frame = window.requestAnimationFrame(() => setMounted(true));
-      return () => window.cancelAnimationFrame(frame);
+      setMounted(true);
+      setRenderedTitle(title);
+      setRenderedMessage(message);
+    } else {
+      const timeout = window.setTimeout(() => setMounted(false), 220);
+      return () => window.clearTimeout(timeout);
     }
-
-    const timeout = window.setTimeout(() => setMounted(false), 220);
-    return () => window.clearTimeout(timeout);
-  }, [open]);
+  }, [open, title, message]);
 
   useEffect(() => {
     onCancelRef.current = onCancel;
@@ -116,17 +120,25 @@ export default function ConfirmDialog({
       tabIndex={-1}
     >
       <div
-        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
+        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${
+          open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"
+        }`}
         onClick={loading ? undefined : onCancel}
       />
-      <div className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-[#0c111e] p-5 shadow-2xl shadow-black/60 sm:p-6`}>
+      <div
+        className={`ui-dialog-panel ${
+          open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"
+        } relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-[#0c111e] p-5 shadow-2xl shadow-black/60 sm:p-6`}
+      >
         <div className="flex items-start gap-4">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
             <TriangleAlert className="h-5 w-5" />
           </span>
           <div>
-            <h2 id={titleId} className="font-semibold text-white tracking-tight">{title}</h2>
-            <p className="mt-1 text-sm text-slate-300">{message}</p>
+            <h2 id={titleId} className="font-semibold text-white tracking-tight">
+              {renderedTitle}
+            </h2>
+            <p className="mt-1 text-sm text-slate-300">{renderedMessage}</p>
           </div>
         </div>
         <div className="mt-6 flex justify-end gap-3">

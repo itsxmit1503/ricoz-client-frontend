@@ -73,7 +73,7 @@ export default function LandingHero() {
               </div>
               <div className="ui-pressable inline-flex items-center gap-1.5 rounded border border-slate-800 bg-[#0e1424] px-2.5 py-1 text-slate-300 hover:border-slate-700">
                 <Zap className="h-3.5 w-3.5 text-amber-400" />
-                <span>Fleet OEE: <strong className="text-white">92.8%</strong></span>
+                <span>Benchmark OEE: <strong className="text-white">92.8%</strong></span>
               </div>
             </div>
 
@@ -115,7 +115,7 @@ export default function LandingHero() {
                   </span>
                 </div>
                 <span className="font-mono text-[10px] text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded">
-                  FEED ONLINE
+                  DEMO WORKCELL // SIMULATED
                 </span>
               </div>
 

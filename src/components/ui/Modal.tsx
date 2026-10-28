@@ -23,17 +23,22 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
   const titleId = useId();
+
+  // Keep modal in DOM during exit animation (220ms)
   const [mounted, setMounted] = useState(open);
+  const [renderedChildren, setRenderedChildren] = useState<ReactNode>(children);
+  const [renderedTitle, setRenderedTitle] = useState(title);
 
   useEffect(() => {
     if (open) {
-      const frame = window.requestAnimationFrame(() => setMounted(true));
-      return () => window.cancelAnimationFrame(frame);
+      setMounted(true);
+      setRenderedChildren(children);
+      setRenderedTitle(title);
+    } else {
+      const timeout = window.setTimeout(() => setMounted(false), 220);
+      return () => window.clearTimeout(timeout);
     }
-
-    const timeout = window.setTimeout(() => setMounted(false), 220);
-    return () => window.clearTimeout(timeout);
-  }, [open]);
+  }, [open, children, title]);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -101,14 +106,22 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
       tabIndex={-1}
     >
       <div
-        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"}`}
+        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${
+          open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"
+        }`}
         onClick={onClose}
       />
       <div
-        className={`ui-dialog-panel ${open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"} theme-scrollbar relative max-h-[calc(100vh-2rem)] w-full ${wide ? "max-w-2xl" : "max-w-lg"} overflow-y-auto rounded-xl border border-slate-700/80 bg-[#0c111e] shadow-2xl shadow-black/60`}
+        className={`ui-dialog-panel ${
+          open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"
+        } theme-scrollbar relative max-h-[calc(100vh-2rem)] w-full ${
+          wide ? "max-w-2xl" : "max-w-lg"
+        } overflow-y-auto rounded-xl border border-slate-700/80 bg-[#0c111e] shadow-2xl shadow-black/60`}
       >
         <div className="flex items-center justify-between border-b border-slate-800/80 px-6 py-4 bg-[#090d16]">
-          <h2 id={titleId} className="text-base font-semibold text-white tracking-tight">{title}</h2>
+          <h2 id={titleId} className="text-base font-semibold text-white tracking-tight">
+            {renderedTitle}
+          </h2>
           <button
             ref={closeButtonRef}
             type="button"
@@ -119,7 +132,7 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="p-5 sm:p-6">{children}</div>
+        <div className="p-5 sm:p-6">{renderedChildren}</div>
       </div>
     </div>
   );
