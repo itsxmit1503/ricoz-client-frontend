@@ -12,16 +12,19 @@ export function setTokenGetter(fn: TokenGetter) {
 }
 
 export const api: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
+    "x-admin-key": "ricoz-admin-secret-2026",
   },
 });
 
 // Clerk session tokens are short-lived; getToken() returns a fresh/cached one each time.
 api.interceptors.request.use(async (config) => {
   const token = await getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });

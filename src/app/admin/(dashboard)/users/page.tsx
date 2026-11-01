@@ -6,7 +6,10 @@ import {
   KeyRound,
   RefreshCw,
   Search,
+  Shield,
   User,
+  UserCheck,
+  UserX,
   Users,
   XCircle,
 } from "lucide-react";
@@ -17,7 +20,6 @@ import AdminErrorState from "@/components/admin/AdminErrorState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import Button from "@/components/ui/Button";
-import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Spinner from "@/components/ui/Spinner";
@@ -38,8 +40,11 @@ export default function AdminUsersPage() {
   // Inspection modal
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
-  // Role Change Confirmation Dialog
+  // Role Change Modal & Target
   const [roleChangeTarget, setRoleChangeTarget] = useState<UserType | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserType["role"]>("user");
+  const [updatingRole, setUpdatingRole] = useState(false);
+  const [togglingStatusId, setTogglingStatusId] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -67,12 +72,15 @@ export default function AdminUsersPage() {
         !q ||
         (u.email && u.email.toLowerCase().includes(q)) ||
         (u.username && u.username.toLowerCase().includes(q)) ||
-        u._id.toLowerCase().includes(q);
+        (u.name && u.name.toLowerCase().includes(q)) ||
+        (u._id && u._id.toLowerCase().includes(q));
 
       const matchesRole = roleFilter === "all" || u.role === roleFilter;
 
       const matchesStatus =
         statusFilter === "all" ||
+        (statusFilter === "active" && u.isActive !== false) ||
+        (statusFilter === "suspended" && u.isActive === false) ||
         (statusFilter === "verified" && u.isemailVerified) ||
         (statusFilter === "pending" && !u.isemailVerified);
 
@@ -80,15 +88,44 @@ export default function AdminUsersPage() {
     });
   }, [users, search, roleFilter, statusFilter]);
 
-  const handleConfirmRoleChange = () => {
-    if (!roleChangeTarget) return;
+  const handleOpenRoleModal = (u: UserType) => {
+    setRoleChangeTarget(u);
+    setSelectedRole(u.role || "user");
+  };
 
-    // Honest check: Inform the admin that backend persistence for role mutation is not exposed
-    toast.error(
-      "Role mutation API endpoint (`PATCH /api/v1/users/:id/role`) is awaiting backend implementation. Privilege change not persisted.",
-      { duration: 5000 }
-    );
-    setRoleChangeTarget(null);
+  const handleConfirmRoleChange = async () => {
+    if (!roleChangeTarget) return;
+    setUpdatingRole(true);
+    try {
+      const updatedUser = await adminService.updateUserRole(roleChangeTarget._id, selectedRole);
+      setUsers((prev) =>
+        prev.map((u) => (u._id === roleChangeTarget._id ? { ...u, ...updatedUser, role: selectedRole } : u))
+      );
+      toast.success(`Role updated to ${selectedRole.toUpperCase()} for ${roleChangeTarget.email}`);
+      setRoleChangeTarget(null);
+    } catch (err: unknown) {
+      const e = err as Error;
+      toast.error(e.message || "Failed to update user role.");
+    } finally {
+      setUpdatingRole(false);
+    }
+  };
+
+  const handleToggleStatus = async (user: UserType) => {
+    const newStatus = user.isActive === false;
+    setTogglingStatusId(user._id);
+    try {
+      const updatedUser = await adminService.updateUserStatus(user._id, newStatus);
+      setUsers((prev) =>
+        prev.map((u) => (u._id === user._id ? { ...u, ...updatedUser, isActive: newStatus } : u))
+      );
+      toast.success(`Account for ${user.email} marked as ${newStatus ? "Active" : "Suspended"}`);
+    } catch (err: unknown) {
+      const e = err as Error;
+      toast.error(e.message || "Failed to change user status.");
+    } finally {
+      setTogglingStatusId(null);
+    }
   };
 
   return (
@@ -104,7 +141,7 @@ export default function AdminUsersPage() {
             size="sm"
             onClick={fetchUsers}
             loading={loading}
-            className="border-slate-800 bg-[#0c111e] text-slate-300 hover:text-white"
+            className="border-slate-700 bg-[#0c111e] text-slate-200 hover:text-white"
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Refresh Directory
@@ -131,10 +168,12 @@ export default function AdminUsersPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="h-9.5 rounded-lg border border-slate-800 bg-[#0d131f] px-3 font-mono text-xs text-slate-300 focus:border-purple-500 focus:outline-none"
+              className="h-9.5 rounded-lg border border-slate-700 bg-[#0d131f] px-3 font-mono text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
             >
               <option value="all">All Roles</option>
               <option value="admin">Administrators</option>
+              <option value="supervisor">Supervisors</option>
+              <option value="operator">Operators</option>
               <option value="user">Standard Users</option>
             </select>
 
@@ -142,9 +181,11 @@ export default function AdminUsersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-9.5 rounded-lg border border-slate-800 bg-[#0d131f] px-3 font-mono text-xs text-slate-300 focus:border-purple-500 focus:outline-none"
+              className="h-9.5 rounded-lg border border-slate-700 bg-[#0d131f] px-3 font-mono text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
             >
-              <option value="all">All Verification</option>
+              <option value="all">All Statuses</option>
+              <option value="active">Active Accounts</option>
+              <option value="suspended">Suspended Accounts</option>
               <option value="verified">Verified Email</option>
               <option value="pending">Pending Verification</option>
             </select>
@@ -156,13 +197,13 @@ export default function AdminUsersPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-slate-800 bg-[#0c111e] p-16">
           <Spinner className="h-8 w-8 text-purple-400" />
-          <p className="mt-3 font-mono text-xs text-slate-400">Loading user records from database…</p>
+          <p className="mt-3 font-mono text-xs text-slate-300">Loading user records from database…</p>
         </div>
       ) : error ? (
         <AdminErrorState
           title="User Directory Unreachable"
           message={error}
-          technicalDetails="Ensure NEXT_PUBLIC_BACKEND_URL is set and the Express endpoint /admin/data is accessible."
+          technicalDetails="Ensure NEXT_PUBLIC_BACKEND_URL is set and the Express endpoint /admin/users is accessible."
           onRetry={fetchUsers}
         />
       ) : filteredUsers.length === 0 ? (
@@ -194,28 +235,29 @@ export default function AdminUsersPage() {
         <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-[#080d17] font-mono uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-800 bg-[#080d17] font-mono uppercase tracking-wider text-slate-200">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">User</th>
-                  <th className="px-4 py-3 font-semibold">Role</th>
-                  <th className="px-4 py-3 font-semibold">Verification</th>
-                  <th className="px-4 py-3 font-semibold">Created Date</th>
-                  <th className="px-4 py-3 text-right font-semibold">Actions</th>
+                  <th className="px-4 py-3 font-bold">User</th>
+                  <th className="px-4 py-3 font-bold">Role</th>
+                  <th className="px-4 py-3 font-bold">Account State</th>
+                  <th className="px-4 py-3 font-bold">Verification</th>
+                  <th className="px-4 py-3 font-bold">Created Date</th>
+                  <th className="px-4 py-3 text-right font-bold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-mono">
+              <tbody className="divide-y divide-slate-800/80 font-mono">
                 {filteredUsers.map((u) => (
                   <tr key={u._id} className="transition-colors hover:bg-[#0e1424]">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-slate-800 bg-[#121826] text-slate-300">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-slate-200">
                           <User className="h-3.5 w-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <span className="block font-semibold text-slate-200 truncate">
-                            {u.username || "Unnamed Employee"}
+                          <span className="block font-bold text-white truncate">
+                            {u.username || u.name || "Unnamed Employee"}
                           </span>
-                          <span className="block text-[11px] text-slate-400 truncate">
+                          <span className="block text-[11px] text-slate-300 font-mono truncate">
                             {u.email}
                           </span>
                         </div>
@@ -223,9 +265,31 @@ export default function AdminUsersPage() {
                     </td>
 
                     <td className="px-4 py-3.5">
-                      <AdminStatusBadge variant={u.role === "admin" ? "admin" : "user"}>
-                        {u.role === "admin" ? "ADMINISTRATOR" : "STANDARD USER"}
+                      <AdminStatusBadge
+                        variant={
+                          u.role === "admin"
+                            ? "admin"
+                            : u.role === "supervisor"
+                            ? "warning"
+                            : "user"
+                        }
+                      >
+                        {u.role.toUpperCase()}
                       </AdminStatusBadge>
+                    </td>
+
+                    <td className="px-4 py-3.5">
+                      {u.isActive !== false ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 font-semibold">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          ACTIVE
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[11px] text-rose-400 font-semibold">
+                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+                          SUSPENDED
+                        </span>
+                      )}
                     </td>
 
                     <td className="px-4 py-3.5">
@@ -234,13 +298,13 @@ export default function AdminUsersPage() {
                           <CheckCircle2 className="h-3.5 w-3.5" /> Verified
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] text-amber-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] text-amber-300 font-medium">
                           <XCircle className="h-3.5 w-3.5" /> Unverified
                         </span>
                       )}
                     </td>
 
-                    <td className="px-4 py-3.5 text-slate-400 text-[11px]">
+                    <td className="px-4 py-3.5 text-slate-300 text-[11px]">
                       {u.createdAt ? formatDate(u.createdAt) : "—"}
                     </td>
 
@@ -251,7 +315,7 @@ export default function AdminUsersPage() {
                           size="sm"
                           onClick={() => setSelectedUser(u)}
                           title="Inspect Profile"
-                          className="h-7 px-2 text-slate-300 hover:text-white"
+                          className="h-7 px-2 text-slate-200 hover:text-white"
                         >
                           <Eye className="h-3.5 w-3.5 mr-1" />
                           Inspect
@@ -260,12 +324,35 @@ export default function AdminUsersPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setRoleChangeTarget(u)}
+                          onClick={() => handleOpenRoleModal(u)}
                           title="Modify Role"
-                          className="h-7 px-2 text-[11px] border-slate-800 bg-[#0d131f] text-slate-300 hover:text-white"
+                          className="h-7 px-2 text-[11px] border-slate-700 bg-[#0d131f] text-slate-200 hover:text-white"
                         >
                           <KeyRound className="h-3 w-3 mr-1 text-purple-400" />
                           Role
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleToggleStatus(u)}
+                          disabled={togglingStatusId === u._id}
+                          title={u.isActive !== false ? "Suspend Account" : "Activate Account"}
+                          className={`h-7 px-2 text-[11px] ${
+                            u.isActive !== false
+                              ? "text-rose-400 hover:bg-rose-500/15"
+                              : "text-emerald-400 hover:bg-emerald-500/15"
+                          }`}
+                        >
+                          {u.isActive !== false ? (
+                            <>
+                              <UserX className="h-3 w-3 mr-1" /> Suspend
+                            </>
+                          ) : (
+                            <>
+                              <UserCheck className="h-3 w-3 mr-1" /> Activate
+                            </>
+                          )}
                         </Button>
                       </div>
                     </td>
@@ -276,7 +363,7 @@ export default function AdminUsersPage() {
           </div>
 
           <div className="border-t border-slate-800 bg-[#080d17] px-4 py-2.5 text-right">
-            <span className="font-mono text-[11px] text-slate-400">
+            <span className="font-mono text-[11px] text-slate-300 font-semibold">
               Showing {filteredUsers.length} of {users.length} accounts
             </span>
           </div>
@@ -293,57 +380,110 @@ export default function AdminUsersPage() {
           <div className="space-y-4 text-xs font-mono">
             <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-3">
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Database ID:</span>
-                <span className="text-slate-300 select-all">{selectedUser._id}</span>
+                <span className="text-slate-300">Database ID:</span>
+                <span className="text-white font-mono select-all">{selectedUser._id}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Username:</span>
-                <span className="font-semibold text-white">{selectedUser.username || "—"}</span>
+                <span className="text-slate-300">Username:</span>
+                <span className="font-bold text-white">{selectedUser.username || selectedUser.name || "—"}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Email Address:</span>
-                <span className="font-semibold text-white">{selectedUser.email}</span>
+                <span className="text-slate-300">Email Address:</span>
+                <span className="font-bold text-white">{selectedUser.email}</span>
               </div>
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Role Privilege:</span>
+                <span className="text-slate-300">Role Privilege:</span>
                 <AdminStatusBadge variant={selectedUser.role === "admin" ? "admin" : "user"}>
                   {selectedUser.role.toUpperCase()}
                 </AdminStatusBadge>
               </div>
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-slate-400">Email Verification:</span>
-                <span className={selectedUser.isemailVerified ? "text-emerald-400 font-semibold" : "text-amber-400"}>
+                <span className="text-slate-300">Account State:</span>
+                <span className={selectedUser.isActive !== false ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>
+                  {selectedUser.isActive !== false ? "ACTIVE" : "SUSPENDED"}
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-slate-800/80 pb-2">
+                <span className="text-slate-300">Email Verification:</span>
+                <span className={selectedUser.isemailVerified ? "text-emerald-400 font-bold" : "text-amber-300 font-medium"}>
                   {selectedUser.isemailVerified ? "CONFIRMED" : "PENDING"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Registered At:</span>
-                <span className="text-slate-300">
+                <span className="text-slate-300">Registered At:</span>
+                <span className="text-slate-200">
                   {selectedUser.createdAt ? formatDate(selectedUser.createdAt) : "—"}
                 </span>
               </div>
             </div>
 
-            <div className="rounded-lg border border-purple-500/20 bg-purple-500/5 p-3 text-[11px] text-purple-300">
+            <div className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-3 text-[11px] text-purple-200 font-semibold">
               <strong>Security Policy:</strong> Passwords, session tokens, and cryptographic secrets are strictly excluded from client responses.
             </div>
           </div>
         </Modal>
       )}
 
-      {/* Role Mutation Confirmation Dialog */}
-      <ConfirmDialog
-        open={Boolean(roleChangeTarget)}
-        title="Administrative Privilege Modification"
-        message={
-          roleChangeTarget
-            ? `Are you sure you want to modify privilege level for "${roleChangeTarget.email}" (${roleChangeTarget.role})? Note that the backend role modification endpoint is not yet connected.`
-            : ""
-        }
-        confirmLabel="Simulate Change"
-        onConfirm={handleConfirmRoleChange}
-        onCancel={() => setRoleChangeTarget(null)}
-      />
+      {/* Role Mutation Interactive Modal */}
+      {roleChangeTarget && (
+        <Modal
+          open={Boolean(roleChangeTarget)}
+          onClose={() => setRoleChangeTarget(null)}
+          title="Administrative Privilege Modification"
+        >
+          <div className="space-y-4 text-xs font-mono">
+            <p className="text-slate-200">
+              Update privilege tier for account: <strong className="text-white">{roleChangeTarget.email}</strong>
+            </p>
+
+            <div>
+              <label className="block text-slate-300 font-semibold mb-2">Select Target Role:</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "admin", label: "Administrator", desc: "Full console access" },
+                  { id: "supervisor", label: "Supervisor", desc: "Floor & shift oversight" },
+                  { id: "operator", label: "Operator", desc: "Machine workcell access" },
+                  { id: "user", label: "Standard User", desc: "General operations" },
+                ].map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setSelectedRole(r.id as UserType["role"])}
+                    className={`rounded-lg border p-3 text-left transition ${
+                      selectedRole === r.id
+                        ? "border-purple-500 bg-purple-500/20 text-white font-bold"
+                        : "border-slate-800 bg-[#080d17] text-slate-300 hover:border-slate-700"
+                    }`}
+                  >
+                    <span className="block font-bold">{r.label}</span>
+                    <span className="text-[10px] text-slate-400">{r.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRoleChangeTarget(null)}
+                disabled={updatingRole}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleConfirmRoleChange}
+                loading={updatingRole}
+                className="bg-purple-600 hover:bg-purple-500 text-white font-bold"
+              >
+                Save Role Change
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

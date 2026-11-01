@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "Ricoz | Manufacturing Operations ERP",
@@ -22,8 +15,8 @@ const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || def
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} min-h-screen antialiased bg-slate-950 text-slate-100 theme-scrollbar`}>
+    <html lang="en">
+      <body className="min-h-screen antialiased bg-slate-950 text-slate-100 theme-scrollbar font-sans">
         <Suspense fallback={<div>Page is Loading</div>}>
           <ClerkProvider publishableKey={clerkPublishableKey}>{children}</ClerkProvider>
         </Suspense>

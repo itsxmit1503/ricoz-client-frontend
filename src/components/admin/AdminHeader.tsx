@@ -30,16 +30,16 @@ export default function AdminHeader({
           </button>
         )}
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-slate-400 hidden sm:inline">
+          <span className="font-mono text-xs text-slate-200 font-semibold hidden sm:inline">
             {breadcrumbs}
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs">
+        <div className="hidden sm:flex items-center gap-2 rounded-full border border-purple-500/40 bg-purple-500/15 px-3 py-1 text-xs">
           <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
-          <span className="font-mono text-[11px] text-purple-200 truncate max-w-[180px]">
+          <span className="font-mono text-[11px] font-bold text-purple-200 truncate max-w-[180px]">
             {adminEmail || "admin@ricoz.mfg"}
           </span>
         </div>
@@ -49,7 +49,7 @@ export default function AdminHeader({
             variant="outline"
             size="sm"
             onClick={onLogout}
-            className="border-slate-800 bg-[#0d131f] text-xs text-slate-300 hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-300"
+            className="border-slate-700 bg-[#0e1524] text-xs font-semibold text-slate-200 hover:border-rose-500/50 hover:bg-rose-500/15 hover:text-rose-200"
           >
             <LogOut className="h-3.5 w-3.5 mr-1.5" />
             Sign Out

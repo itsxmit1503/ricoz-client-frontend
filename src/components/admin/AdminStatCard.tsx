@@ -24,13 +24,13 @@ export default function AdminStatCard({
 }: Props) {
   return (
     <div
-      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] p-5 shadow-sm transition hover:border-slate-700/80 ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] p-5 shadow-sm transition hover:border-slate-700 ${className}`}
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xs font-semibold tracking-wider text-slate-400 uppercase">
+        <span className="font-mono text-xs font-bold tracking-wider text-slate-200 uppercase">
           {title}
         </span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-[#121826] text-blue-400 shadow-inner">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-blue-400 shadow-inner">
           <Icon className="h-4 w-4" />
         </div>
       </div>
@@ -39,12 +39,12 @@ export default function AdminStatCard({
         {loading ? (
           <div className="flex h-9 items-center">
             <Spinner className="h-5 w-5 text-blue-400" />
-            <span className="ml-2 font-mono text-xs text-slate-400">Loading live data…</span>
+            <span className="ml-2 font-mono text-xs text-slate-300">Loading live data…</span>
           </div>
         ) : error ? (
           <div className="flex flex-col">
-            <span className="font-mono text-xs font-semibold text-rose-400">Unavailable</span>
-            <span className="mt-0.5 text-[11px] text-slate-500 truncate" title={error}>
+            <span className="font-mono text-xs font-bold text-rose-400">Unavailable</span>
+            <span className="mt-0.5 text-[11px] text-slate-400 truncate" title={error}>
               {error}
             </span>
           </div>
@@ -54,18 +54,18 @@ export default function AdminStatCard({
               {typeof value === "number" ? value.toLocaleString() : value}
             </span>
             {badge && (
-              <span className="rounded border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-blue-300">
+              <span className="rounded border border-blue-500/40 bg-blue-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-blue-300">
                 {badge}
               </span>
             )}
           </div>
         ) : (
-          <span className="font-mono text-sm text-slate-500">No data available</span>
+          <span className="font-mono text-sm text-slate-400">No data available</span>
         )}
       </div>
 
       {subtitle && (
-        <p className="mt-2 text-xs text-slate-400 leading-relaxed truncate">{subtitle}</p>
+        <p className="mt-2 text-xs text-slate-300 leading-relaxed truncate">{subtitle}</p>
       )}
     </div>
   );

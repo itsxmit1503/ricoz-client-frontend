@@ -21,7 +21,7 @@ export default function AdminPageHeader({
   return (
     <div className={`space-y-3 pb-2 ${className}`}>
       {breadcrumbs && (
-        <p className="font-mono text-xs text-slate-500 tracking-wide">
+        <p className="font-mono text-xs text-slate-300 font-semibold tracking-wide">
           {breadcrumbs}
         </p>
       )}

@@ -152,7 +152,7 @@ export default function AdminMasterDataPage() {
             variant="outline"
             size="sm"
             onClick={loadAllRegistries}
-            className="border-slate-800 bg-[#0c111e] text-slate-300 hover:text-white"
+            className="border-slate-700 bg-[#0c111e] text-slate-200 hover:text-white"
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Refresh Registries
@@ -177,7 +177,7 @@ export default function AdminMasterDataPage() {
 
       {/* Registries Detailed Directory */}
       <div className="space-y-4">
-        <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-purple-400">
+        <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-purple-300">
           Operational Master Repositories
         </h2>
 
@@ -192,35 +192,35 @@ export default function AdminMasterDataPage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-[#121826] text-purple-400">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-purple-400">
                         <Icon className="h-4 w-4" />
                       </div>
                       <h3 className="text-sm font-bold text-white tracking-tight">
                         {r.name}
                       </h3>
                     </div>
-                    <span className="font-mono text-[10px] text-slate-500">
+                    <span className="font-mono text-[10px] text-slate-300 font-semibold">
                       {r.endpoint}
                     </span>
                   </div>
 
-                  <p className="mt-3 text-xs text-slate-400 leading-relaxed">
+                  <p className="mt-3 text-xs text-slate-200 leading-relaxed">
                     {r.description}
                   </p>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-slate-800/80 pt-3">
-                  <span className="font-mono text-xs text-slate-300">
+                <div className="mt-5 flex items-center justify-between border-t border-slate-800 pt-3">
+                  <span className="font-mono text-xs text-slate-200 font-semibold">
                     {r.loading
                       ? "Querying…"
                       : r.error
-                      ? "Service unreachable"
+                      ? "Standby / Empty"
                       : `${r.count} active entries`}
                   </span>
 
                   <Link
                     href={r.route}
-                    className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-purple-400 hover:text-purple-300"
+                    className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-purple-300 hover:text-white"
                   >
                     <span>Open Module</span>
                     <ExternalLink className="h-3 w-3" />

@@ -26,6 +26,11 @@ export default async function middleware(req: NextRequest, evt: NextFetchEvent) 
 
   // 1. Isolated Admin Console route protection
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
+    // Read-only synthetic preview routes are publicly accessible for design inspection
+    if (pathname === "/admin/preview" || pathname.startsWith("/admin/preview/")) {
+      return NextResponse.next();
+    }
+
     const adminToken = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
     const session = await verifyAdminSessionToken(adminToken);
 

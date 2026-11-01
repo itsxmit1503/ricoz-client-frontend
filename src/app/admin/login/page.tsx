@@ -152,14 +152,24 @@ export default function AdminLoginPage() {
                 <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
             </div>
+
+            {/* Visual Preview Link */}
+            <div className="pt-2">
+              <Link
+                href="/admin/preview"
+                className="ui-pressable group flex w-full items-center justify-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 font-mono text-xs font-semibold text-amber-300 hover:border-amber-500/50 hover:bg-amber-500/15 transition duration-150"
+              >
+                <span>Explore UI Design Preview (Synthetic Data)</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
           </form>
 
           {/* Development Security Notice */}
           <div className="mt-6 rounded-lg border border-slate-800/80 bg-[#080d17] p-3 text-center">
             <p className="font-mono text-[11px] text-slate-400">
-              <span className="text-purple-400 font-semibold">Dev Note:</span> Configured via{" "}
-              <code className="text-slate-300">ADMIN_DEV_EMAIL</code> &amp;{" "}
-              <code className="text-slate-300">ADMIN_DEV_PASSWORD</code>.
+              <span className="text-purple-400 font-semibold">Environment Gate:</span> In production deployments, set{" "}
+              <code className="text-slate-300">ADMIN_DEV_ENABLED=&quot;true&quot;</code> in environment variables to enable credential login.
             </p>
           </div>
         </div>
