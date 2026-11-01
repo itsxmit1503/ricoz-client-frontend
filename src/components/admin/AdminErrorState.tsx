@@ -21,7 +21,7 @@ export default function AdminErrorState({
         <div className="min-w-0 flex-1">
           <h3 className="text-sm font-bold text-rose-200">{title}</h3>
           <p className="mt-1 text-xs text-slate-300">{message}</p>
-          {technicalDetails && <p className="mt-2 font-mono text-[11px] text-slate-500">{technicalDetails}</p>}
+          {technicalDetails && <p className="mt-2 font-mono text-[11px] text-slate-300 font-medium">{technicalDetails}</p>}
           {onRetry && (
             <Button variant="outline" size="sm" onClick={onRetry} className="mt-3 border-slate-700">
               Retry

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 import "./globals.css";
 
@@ -17,9 +17,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen antialiased bg-slate-950 text-slate-100 theme-scrollbar font-sans">
-        <Suspense fallback={<div>Loading application…</div>}>
-          <ClerkProvider publishableKey={clerkPublishableKey}>{children}</ClerkProvider>
-        </Suspense>
+        <ClerkProvider
+          publishableKey={clerkPublishableKey}
+          appearance={dark as any}
+        >
+          {children}
+        </ClerkProvider>
 
         <Toaster
           position="top-right"

@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { Eye, Menu, ShieldAlert, X } from "lucide-react";
+import { ArrowUpRight, Eye, Menu, ShieldAlert, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -9,31 +9,60 @@ import { FullScreenSpinner } from "@/components/ui/Spinner";
 import { useAuth } from "@/hooks/useAuth";
 import { adminNav } from "./nav-config";
 
+const hasClerkKey = Boolean(
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+  !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes("localhost")
+);
+
 function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const isPreview = pathname.startsWith("/admin/preview");
+  const { user } = useAuth();
+
+  // Resolve display identity with guaranteed high contrast
+  const displayEmail =
+    user?.email ||
+    (isPreview ? "preview@ricoz.mfg" : "admin@ricoz.mfg");
+
+  const displayName =
+    user?.name ||
+    user?.username ||
+    "System Administrator";
+
+  const initials = (displayName || "Admin")
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <nav className="flex h-full w-64 flex-col border-r border-slate-800 bg-[#080d17]">
+    <nav className="flex h-full w-64 flex-col border-r border-slate-800 bg-[#080d17] text-slate-100">
+      {/* Brand Header */}
       <div className="flex h-16 shrink-0 items-center gap-3 px-5 border-b border-slate-800">
-        <span className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
-          isPreview
-            ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
-            : "border-purple-500/30 bg-purple-600/15 text-purple-300"
-        }`}>
+        <span
+          className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
+            isPreview
+              ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+              : "border-purple-500/40 bg-purple-600/20 text-purple-300"
+          }`}
+        >
           {isPreview ? <Eye className="h-4 w-4" /> : <ShieldAlert className="h-4 w-4" />}
         </span>
         <div className="leading-tight">
           <span className="block text-sm font-bold text-white">Ricoz Admin</span>
-          <span className={`block font-mono text-[10px] font-bold uppercase ${
-            isPreview ? "text-amber-400" : "text-purple-300"
-          }`}>
+          <span
+            className={`block font-mono text-[10px] font-bold uppercase ${
+              isPreview ? "text-amber-400" : "text-purple-300"
+            }`}
+          >
             {isPreview ? "UI PREVIEW" : "CONSOLE"}
           </span>
         </div>
       </div>
 
-      <ul className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      {/* Nav Link Items */}
+      <ul className="flex-1 space-y-1 overflow-y-auto px-3 py-4 theme-scrollbar">
         {adminNav.map(({ href, label, icon: Icon }) => {
           const targetHref = isPreview ? href.replace("/admin", "/admin/preview") : href;
           const active = href === "/admin" ? pathname === targetHref : pathname.startsWith(targetHref);
@@ -50,7 +79,15 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
                     : "text-slate-200 hover:bg-slate-800/60 hover:text-white"
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${active ? (isPreview ? "text-amber-400" : "text-purple-300") : "text-slate-400"}`} />
+                <Icon
+                  className={`h-4 w-4 shrink-0 ${
+                    active
+                      ? isPreview
+                        ? "text-amber-400"
+                        : "text-purple-300"
+                      : "text-slate-400"
+                  }`}
+                />
                 {label}
               </Link>
             </li>
@@ -58,15 +95,77 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         })}
       </ul>
 
-      <div className="space-y-3 border-t border-slate-800 px-5 py-4 bg-[#060a12]">
-        <Link href="/dashboard" className="block text-xs font-medium text-slate-300 hover:text-white transition">
-          ← Back to Ricoz ERP
+      {/* Bottom Profile & Navigation Section - High Contrast Guarantee */}
+      <div className="border-t border-slate-800/90 bg-[#070b14] p-3.5 space-y-3">
+        {/* Navigation link: Back to Ricoz ERP */}
+        <Link
+          href="/dashboard"
+          className="flex items-center justify-between rounded-lg border border-slate-800 bg-[#0e1524] px-3 py-2 text-xs font-semibold text-slate-200 hover:border-slate-700 hover:bg-[#162035] hover:text-white transition group"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-slate-400 group-hover:text-purple-300 transition-colors">←</span>
+            <span>Back to Ricoz ERP</span>
+          </span>
+          <ArrowUpRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-white transition-colors" />
         </Link>
-        {!isPreview && (
-          <div className="flex items-center gap-2 pt-1">
-            <UserButton showName />
+
+        {/* Profile Card with High-Contrast Typography */}
+        <div className="rounded-xl border border-slate-800/80 bg-[#0c1222] p-3 shadow-md">
+          <div className="flex items-center gap-3">
+            {/* Avatar or Clerk UserButton */}
+            <div className="relative shrink-0">
+              {!isPreview && hasClerkKey ? (
+                <UserButton
+                  appearance={{
+                    elements: {
+                      rootBox: "flex items-center justify-center",
+                      userButtonAvatarBox: "h-10 w-10 rounded-lg border border-purple-500/40 shadow-sm",
+                      userButtonTrigger: "focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-lg",
+                      userPreviewSecondaryIdentifier: "!text-slate-300 !text-xs !font-mono",
+                      userPreviewMainIdentifier: "!text-white !text-sm !font-bold",
+                    },
+                  }}
+                />
+              ) : (
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border text-xs font-bold font-mono shadow-sm ${
+                    isPreview
+                      ? "border-amber-500/50 bg-amber-500/20 text-amber-200"
+                      : "border-purple-500/50 bg-purple-600/20 text-purple-200"
+                  }`}
+                >
+                  {initials || "AD"}
+                </div>
+              )}
+              {/* Online indicator dot */}
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0c1222] bg-emerald-400 shadow-xs" />
+            </div>
+
+            {/* User Identity Details */}
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <div className="flex items-center justify-between gap-1.5">
+                <span className="truncate text-xs font-bold text-white tracking-tight" title={displayName}>
+                  {displayName}
+                </span>
+                <span
+                  className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${
+                    isPreview
+                      ? "border-amber-500/50 bg-amber-500/20 text-amber-300"
+                      : "border-purple-500/50 bg-purple-500/20 text-purple-300"
+                  }`}
+                >
+                  {isPreview ? "PREVIEW" : "ADMIN"}
+                </span>
+              </div>
+              <p
+                className="truncate font-mono text-[11px] font-bold text-slate-100 tracking-tight mt-1"
+                title={displayEmail}
+              >
+                {displayEmail}
+              </p>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
@@ -93,10 +192,16 @@ export default function AdminShell({ children }: { children: ReactNode }) {
               : "Unable to retrieve employee profile from the server."}
           </p>
           <div className="mt-5 flex items-center gap-3">
-            <Link href="/admin/preview" className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition">
+            <Link
+              href="/admin/preview"
+              className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition"
+            >
               Explore Design Preview →
             </Link>
-            <Link href="/dashboard" className="rounded-lg border border-slate-800 bg-[#0d131f] px-4 py-2 text-xs font-semibold text-purple-300 hover:text-white transition">
+            <Link
+              href="/dashboard"
+              className="rounded-lg border border-slate-800 bg-[#0d131f] px-4 py-2 text-xs font-semibold text-purple-300 hover:text-white transition"
+            >
               Return to Dashboard
             </Link>
           </div>

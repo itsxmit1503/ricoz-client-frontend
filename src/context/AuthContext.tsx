@@ -29,12 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  // Set during render (not in an effect) so child effects that fire API calls already have it.
+  // Set during render so child effects that fire API calls carry the token
   setTokenGetter(() => getToken());
 
-  // Load / create the backend profile once Clerk says we are signed in.
+  // Load / create the backend profile once Clerk says we are signed in
   useEffect(() => {
-    // if (!isLoaded) return;
     if (!isSignedIn) {
       setUser(null);
       setProfileLoading(false);
@@ -60,9 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({ user, loading: !isLoaded || profileLoading, logout }),
     [user, isLoaded, profileLoading, logout],
   );
-
-  // Don't render pages (which call the API) until Clerk can hand out a token.
-  if (!isLoaded) return null;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

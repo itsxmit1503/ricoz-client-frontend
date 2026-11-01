@@ -38,7 +38,7 @@ export default function AdminStatCard({
         ) : error ? (
           <div className="flex flex-col">
             <span className="font-mono text-xs font-bold text-rose-400">Unavailable</span>
-            <span className="mt-0.5 text-[11px] text-slate-400 truncate" title={error}>
+            <span className="mt-0.5 text-[11px] text-slate-300 font-medium truncate" title={error}>
               {error}
             </span>
           </div>
@@ -54,7 +54,7 @@ export default function AdminStatCard({
             )}
           </div>
         ) : (
-          <span className="font-mono text-sm text-slate-400">No data available</span>
+          <span className="font-mono text-sm text-slate-300 font-medium">No data available</span>
         )}
       </div>
 

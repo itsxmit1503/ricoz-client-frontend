@@ -282,3 +282,37 @@
     transform: none !important;
   }
 }
+
+
+/* 9. Clerk Dark Theme & High-Contrast Typography Enforcements */
+.cl-userButtonOuterIdentifier {
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  letter-spacing: -0.01em !important;
+}
+
+.cl-userButtonTrigger {
+  color: #f8fafc !important;
+}
+
+.cl-userButtonAvatarBox {
+  border-radius: 8px !important;
+}
+
+.cl-userPreviewSecondaryIdentifier {
+  color: #cbd5e1 !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+}
+
+.cl-userPreviewMainIdentifier {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.cl-userButtonPopoverCard {
+  background-color: #0b101c !important;
+  border: 1px solid #1e293b !important;
+  color: #f8fafc !important;
+}
