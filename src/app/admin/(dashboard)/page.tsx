@@ -24,7 +24,7 @@ import Button from "@/components/ui/Button";
 import {
   adminService,
   type AdminStats,
-  type AuditLogItem,
+  type AuditLogRecord,
   type BackendHealthStatus,
 } from "@/services/admin.service";
 import type { User } from "@/types/auth";
@@ -32,7 +32,7 @@ import type { User } from "@/types/auth";
 export default function AdminOverviewPage() {
   const [users, setUsers] = useState<User[] | null>(null);
   const [stats, setStats] = useState<AdminStats | null>(null);
-  const [recentLogs, setRecentLogs] = useState<AuditLogItem[]>([]);
+  const [recentLogs, setRecentLogs] = useState<AuditLogRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
 
@@ -46,7 +46,7 @@ export default function AdminOverviewPage() {
       const [usersData, statsData, logsData, healthData] = await Promise.allSettled([
         adminService.listUsers(),
         adminService.getAdminStats(),
-        adminService.getAuditLogs({ limit: 5 }),
+        adminService.listAuditLogs({ limit: 5 }),
         adminService.checkHealth(),
       ]);
 
@@ -60,8 +60,8 @@ export default function AdminOverviewPage() {
         setStats(statsData.value);
       }
 
-      if (logsData.status === "fulfilled") {
-        setRecentLogs(logsData.value);
+      if (logsData.status === "fulfilled" && logsData.value?.logs) {
+        setRecentLogs(logsData.value.logs);
       }
 
       if (healthData.status === "fulfilled") {
@@ -268,14 +268,14 @@ export default function AdminOverviewPage() {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-200">Admin Session Gate</span>
                 <span className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-purple-300">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> ISOLATED DEV
+                  <CheckCircle2 className="h-3.5 w-3.5" /> CLERK + ROLE
                 </span>
               </div>
               <p className="mt-1.5 font-mono text-[11px] text-slate-300 font-semibold">
-                Token: HMAC-SHA256 (HttpOnly)
+                Auth: Clerk session + server role check
               </p>
               <p className="mt-1 text-[11px] text-slate-300">
-                Duration: 8h session lifespan
+                Role: admin required on /admin/*
               </p>
             </div>
           </div>
@@ -324,7 +324,7 @@ export default function AdminOverviewPage() {
                   {recentLogs.map((log) => (
                     <tr key={log._id} className="hover:bg-[#0c111e]">
                       <td className="px-3.5 py-2.5 text-slate-300 text-[11px] whitespace-nowrap">
-                        {new Date(log.createdAt).toLocaleTimeString()}
+                        {new Date(log.timestamp || (log as any).createdAt || Date.now()).toLocaleTimeString()}
                       </td>
                       <td className="px-3.5 py-2.5 text-white font-semibold truncate max-w-[140px]">
                         {log.actorEmail}
@@ -340,7 +340,7 @@ export default function AdminOverviewPage() {
                         </span>
                       </td>
                       <td className="px-3.5 py-2.5 text-slate-300 truncate max-w-[240px]">
-                        {log.details || "—"}
+                        {typeof log.metadata === "string" ? log.metadata : (log.details || JSON.stringify(log.metadata || "") || "—")}
                       </td>
                     </tr>
                   ))}

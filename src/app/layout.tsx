@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen antialiased bg-slate-950 text-slate-100 theme-scrollbar font-sans">
-        <Suspense fallback={<div>Page is Loading</div>}>
+        <Suspense fallback={<div>Loading application…</div>}>
           <ClerkProvider publishableKey={clerkPublishableKey}>{children}</ClerkProvider>
         </Suspense>
 

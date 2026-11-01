@@ -16,7 +16,6 @@ export const api: AxiosInstance = axios.create({
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
-    "x-admin-key": "ricoz-admin-secret-2026",
   },
 });
 

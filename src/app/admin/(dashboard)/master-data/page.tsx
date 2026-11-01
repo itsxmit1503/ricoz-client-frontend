@@ -13,10 +13,7 @@ import { useEffect, useState } from "react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import Button from "@/components/ui/Button";
-import { inventoryService } from "@/services/inventory.service";
-import { machineService } from "@/services/machine.service";
-import { productService } from "@/services/product.service";
-import { supplierService } from "@/services/supplier.service";
+import { adminService } from "@/services/admin.service";
 
 interface MasterDataRegistry {
   id: string;
@@ -79,62 +76,17 @@ export default function AdminMasterDataPage() {
   ]);
 
   const loadAllRegistries = async () => {
-    // 1. Products
-    productService
-      .list()
-      .then((items) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "products" ? { ...r, count: items.length, loading: false, error: null } : r))
-        );
-      })
-      .catch((err: Error) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "products" ? { ...r, count: null, loading: false, error: err.message || "Failed" } : r))
-        );
-      });
-
-    // 2. Machines
-    machineService
-      .list()
-      .then((items) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "machines" ? { ...r, count: items.length, loading: false, error: null } : r))
-        );
-      })
-      .catch((err: Error) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "machines" ? { ...r, count: null, loading: false, error: err.message || "Failed" } : r))
-        );
-      });
-
-    // 3. Inventory
-    inventoryService
-      .list()
-      .then((items) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "inventory" ? { ...r, count: items.length, loading: false, error: null } : r))
-        );
-      })
-      .catch((err: Error) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "inventory" ? { ...r, count: null, loading: false, error: err.message || "Failed" } : r))
-        );
-      });
-
-    // 4. Suppliers
-    supplierService
-      .list()
-      .then((items) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "suppliers" ? { ...r, count: items.length, loading: false, error: null } : r))
-        );
-      })
-      .catch((err: Error) => {
-        setRegistries((prev) =>
-          prev.map((r) => (r.id === "suppliers" ? { ...r, count: null, loading: false, error: err.message || "Failed" } : r))
-        );
-      });
-  };
+  setRegistries((prev) => prev.map((r) => ({ ...r, loading: true })));
+  try {
+    const counts = await adminService.masterDataCounts();
+    setRegistries((prev) =>
+      prev.map((r) => ({ ...r, count: counts[r.id as keyof typeof counts] ?? null, loading: false, error: null }))
+    );
+  } catch (err: unknown) {
+    const msg = (err as Error).message || "Failed";
+    setRegistries((prev) => prev.map((r) => ({ ...r, count: null, loading: false, error: msg })));
+  }
+};
 
   useEffect(() => {
     loadAllRegistries();

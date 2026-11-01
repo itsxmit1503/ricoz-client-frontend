@@ -1,143 +1,154 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import toast from "react-hot-toast";
-import AdminHeader from "./AdminHeader";
-import AdminSidebar from "./AdminSidebar";
-import { lockBodyScroll } from "@/components/ui/focus";
+import { UserButton } from "@clerk/nextjs";
+import { Eye, Menu, ShieldAlert, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, type ReactNode } from "react";
+import { FullScreenSpinner } from "@/components/ui/Spinner";
+import { useAuth } from "@/hooks/useAuth";
+import { adminNav } from "./nav-config";
 
-interface Props {
-  children: ReactNode;
-}
-
-export default function AdminShell({ children }: Props) {
-  const router = useRouter();
+function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const isPreview = pathname.startsWith("/admin/preview");
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [adminEmail, setAdminEmail] = useState<string>(
-    isPreview ? "read-only-preview@ricoz.mfg" : "admin@ricoz.mfg"
+  return (
+    <nav className="flex h-full w-64 flex-col border-r border-slate-800 bg-[#080d17]">
+      <div className="flex h-16 shrink-0 items-center gap-3 px-5 border-b border-slate-800">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-lg border ${
+          isPreview
+            ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+            : "border-purple-500/30 bg-purple-600/15 text-purple-300"
+        }`}>
+          {isPreview ? <Eye className="h-4 w-4" /> : <ShieldAlert className="h-4 w-4" />}
+        </span>
+        <div className="leading-tight">
+          <span className="block text-sm font-bold text-white">Ricoz Admin</span>
+          <span className={`block font-mono text-[10px] font-bold uppercase ${
+            isPreview ? "text-amber-400" : "text-purple-300"
+          }`}>
+            {isPreview ? "UI PREVIEW" : "CONSOLE"}
+          </span>
+        </div>
+      </div>
+
+      <ul className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {adminNav.map(({ href, label, icon: Icon }) => {
+          const targetHref = isPreview ? href.replace("/admin", "/admin/preview") : href;
+          const active = href === "/admin" ? pathname === targetHref : pathname.startsWith(targetHref);
+          return (
+            <li key={href}>
+              <Link
+                href={targetHref}
+                onClick={onNavigate}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                  active
+                    ? isPreview
+                      ? "border border-amber-500/40 bg-amber-500/15 text-amber-200 shadow-sm"
+                      : "border border-purple-500/40 bg-purple-600/20 text-purple-200 font-bold shadow-sm"
+                    : "text-slate-200 hover:bg-slate-800/60 hover:text-white"
+                }`}
+              >
+                <Icon className={`h-4 w-4 shrink-0 ${active ? (isPreview ? "text-amber-400" : "text-purple-300") : "text-slate-400"}`} />
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="space-y-3 border-t border-slate-800 px-5 py-4 bg-[#060a12]">
+        <Link href="/dashboard" className="block text-xs font-medium text-slate-300 hover:text-white transition">
+          ← Back to Ricoz ERP
+        </Link>
+        {!isPreview && (
+          <div className="flex items-center gap-2 pt-1">
+            <UserButton showName />
+          </div>
+        )}
+      </div>
+    </nav>
   );
-  const drawerRef = useRef<HTMLDivElement>(null);
+}
 
-  // Fetch admin session details client-side (only if not preview)
-  useEffect(() => {
-    if (isPreview) return;
+export default function AdminShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isPreview = pathname.startsWith("/admin/preview");
+  const { user, loading } = useAuth();
+  const [open, setOpen] = useState(false);
 
-    let active = true;
-    fetch("/api/admin/session")
-      .then((res) => {
-        if (!res.ok) throw new Error("Unauthenticated");
-        return res.json();
-      })
-      .then((data) => {
-        if (active && data.user?.email) {
-          setAdminEmail(data.user.email);
-        }
-      })
-      .catch(() => {
-        // Handled server-side by middleware redirect
-      });
-    return () => {
-      active = false;
-    };
-  }, [isPreview]);
+  // Allow preview routes without authentication block
+  if (!isPreview) {
+    if (loading) return <FullScreenSpinner />;
 
-  // Lock scroll when mobile drawer is open
-  useEffect(() => {
-    if (!drawerOpen) return;
-    const releaseScroll = lockBodyScroll();
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setDrawerOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      releaseScroll();
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [drawerOpen]);
-
-  const handleLogout = useCallback(async () => {
-    if (isPreview) {
-      router.push("/admin/login");
-      return;
+    if (user?.role !== "admin") {
+      return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#06090f] px-4 text-center">
+          <ShieldAlert className="h-10 w-10 text-rose-400" />
+          <h1 className="mt-4 text-xl font-bold text-white">Administrator Access Required</h1>
+          <p className="mt-1 max-w-sm text-sm text-slate-300">
+            {user
+              ? `${user.email} does not possess the administrator role in the active database.`
+              : "Unable to retrieve employee profile from the server."}
+          </p>
+          <div className="mt-5 flex items-center gap-3">
+            <Link href="/admin/preview" className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition">
+              Explore Design Preview →
+            </Link>
+            <Link href="/dashboard" className="rounded-lg border border-slate-800 bg-[#0d131f] px-4 py-2 text-xs font-semibold text-purple-300 hover:text-white transition">
+              Return to Dashboard
+            </Link>
+          </div>
+        </div>
+      );
     }
-
-    try {
-      const res = await fetch("/api/admin/logout", { method: "POST" });
-      if (res.ok) {
-        toast.success("Admin session terminated");
-        router.push("/admin/login");
-        router.refresh();
-      } else {
-        toast.error("Failed to sign out cleanly");
-      }
-    } catch {
-      toast.error("Network error during sign out");
-    }
-  }, [isPreview, router]);
+  }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#06090f] text-slate-100">
-      {/* High-Visibility Preview Mode Banner */}
-      {isPreview && (
-        <div className="sticky top-0 z-40 flex items-center justify-center gap-2 border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 font-mono text-xs text-amber-300 backdrop-blur-md">
-          <span className="rounded border border-amber-500/40 bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-200">
-            PREVIEW MODE
-          </span>
-          <span className="hidden sm:inline">
-            Read-Only Visual Demonstration — Synthetic Data — Live database mutations disabled
-          </span>
-          <span className="sm:hidden">Read-Only Synthetic Preview</span>
+    <div className="flex h-screen overflow-hidden bg-[#06090f] text-slate-100">
+      <div className="hidden lg:block">
+        <Nav />
+      </div>
+
+      {open && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setOpen(false)} />
+          <div className="relative h-full w-64">
+            <Nav onNavigate={() => setOpen(false)} />
+            <button
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+              className="absolute -right-12 top-4 rounded-lg bg-slate-900 p-2 text-slate-200"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="flex flex-1">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:flex md:w-64 md:shrink-0 md:flex-col">
-          <div className={`fixed flex w-64 flex-col ${isPreview ? "top-9.5 bottom-0" : "inset-y-0"}`}>
-            <AdminSidebar adminEmail={adminEmail} onLogout={handleLogout} />
-          </div>
-        </div>
-
-        {/* Mobile Drawer Backdrop & Sidebar */}
-        {drawerOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
-            <div
-              className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
-              onClick={() => setDrawerOpen(false)}
-              aria-hidden="true"
-            />
-            <div
-              ref={drawerRef}
-              className="fixed inset-y-0 left-0 flex w-64 flex-col shadow-2xl transition-transform"
-            >
-              <AdminSidebar
-                adminEmail={adminEmail}
-                onLogout={handleLogout}
-                onNavClick={() => setDrawerOpen(false)}
-              />
-            </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        {isPreview && (
+          <div className="flex items-center justify-between border-b border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs text-amber-300 font-mono">
+            <span>PREVIEW MODE // Non-persistent Demonstration Sandbox</span>
+            <Link href="/admin/login" className="underline hover:text-white">
+              Exit Preview
+            </Link>
           </div>
         )}
 
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col md:pl-64">
-          <AdminHeader
-            adminEmail={adminEmail}
-            onLogout={handleLogout}
-            onMenuToggle={() => setDrawerOpen(true)}
-            breadcrumbs={isPreview ? "Console / Visual Preview" : "Console / Production"}
-          />
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-800 px-4 lg:hidden">
+          <button
+            aria-label="Open menu"
+            onClick={() => setOpen(true)}
+            className="rounded-lg p-2 text-slate-300 hover:bg-slate-800"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <span className="font-mono text-xs font-bold text-white">Ricoz Admin</span>
+        </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            <div className="mx-auto max-w-7xl">{children}</div>
-          </main>
-        </div>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 theme-scrollbar">{children}</main>
       </div>
     </div>
   );

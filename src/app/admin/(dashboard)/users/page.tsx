@@ -6,7 +6,6 @@ import {
   KeyRound,
   RefreshCw,
   Search,
-  Shield,
   User,
   UserCheck,
   UserX,
@@ -104,8 +103,8 @@ export default function AdminUsersPage() {
       toast.success(`Role updated to ${selectedRole.toUpperCase()} for ${roleChangeTarget.email}`);
       setRoleChangeTarget(null);
     } catch (err: unknown) {
-      const e = err as Error;
-      toast.error(e.message || "Failed to update user role.");
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      toast.error(e.response?.data?.message || e.message || "Failed to update user role.");
     } finally {
       setUpdatingRole(false);
     }
@@ -121,8 +120,8 @@ export default function AdminUsersPage() {
       );
       toast.success(`Account for ${user.email} marked as ${newStatus ? "Active" : "Suspended"}`);
     } catch (err: unknown) {
-      const e = err as Error;
-      toast.error(e.message || "Failed to change user status.");
+      const e = err as { response?: { data?: { message?: string } }; message?: string };
+      toast.error(e.response?.data?.message || e.message || "Failed to change user status.");
     } finally {
       setTogglingStatusId(null);
     }
@@ -203,7 +202,7 @@ export default function AdminUsersPage() {
         <AdminErrorState
           title="User Directory Unreachable"
           message={error}
-          technicalDetails="Ensure NEXT_PUBLIC_BACKEND_URL is set and the Express endpoint /admin/users is accessible."
+          technicalDetails="Ensure NEXT_PUBLIC_BACKEND_URL is set and the Express endpoint /admin/data is accessible."
           onRetry={fetchUsers}
         />
       ) : filteredUsers.length === 0 ? (
@@ -393,7 +392,15 @@ export default function AdminUsersPage() {
               </div>
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
                 <span className="text-slate-300">Role Privilege:</span>
-                <AdminStatusBadge variant={selectedUser.role === "admin" ? "admin" : "user"}>
+                <AdminStatusBadge
+                  variant={
+                    selectedUser.role === "admin"
+                      ? "admin"
+                      : selectedUser.role === "supervisor"
+                      ? "warning"
+                      : "user"
+                  }
+                >
                   {selectedUser.role.toUpperCase()}
                 </AdminStatusBadge>
               </div>

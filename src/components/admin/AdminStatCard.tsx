@@ -1,36 +1,30 @@
-import { type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Spinner from "@/components/ui/Spinner";
-
-interface Props {
-  title: string;
-  value?: number | string | null;
-  icon: LucideIcon;
-  subtitle?: string;
-  loading?: boolean;
-  error?: string | null;
-  badge?: string;
-  className?: string;
-}
 
 export default function AdminStatCard({
   title,
   value,
   icon: Icon,
   subtitle,
-  loading = false,
-  error = null,
   badge,
-  className = "",
-}: Props) {
+  loading,
+  error,
+}: {
+  title: string;
+  value: string | number | null | undefined;
+  icon: LucideIcon;
+  subtitle?: string;
+  badge?: string;
+  loading?: boolean;
+  error?: string | null;
+}) {
   return (
-    <div
-      className={`relative overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] p-5 shadow-sm transition hover:border-slate-700 ${className}`}
-    >
+    <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] p-5 shadow-sm transition hover:border-slate-700">
       <div className="flex items-center justify-between">
         <span className="font-mono text-xs font-bold tracking-wider text-slate-200 uppercase">
           {title}
         </span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-blue-400 shadow-inner">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-[#121826] text-purple-400">
           <Icon className="h-4 w-4" />
         </div>
       </div>
@@ -38,8 +32,8 @@ export default function AdminStatCard({
       <div className="mt-4">
         {loading ? (
           <div className="flex h-9 items-center">
-            <Spinner className="h-5 w-5 text-blue-400" />
-            <span className="ml-2 font-mono text-xs text-slate-300">Loading live data…</span>
+            <Spinner className="h-5 w-5 text-purple-400" />
+            <span className="ml-2 font-mono text-xs text-slate-300">Loading data…</span>
           </div>
         ) : error ? (
           <div className="flex flex-col">
@@ -54,7 +48,7 @@ export default function AdminStatCard({
               {typeof value === "number" ? value.toLocaleString() : value}
             </span>
             {badge && (
-              <span className="rounded border border-blue-500/40 bg-blue-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-blue-300">
+              <span className="rounded border border-purple-500/40 bg-purple-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-purple-300">
                 {badge}
               </span>
             )}

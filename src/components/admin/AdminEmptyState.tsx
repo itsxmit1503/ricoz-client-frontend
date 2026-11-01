@@ -1,31 +1,25 @@
-import { AlertCircle, type LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-interface Props {
-  icon?: LucideIcon;
-  title: string;
-  description: string;
-  action?: ReactNode;
-  className?: string;
-}
-
 export default function AdminEmptyState({
-  icon: Icon = AlertCircle,
+  icon: Icon,
   title,
   description,
   action,
-  className = "",
-}: Props) {
+}: {
+  icon: LucideIcon;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+}) {
   return (
-    <div
-      className={`flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-800 bg-[#080d17]/60 p-8 text-center sm:p-12 ${className}`}
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-800 bg-[#0d131f] text-slate-400 shadow-sm">
-        <Icon className="h-6 w-6 text-slate-300" />
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-800 bg-[#0c111e] px-6 py-12 text-center">
+      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-800 bg-[#121826] text-slate-400">
+        <Icon className="h-5 w-5" />
       </div>
-      <h3 className="mt-4 text-sm font-semibold tracking-tight text-white">{title}</h3>
-      <p className="mt-1 max-w-md text-xs text-slate-400 leading-relaxed">{description}</p>
-      {action && <div className="mt-5">{action}</div>}
+      <h3 className="mt-3 text-sm font-bold text-slate-200">{title}</h3>
+      {description && <p className="mt-1 max-w-md text-xs text-slate-400">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

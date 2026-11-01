@@ -1,36 +1,24 @@
 import type { ReactNode } from "react";
 
-export type AdminStatusVariant =
-  | "admin"
-  | "user"
-  | "verified"
-  | "pending"
-  | "active"
-  | "inactive"
-  | "warning"
-  | "neutral";
-
-interface Props {
-  variant?: AdminStatusVariant;
-  children: ReactNode;
-  className?: string;
-}
-
-const variantStyles: Record<AdminStatusVariant, string> = {
-  admin: "border-purple-500/30 bg-purple-500/10 text-purple-300 font-semibold",
-  user: "border-blue-500/30 bg-blue-500/10 text-blue-300 font-medium",
-  verified: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-semibold",
-  pending: "border-amber-500/30 bg-amber-500/10 text-amber-300 font-medium",
-  active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 font-medium",
-  inactive: "border-slate-700 bg-slate-800 text-slate-400 font-medium",
-  warning: "border-amber-500/30 bg-amber-500/10 text-amber-300 font-medium",
-  neutral: "border-slate-800 bg-[#0d131f] text-slate-300 font-medium",
+const styles = {
+  admin: "border-purple-500/30 bg-purple-500/10 text-purple-300",
+  user: "border-slate-700 bg-slate-800/60 text-slate-300",
+  success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+  warning: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+  danger: "border-rose-500/30 bg-rose-500/10 text-rose-300",
+  neutral: "border-slate-700 bg-[#0d131f] text-slate-300",
 };
 
-export default function AdminStatusBadge({ variant = "neutral", children, className = "" }: Props) {
+export default function AdminStatusBadge({
+  variant = "user",
+  children,
+}: {
+  variant?: keyof typeof styles;
+  children: ReactNode;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[11px] tracking-tight ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold tracking-wide ${styles[variant]}`}
     >
       {children}
     </span>
