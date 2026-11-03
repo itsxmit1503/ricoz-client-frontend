@@ -100,7 +100,8 @@ export default function AdminUsersPage() {
     }
     setUpdatingRole(true);
     try {
-      const updatedUser = await adminService.updateUserRole(roleChangeTarget._id, selectedRole);
+      const targetIdentifier = roleChangeTarget._id || roleChangeTarget.email;
+      const updatedUser = await adminService.updateUserRole(targetIdentifier, selectedRole);
       setUsers((prev) =>
         prev.map((u) => (u._id === roleChangeTarget._id ? { ...u, ...updatedUser, role: selectedRole } : u))
       );
@@ -122,7 +123,8 @@ export default function AdminUsersPage() {
     const newStatus = user.isActive === false;
     setTogglingStatusId(user._id);
     try {
-      const updatedUser = await adminService.updateUserStatus(user._id, newStatus);
+      const targetIdentifier = user._id || user.email;
+      const updatedUser = await adminService.updateUserStatus(targetIdentifier, newStatus);
       setUsers((prev) =>
         prev.map((u) => (u._id === user._id ? { ...u, ...updatedUser, isActive: newStatus } : u))
       );
