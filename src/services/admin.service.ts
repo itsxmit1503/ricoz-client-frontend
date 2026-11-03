@@ -1,16 +1,18 @@
+import axios from "axios";
 import type { Role, User } from "@/types/auth";
-import { api } from "./api";
 
 export interface BackendHealthStatus {
   online: boolean;
   url: string;
   statusText: string;
+  dataSource?: string;
 }
 
 interface ServerUser {
   id: string;
   _id?: string;
   username?: string;
+  name?: string;
   email: string;
   role: Role;
   isActive?: boolean;
@@ -20,11 +22,12 @@ interface ServerUser {
 
 const toUser = (u: ServerUser): User => ({
   _id: u.id || u._id || "",
-  username: u.username,
+  username: u.username || u.name || (u.email ? u.email.split("@")[0] : "User"),
+  name: u.name || u.username,
   email: u.email,
   role: u.role,
   isActive: u.isActive !== false,
-  isemailVerified: u.isemailVerified,
+  isemailVerified: Boolean(u.isemailVerified),
   createdAt: u.createdAt,
 });
 
@@ -47,6 +50,7 @@ export interface AuditLogPage {
   total: number;
   page: number;
   pages: number;
+  dataSource?: string;
 }
 
 export interface OrgSettings {
@@ -58,6 +62,8 @@ export interface OrgSettings {
   autoBackups?: boolean;
   mfaEnforced?: boolean;
   sessionTimeoutMinutes?: number;
+  updatedBy?: string;
+  updatedAt?: string;
 }
 
 export interface MasterDataCounts {
@@ -65,6 +71,11 @@ export interface MasterDataCounts {
   machines: number;
   inventory: number;
   suppliers: number;
+}
+
+export interface MasterDataResponse {
+  counts: MasterDataCounts;
+  dataSource?: string;
 }
 
 export interface AdminStats {
@@ -78,44 +89,140 @@ export interface AdminStats {
   databaseStatus: string;
 }
 
+/**
+ * Dedicated administrative API client routing through Next.js App Router API handlers.
+ * Ensures same-origin credentials dispatch, eliminates CORS issues, and guarantees
+ * truthful, human-readable error propagation instead of generic 404s.
+ */
+export const adminApi = axios.create({
+  baseURL: "/api/admin",
+  timeout: 15000,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+adminApi.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    const backendMsg = data?.message;
+
+    let friendlyMessage = backendMsg;
+    if (!friendlyMessage) {
+      if (status === 404) {
+        friendlyMessage = "The requested administrative resource was not found.";
+      } else if (status === 503) {
+        friendlyMessage =
+          data?.code === "DATABASE_UNAVAILABLE"
+            ? "Administrative write blocked: MongoDB connection is offline. Changes cannot be persisted to primary storage."
+            : "The Ricoz MFG backend service is currently unreachable.";
+      } else if (status === 401) {
+        friendlyMessage = "Administrative session expired or unauthorized. Please re-login at /admin/login.";
+      } else if (status === 403) {
+        friendlyMessage = "Action Forbidden: This account lacks administrative privileges.";
+      } else if (error.code === "ECONNABORTED") {
+        friendlyMessage = "Network timeout: The administrative service did not respond in time.";
+      } else {
+        friendlyMessage = error.message || "An unexpected error occurred during administrative request.";
+      }
+    }
+
+    const enhancedError = new Error(friendlyMessage);
+    (enhancedError as any).status = status;
+    (enhancedError as any).code = data?.code;
+    (enhancedError as any).response = error.response;
+    return Promise.reject(enhancedError);
+  }
+);
+
 export const adminService = {
+  /**
+   * Updates user role on the backend (admin, supervisor, operator, user).
+   */
   updateUserRole: (id: string, role: Role) =>
-    api.patch<{ user: ServerUser }>(`/admin/users/${id}/role`, { role }).then((r) => toUser(r.data.user)),
+    adminApi
+      .patch<{ user: ServerUser }>(`/users/${encodeURIComponent(id)}/role`, { role })
+      .then((r) => toUser(r.data.user)),
 
+  /**
+   * Updates user account status (Active vs Suspended).
+   */
   updateUserStatus: (id: string, isActive: boolean) =>
-    api.patch<{ user: ServerUser }>(`/admin/users/${id}/status`, { isActive }).then((r) => toUser(r.data.user)),
+    adminApi
+      .patch<{ user: ServerUser }>(`/users/${encodeURIComponent(id)}/status`, { isActive })
+      .then((r) => toUser(r.data.user)),
 
-  listAuditLogs: (params: { page?: number; limit?: number; action?: string; outcome?: string; actor?: string; search?: string } = {}) =>
-    api.get<AuditLogPage>("/admin/audit-logs", { params }).then((r) => r.data),
+  /**
+   * Retrieves paginated audit log ledger from backend.
+   */
+  listAuditLogs: (params: {
+    page?: number;
+    limit?: number;
+    action?: string;
+    outcome?: string;
+    search?: string;
+  } = {}) =>
+    adminApi.get<AuditLogPage>("/audit-logs", { params }).then((r) => r.data),
 
   getAuditLogs: (params: { limit?: number; search?: string; action?: string } = {}) =>
-    api.get<AuditLogPage>("/admin/audit-logs", { params }).then((r) => r.data.logs || []),
+    adminApi.get<AuditLogPage>("/audit-logs", { params }).then((r) => r.data.logs || []),
 
+  /**
+   * Retrieves master data inventory and catalog counts.
+   */
   masterDataCounts: () =>
-    api.get<{ counts: MasterDataCounts }>("/admin/master-data").then((r) => r.data.counts),
+    adminApi
+      .get<{ counts: MasterDataCounts; dataSource?: string }>("/master-data")
+      .then((r) => r.data.counts),
 
-  getSettings: () => api.get<{ settings: OrgSettings }>("/admin/settings").then((r) => r.data.settings),
+  /**
+   * Retrieves system settings.
+   */
+  getSettings: () =>
+    adminApi.get<{ settings: OrgSettings }>("/settings").then((r) => r.data.settings),
 
-  saveSettings: (payload: OrgSettings) =>
-    api.put<{ settings: OrgSettings }>("/admin/settings", payload).then((r) => r.data.settings),
+  /**
+   * Persists updated system settings.
+   */
+  saveSettings: (payload: Partial<OrgSettings>) =>
+    adminApi.put<{ settings: OrgSettings }>("/settings", payload).then((r) => r.data.settings),
 
-  updateSettings: (payload: OrgSettings) =>
-    api.put<{ settings: OrgSettings }>("/admin/settings", payload).then((r) => r.data.settings),
+  updateSettings: (payload: Partial<OrgSettings>) =>
+    adminApi.put<{ settings: OrgSettings }>("/settings", payload).then((r) => r.data.settings),
 
+  /**
+   * Retrieves full employee account directory.
+   */
   listUsers: () =>
-    api.get<{ users: ServerUser[] }>("/admin/data").then((r) => r.data.users.map(toUser)),
+    adminApi
+      .get<{ users: ServerUser[]; dataSource?: string }>("/users")
+      .then((r) => r.data.users.map(toUser)),
 
+  /**
+   * Retrieves administrative overview telemetry metrics.
+   */
   getAdminStats: () =>
-    api.get<{ success: boolean; stats: AdminStats }>("/admin/stats").then((r) => r.data.stats),
+    adminApi
+      .get<{ success: boolean; stats: AdminStats }>("/stats")
+      .then((r) => r.data.stats),
 
+  /**
+   * Performs an end-to-end live backend connectivity ping test.
+   */
   async checkHealth(): Promise<BackendHealthStatus> {
-    const url = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:5000";
     try {
-      const res = await api.get("/", { timeout: 5000 });
-      return { online: true, url, statusText: `HTTP ${res.status}` };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unreachable";
-      return { online: false, url, statusText: msg };
+      const res = await adminApi.get<BackendHealthStatus>("/health");
+      return res.data;
+    } catch (err: unknown) {
+      const e = err as Error;
+      return {
+        online: false,
+        url: "Backend API Gateway",
+        statusText: e.message || "Unreachable",
+      };
     }
   },
 };

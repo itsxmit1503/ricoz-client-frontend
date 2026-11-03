@@ -62,8 +62,8 @@ export default function AdminSettingsPage() {
       setContactEmail(st.contactEmail);
       toast.success("Facility profile successfully saved to backend");
     } catch (err: unknown) {
-      const er = err as { response?: { data?: { message?: string } }; message?: string };
-      toast.error(er.response?.data?.message || er.message || "Save failed");
+      const er = err as Error;
+      toast.error(er.message || "Save failed");
     } finally {
       setIsSaving(false);
     }

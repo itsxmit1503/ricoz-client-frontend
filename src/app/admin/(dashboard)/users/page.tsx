@@ -94,6 +94,10 @@ export default function AdminUsersPage() {
 
   const handleConfirmRoleChange = async () => {
     if (!roleChangeTarget) return;
+    if (roleChangeTarget.email === "admin@ricoz.mfg" && selectedRole !== "admin") {
+      toast.error("Security Policy: Cannot demote the root administrator account.");
+      return;
+    }
     setUpdatingRole(true);
     try {
       const updatedUser = await adminService.updateUserRole(roleChangeTarget._id, selectedRole);
@@ -103,14 +107,18 @@ export default function AdminUsersPage() {
       toast.success(`Role updated to ${selectedRole.toUpperCase()} for ${roleChangeTarget.email}`);
       setRoleChangeTarget(null);
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { message?: string } }; message?: string };
-      toast.error(e.response?.data?.message || e.message || "Failed to update user role.");
+      const e = err as Error;
+      toast.error(e.message || "Failed to update user role.");
     } finally {
       setUpdatingRole(false);
     }
   };
 
   const handleToggleStatus = async (user: UserType) => {
+    if (user.email === "admin@ricoz.mfg") {
+      toast.error("Security Policy: Cannot suspend the root administrator account.");
+      return;
+    }
     const newStatus = user.isActive === false;
     setTogglingStatusId(user._id);
     try {
@@ -120,8 +128,8 @@ export default function AdminUsersPage() {
       );
       toast.success(`Account for ${user.email} marked as ${newStatus ? "Active" : "Suspended"}`);
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { message?: string } }; message?: string };
-      toast.error(e.response?.data?.message || e.message || "Failed to change user status.");
+      const e = err as Error;
+      toast.error(e.message || "Failed to change user status.");
     } finally {
       setTogglingStatusId(null);
     }
@@ -447,10 +455,10 @@ export default function AdminUsersPage() {
               <label className="block text-slate-300 font-semibold mb-2">Select Target Role:</label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: "admin", label: "Administrator", desc: "Full console access" },
-                  { id: "supervisor", label: "Supervisor", desc: "Floor & shift oversight" },
-                  { id: "operator", label: "Operator", desc: "Machine workcell access" },
-                  { id: "user", label: "Standard User", desc: "General operations" },
+                  { id: "admin", label: "Administrator", tier: "Core Platform", desc: "Full console access & user governance" },
+                  { id: "user", label: "Standard User", tier: "Core Platform", desc: "General read-only operational portal" },
+                  { id: "supervisor", label: "Supervisor", tier: "Plant Floor", desc: "Line oversight & work order approval" },
+                  { id: "operator", label: "Operator", tier: "Plant Floor", desc: "Machine execution & workcell logging" },
                 ].map((r) => (
                   <button
                     key={r.id}
@@ -458,15 +466,25 @@ export default function AdminUsersPage() {
                     onClick={() => setSelectedRole(r.id as UserType["role"])}
                     className={`rounded-lg border p-3 text-left transition ${
                       selectedRole === r.id
-                        ? "border-purple-500 bg-purple-500/20 text-white font-bold"
-                        : "border-slate-800 bg-[#080d17] text-slate-300 hover:border-slate-700"
+                        ? "border-purple-500 bg-purple-500/20 text-white font-bold ring-1 ring-purple-500"
+                        : "border-slate-800 bg-[#080d17] text-slate-300 hover:border-slate-700 hover:bg-[#0c1222]"
                     }`}
                   >
-                    <span className="block font-bold">{r.label}</span>
-                    <span className="text-[10px] text-slate-400">{r.desc}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="block font-bold">{r.label}</span>
+                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800/80 text-slate-300">
+                        {r.tier}
+                      </span>
+                    </div>
+                    <span className="mt-1 block text-[10px] text-slate-400">{r.desc}</span>
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-lg border border-slate-800 bg-[#080d17] p-2.5 text-[11px] text-slate-400">
+              <span className="text-amber-300 font-semibold">Persistence Requirement: </span>
+              Role updates are committed directly to the backend database. If MongoDB is offline, administrative writes fail safely with HTTP 503 to prevent non-persistent state drift.
             </div>
 
             <div className="flex justify-end gap-2 pt-2">
