@@ -22,7 +22,10 @@ const clerkHandler = hasClerkKey
       }
 
       // 3. Authenticated admin opening admin login -> admin dashboard
-      if (pathname.startsWith("/admin/login") && isAuthenticated) {
+      const hasAdminSession = Boolean(req.cookies.get("ricoz_admin_session")?.value);
+      const hasAdminAccess = isAuthenticated || hasAdminSession;
+
+      if (pathname.startsWith("/admin/login") && hasAdminAccess) {
         return NextResponse.redirect(new URL("/admin", req.url));
       }
 
@@ -31,11 +34,11 @@ const clerkHandler = hasClerkKey
         return NextResponse.redirect(new URL("/login", req.url));
       }
 
-      // 5. Admin panel protection
+      // 5. Admin panel protection (permits Clerk auth OR valid admin session cookie)
       if (
         pathname.startsWith("/admin") &&
         !pathname.startsWith("/admin/login") &&
-        !isAuthenticated
+        !hasAdminAccess
       ) {
         return NextResponse.redirect(new URL("/admin/login", req.url));
       }
