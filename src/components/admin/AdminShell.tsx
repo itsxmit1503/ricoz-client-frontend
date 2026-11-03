@@ -4,9 +4,10 @@ import { UserButton } from "@clerk/nextjs";
 import { ArrowUpRight, Eye, Menu, ShieldAlert, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { FullScreenSpinner } from "@/components/ui/Spinner";
 import { useAuth } from "@/hooks/useAuth";
+import { adminService } from "@/services/admin.service";
 import { adminNav } from "./nav-config";
 
 const hasClerkKey = Boolean(
@@ -14,17 +15,19 @@ const hasClerkKey = Boolean(
   !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes("localhost")
 );
 
-function Nav({ onNavigate }: { onNavigate?: () => void }) {
+function Nav({ onNavigate, adminUser }: { onNavigate?: () => void; adminUser?: { email: string; role: string; name?: string } | null }) {
   const pathname = usePathname();
   const isPreview = pathname.startsWith("/admin/preview");
   const { user } = useAuth();
 
   // Resolve display identity with guaranteed high contrast
   const displayEmail =
+    adminUser?.email ||
     user?.email ||
     (isPreview ? "preview@ricoz.mfg" : "admin@ricoz.mfg");
 
   const displayName =
+    adminUser?.name ||
     user?.name ||
     user?.username ||
     "System Administrator";
@@ -175,13 +178,43 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isPreview = pathname.startsWith("/admin/preview");
   const { user, loading } = useAuth();
+  const [adminSession, setAdminSession] = useState<{ authenticated: boolean; user?: { email: string; role: string; name?: string } } | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    if (isPreview) {
+      setCheckingSession(false);
+      return;
+    }
+    adminService
+      .checkSession()
+      .then((res) => {
+        if (active) setAdminSession(res);
+      })
+      .catch(() => {
+        if (active) setAdminSession({ authenticated: false });
+      })
+      .finally(() => {
+        if (active) setCheckingSession(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isPreview]);
 
   // Allow preview routes without authentication block
   if (!isPreview) {
-    if (loading) return <FullScreenSpinner />;
+    if ((loading || checkingSession) && !adminSession?.authenticated && user?.role !== "admin") {
+      return <FullScreenSpinner />;
+    }
 
-    if (user?.role !== "admin") {
+    const isClerkAdmin = user?.role === "admin";
+    const isSessionAdmin = Boolean(adminSession?.authenticated && adminSession?.user?.role === "admin");
+    const hasAdminPrivilege = isClerkAdmin || isSessionAdmin;
+
+    if (!hasAdminPrivilege && !loading && !checkingSession) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-[#06090f] px-4 text-center">
           <ShieldAlert className="h-10 w-10 text-rose-400" />
@@ -210,17 +243,19 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     }
   }
 
+  const activeAdminUser = adminSession?.user || (user?.role === "admin" ? { email: user.email, role: user.role, name: user.name || user.username } : null);
+
   return (
     <div className="flex h-screen overflow-hidden bg-[#06090f] text-slate-100">
       <div className="hidden lg:block">
-        <Nav />
+        <Nav adminUser={activeAdminUser} />
       </div>
 
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/70" onClick={() => setOpen(false)} />
           <div className="relative h-full w-64">
-            <Nav onNavigate={() => setOpen(false)} />
+            <Nav onNavigate={() => setOpen(false)} adminUser={activeAdminUser} />
             <button
               aria-label="Close menu"
               onClick={() => setOpen(false)}

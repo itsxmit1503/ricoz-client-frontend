@@ -210,6 +210,18 @@ export const adminService = {
       .then((r) => r.data.stats),
 
   /**
+   * Checks for an active HttpOnly admin session.
+   */
+  async checkSession(): Promise<{ authenticated: boolean; user?: { email: string; role: Role; name?: string } }> {
+    try {
+      const res = await adminApi.get<{ authenticated: boolean; user?: { email: string; role: Role; name?: string } }>("/session");
+      return res.data;
+    } catch {
+      return { authenticated: false };
+    }
+  },
+
+  /**
    * Performs an end-to-end live backend connectivity ping test.
    */
   async checkHealth(): Promise<BackendHealthStatus> {
