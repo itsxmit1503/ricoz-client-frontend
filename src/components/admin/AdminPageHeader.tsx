@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 export default function AdminPageHeader({
   badge,
+  badgeVariant = "default",
   title,
   description,
   breadcrumbs,
@@ -9,12 +10,20 @@ export default function AdminPageHeader({
   className = "",
 }: {
   badge?: string;
+  badgeVariant?: "database" | "store" | "default";
   title: string;
   description?: string;
   breadcrumbs?: string;
   actions?: ReactNode;
   className?: string;
 }) {
+  const badgeClasses =
+    badgeVariant === "database"
+      ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+      : badgeVariant === "store"
+      ? "border-amber-500/40 bg-amber-500/15 text-amber-300"
+      : "border-purple-500/30 bg-purple-500/10 text-purple-300";
+
   return (
     <div className={`flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between ${className}`}>
       <div className="min-w-0">
@@ -25,7 +34,7 @@ export default function AdminPageHeader({
             </p>
           )}
           {badge && (
-            <span className="rounded border border-purple-500/30 bg-purple-500/10 px-2 py-0.2 font-mono text-[9px] font-bold uppercase text-purple-300">
+            <span className={`rounded border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${badgeClasses}`}>
               {badge}
             </span>
           )}

@@ -44,6 +44,8 @@ export default function AdminAuditLogsPage() {
         title="Administrative Audit Trail"
         description="Immutable real-time ledger of security events, privilege adjustments, and configuration modifications recorded by the backend."
         breadcrumbs="Console / Audit Logs"
+        badge={data?.dataSource === "database" ? "Live Database" : "Standby Memory"}
+        badgeVariant={data?.dataSource === "database" ? "database" : "store"}
         actions={
           <Button
             variant="outline"

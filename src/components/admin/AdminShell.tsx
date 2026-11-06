@@ -179,6 +179,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const isPreview = pathname.startsWith("/admin/preview");
   const { user, loading } = useAuth();
   const [adminSession, setAdminSession] = useState<{ authenticated: boolean; user?: { email: string; role: string; name?: string } } | null>(null);
+  const [healthStatus, setHealthStatus] = useState<{ online: boolean; dataSource?: string; databaseStatus?: string } | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [open, setOpen] = useState(false);
 
@@ -188,13 +189,17 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       setCheckingSession(false);
       return;
     }
-    adminService
-      .checkSession()
-      .then((res) => {
-        if (active) setAdminSession(res);
-      })
-      .catch(() => {
-        if (active) setAdminSession({ authenticated: false });
+    Promise.allSettled([adminService.checkSession(), adminService.checkHealth()])
+      .then(([sessionResult, healthResult]) => {
+        if (!active) return;
+        if (sessionResult.status === "fulfilled") {
+          setAdminSession(sessionResult.value);
+        } else {
+          setAdminSession({ authenticated: false });
+        }
+        if (healthResult.status === "fulfilled") {
+          setHealthStatus(healthResult.value);
+        }
       })
       .finally(() => {
         if (active) setCheckingSession(false);
@@ -274,6 +279,42 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             <Link href="/admin/login" className="underline hover:text-white">
               Exit Preview
             </Link>
+          </div>
+        )}
+
+        {!isPreview && healthStatus?.online === false && (
+          <div className="flex items-center justify-between border-b border-rose-500/40 bg-rose-950/60 px-4 py-1.5 text-xs text-rose-300 font-mono">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+              <span>BACKEND SERVICE UNREACHABLE: Ensure Ricoz MFG Express server is running on port 5000.</span>
+            </span>
+            <span className="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rose-200">
+              OFFLINE
+            </span>
+          </div>
+        )}
+
+        {!isPreview && healthStatus?.online && healthStatus?.dataSource === "store" && (
+          <div className="flex items-center justify-between border-b border-amber-500/30 bg-amber-950/40 px-4 py-1.5 text-xs text-amber-300 font-mono">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              <span>STANDBY MODE: Primary database is offline. In-memory data store active; writes will not survive server restart.</span>
+            </span>
+            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-200">
+              STANDBY MEMORY
+            </span>
+          </div>
+        )}
+
+        {!isPreview && healthStatus?.online && healthStatus?.dataSource === "database" && (
+          <div className="flex items-center justify-between border-b border-emerald-500/30 bg-emerald-950/30 px-4 py-1 text-xs text-emerald-300 font-mono">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span>LIVE DATABASE: Primary MongoDB connected. Persistent storage verified.</span>
+            </span>
+            <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+              LIVE MONGO
+            </span>
           </div>
         )}
 

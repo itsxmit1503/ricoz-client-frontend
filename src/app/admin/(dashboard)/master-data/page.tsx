@@ -75,10 +75,13 @@ export default function AdminMasterDataPage() {
     },
   ]);
 
+  const [dataSource, setDataSource] = useState<string>("store");
+
   const loadAllRegistries = async () => {
   setRegistries((prev) => prev.map((r) => ({ ...r, loading: true })));
   try {
-    const counts = await adminService.masterDataCounts();
+    const { counts, dataSource: source } = await adminService.masterDataWithMeta();
+    setDataSource(source);
     setRegistries((prev) =>
       prev.map((r) => ({ ...r, count: counts[r.id as keyof typeof counts] ?? null, loading: false, error: null }))
     );
@@ -99,6 +102,8 @@ export default function AdminMasterDataPage() {
         title="Master Data Repositories"
         description="Centralized administration of authoritative manufacturing definitions, equipment registries, inventory ledgers, and vendor directories."
         breadcrumbs="Console / Master Data"
+        badge={dataSource === "database" ? "Live Database" : "Standby Memory"}
+        badgeVariant={dataSource === "database" ? "database" : "store"}
         actions={
           <Button
             variant="outline"

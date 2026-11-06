@@ -34,9 +34,12 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const [dataSource, setDataSource] = useState<string>("store");
+
   const loadSettings = async () => {
     try {
-      const st = await adminService.getSettings();
+      const { settings: st, dataSource: source } = await adminService.getSettingsWithMeta();
+      setDataSource(source);
       if (st) {
         if (st.plantName) setPlantName(st.plantName);
         if (st.plantCode) setPlantCode(st.plantCode);
@@ -76,6 +79,8 @@ export default function AdminSettingsPage() {
         title="System & Security Settings"
         description="Inspect environmental variables, security gate parameters, active connectivity status, and organizational metadata."
         breadcrumbs="Console / Settings"
+        badge={dataSource === "database" ? "Live Database" : "Standby Memory"}
+        badgeVariant={dataSource === "database" ? "database" : "store"}
       />
 
       {/* Security Architecture & Gate Parameters */}

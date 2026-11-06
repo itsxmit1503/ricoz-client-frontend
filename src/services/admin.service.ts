@@ -173,16 +173,29 @@ export const adminService = {
   /**
    * Retrieves master data inventory and catalog counts.
    */
+  masterDataWithMeta: () =>
+    adminApi
+      .get<{ counts: MasterDataCounts; dataSource?: string }>("/master-data")
+      .then((r) => ({ counts: r.data.counts, dataSource: r.data.dataSource || "store" })),
+
   masterDataCounts: () =>
     adminApi
       .get<{ counts: MasterDataCounts; dataSource?: string }>("/master-data")
       .then((r) => r.data.counts),
 
   /**
+   * Retrieves system settings with dataSource metadata.
+   */
+  getSettingsWithMeta: () =>
+    adminApi
+      .get<{ settings: OrgSettings; dataSource?: string }>("/settings")
+      .then((r) => ({ settings: r.data.settings, dataSource: r.data.dataSource || "store" })),
+
+  /**
    * Retrieves system settings.
    */
   getSettings: () =>
-    adminApi.get<{ settings: OrgSettings }>("/settings").then((r) => r.data.settings),
+    adminApi.get<{ settings: OrgSettings; dataSource?: string }>("/settings").then((r) => r.data.settings),
 
   /**
    * Persists updated system settings.
@@ -192,6 +205,17 @@ export const adminService = {
 
   updateSettings: (payload: Partial<OrgSettings>) =>
     adminApi.put<{ settings: OrgSettings }>("/settings", payload).then((r) => r.data.settings),
+
+  /**
+   * Retrieves full employee account directory with dataSource metadata.
+   */
+  listUsersWithMeta: () =>
+    adminApi
+      .get<{ users: ServerUser[]; dataSource?: string }>("/users")
+      .then((r) => ({
+        users: (r.data?.users || []).map(toUser),
+        dataSource: r.data?.dataSource || "store",
+      })),
 
   /**
    * Retrieves full employee account directory.

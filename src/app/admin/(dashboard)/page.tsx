@@ -97,6 +97,8 @@ export default function AdminOverviewPage() {
         title="Admin Overview"
         description="Private central command for user governance, permission policy inspection, master data registries, and system health monitoring."
         breadcrumbs="Console / Overview"
+        badge={health?.dataSource === "database" ? "Live Database" : "Standby Memory"}
+        badgeVariant={health?.dataSource === "database" ? "database" : "store"}
         actions={
           <Button
             variant="outline"

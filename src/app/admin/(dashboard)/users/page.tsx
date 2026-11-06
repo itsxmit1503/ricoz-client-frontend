@@ -44,13 +44,15 @@ export default function AdminUsersPage() {
   const [selectedRole, setSelectedRole] = useState<UserType["role"]>("user");
   const [updatingRole, setUpdatingRole] = useState(false);
   const [togglingStatusId, setTogglingStatusId] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<string>("store");
 
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminService.listUsers();
+      const { users: data, dataSource: source } = await adminService.listUsersWithMeta();
       setUsers(data);
+      setDataSource(source);
     } catch (err: unknown) {
       const e = err as Error;
       setError(e.message || "Failed to retrieve user directory.");
@@ -144,6 +146,8 @@ export default function AdminUsersPage() {
         title="User Governance & Directory"
         description="Inspect registered employee accounts, role assignments, and email verification status from the live identity database."
         breadcrumbs="Console / Users"
+        badge={dataSource === "database" ? "Live Database" : "Standby Memory"}
+        badgeVariant={dataSource === "database" ? "database" : "store"}
         actions={
           <Button
             variant="outline"
