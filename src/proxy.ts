@@ -29,8 +29,21 @@ const clerkHandler = hasClerkKey
         return NextResponse.redirect(new URL("/admin", req.url));
       }
 
-      // 4. Standard dashboard protection
-      if (pathname.startsWith("/dashboard") && !isAuthenticated) {
+      // 4. Standard ERP protected modules protection
+      const isProtectedModule =
+        pathname.startsWith("/dashboard") ||
+        pathname.startsWith("/production") ||
+        pathname.startsWith("/machines") ||
+        pathname.startsWith("/quality") ||
+        pathname.startsWith("/maintenance") ||
+        pathname.startsWith("/inventory") ||
+        pathname.startsWith("/suppliers") ||
+        pathname.startsWith("/purchase") ||
+        pathname.startsWith("/bom") ||
+        pathname.startsWith("/products") ||
+        pathname.startsWith("/info");
+
+      if (isProtectedModule && !isAuthenticated) {
         return NextResponse.redirect(new URL("/login", req.url));
       }
 

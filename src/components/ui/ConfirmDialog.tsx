@@ -2,6 +2,7 @@
 
 import { TriangleAlert } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Button from "./Button";
 import { focusWithoutScroll, getFocusableElements, isTopmostLayer, lockBodyScroll } from "./focus";
 
@@ -30,9 +31,14 @@ export default function ConfirmDialog({
   const loadingRef = useRef(Boolean(loading));
   const titleId = useId();
 
+  const [hasMounted, setHasMounted] = useState(false);
   const [mounted, setMounted] = useState(open);
   const [renderedTitle, setRenderedTitle] = useState(title);
   const [renderedMessage, setRenderedMessage] = useState(message);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -108,48 +114,53 @@ export default function ConfirmDialog({
     };
   }, [open]);
 
-  if (!mounted && !open) return null;
+  if (!hasMounted || (!mounted && !open)) return null;
 
-  return (
+  const content = (
     <div
       ref={dialogRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto theme-scrollbar"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
       tabIndex={-1}
     >
       <div
-        className={`ui-dialog-backdrop absolute inset-0 bg-black/80 backdrop-blur-xs ${
+        className={`ui-dialog-backdrop fixed inset-0 bg-black/80 backdrop-blur-xs ${
           open ? "ui-dialog-backdrop-enter" : "ui-dialog-backdrop-exit"
         }`}
         onClick={loading ? undefined : onCancel}
+        aria-hidden="true"
       />
-      <div
-        className={`ui-dialog-panel ${
-          open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"
-        } relative max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-xl border border-slate-700/90 bg-[#0c111e] p-5 shadow-2xl shadow-black/60 sm:p-6`}
-      >
-        <div className="flex items-start gap-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
-            <TriangleAlert className="h-5 w-5" />
-          </span>
-          <div>
-            <h2 id={titleId} className="font-semibold text-white tracking-tight">
-              {renderedTitle}
-            </h2>
-            <p className="mt-1 text-sm text-slate-300">{renderedMessage}</p>
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 text-center">
+        <div
+          className={`ui-dialog-panel ${
+            open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"
+          } relative my-auto w-full max-w-md overflow-hidden rounded-xl border border-slate-700/90 bg-[#0c111e] p-5 shadow-2xl shadow-black/80 sm:p-6 text-left`}
+        >
+          <div className="flex items-start gap-4">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-400">
+              <TriangleAlert className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 id={titleId} className="font-semibold text-white tracking-tight">
+                {renderedTitle}
+              </h2>
+              <p className="mt-1 text-sm text-slate-300">{renderedMessage}</p>
+            </div>
           </div>
-        </div>
-        <div className="mt-6 flex justify-end gap-3">
-          <Button variant="outline" className="w-auto" onClick={onCancel} disabled={loading}>
-            Cancel
-          </Button>
-          <Button className="w-auto bg-red-600 hover:bg-red-500" loading={loading} onClick={onConfirm}>
-            {confirmLabel}
-          </Button>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="outline" className="w-auto" onClick={onCancel} disabled={loading}>
+              Cancel
+            </Button>
+            <Button className="w-auto bg-red-600 hover:bg-red-500" loading={loading} onClick={onConfirm}>
+              {confirmLabel}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }
