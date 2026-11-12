@@ -59,7 +59,7 @@ export default function AdminAuditLogsPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-2 rounded-xl border border-slate-800 bg-[#0c111e] p-4">
+      <div className="flex flex-col sm:flex-row gap-2.5 rounded-xl border border-slate-800 bg-[#0c111e] p-4">
         <select
           value={action}
           onChange={(e) => {
@@ -105,9 +105,8 @@ export default function AdminAuditLogsPage() {
         />
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e]">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-[#080d17] font-mono uppercase tracking-wider text-slate-200">
+          <div className="overflow-x-auto theme-scrollbar"><table className="w-full text-left text-xs min-w-[700px]">
+              <thead className="border-b border-slate-800 bg-[#080d17] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-bold">Time</th>
                   <th className="px-4 py-3 font-bold">Actor</th>
@@ -117,11 +116,11 @@ export default function AdminAuditLogsPage() {
                   <th className="px-4 py-3 font-bold">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80 font-mono">
+              <tbody className="divide-y divide-slate-800/80">
                 {data.logs.map((l) => (
                   <tr key={l._id} className="hover:bg-[#0e1424]">
                     <td className="whitespace-nowrap px-4 py-3 text-slate-300 text-[11px]">
-                      {new Date(l.timestamp || (l as any).createdAt || Date.now()).toLocaleString()}
+                      {l.timestamp ? new Date(l.timestamp).toLocaleString() : (l.createdAt ? new Date(l.createdAt).toLocaleString() : "-")}
                     </td>
                     <td className="px-4 py-3 font-semibold text-white">{l.actorEmail}</td>
                     <td className="px-4 py-3">

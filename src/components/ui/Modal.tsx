@@ -122,16 +122,16 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
       />
 
       {/* Centering wrapper preventing top clipping on all viewport heights */}
-      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 text-center">
+      <div className="flex min-h-full items-center justify-center p-2.5 sm:p-6 text-center">
         <div
           className={`ui-dialog-panel ${
             open ? "ui-dialog-panel-enter" : "ui-dialog-panel-exit"
           } relative my-auto flex flex-col w-full ${
             wide ? "max-w-2xl" : "max-w-lg"
-          } max-h-[calc(100dvh-3rem)] rounded-xl border border-slate-700/80 bg-[#0c111e] shadow-2xl shadow-black/80 text-left overflow-hidden`}
+          } max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-3rem)] rounded-xl border border-slate-700/80 bg-[#0c111e] shadow-2xl shadow-black/80 text-left overflow-hidden`}
         >
           {/* Header - Fixed & sticky, permanently visible with Title and Close button */}
-          <div className="shrink-0 flex items-center justify-between border-b border-slate-800/80 px-6 py-4 bg-[#090d16]">
+          <div className="shrink-0 flex items-center justify-between border-b border-slate-800/80 px-4 sm:px-6 py-3.5 sm:py-4 bg-[#090d16]">
             <h2 id={titleId} className="text-base font-semibold text-white tracking-tight">
               {renderedTitle}
             </h2>
@@ -147,7 +147,7 @@ export default function Modal({ open, title, onClose, children, wide = false }: 
           </div>
 
           {/* Form Content - Smooth internal scrolling */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-6 theme-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 theme-scrollbar">
             {renderedChildren}
           </div>
         </div>

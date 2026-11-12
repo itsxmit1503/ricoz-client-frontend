@@ -119,7 +119,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             onClick={closeDrawer}
           />
           <div
-            className={`ui-drawer-panel relative h-full w-72 max-w-[85vw] shadow-2xl ${
+            className={`ui-drawer-panel relative h-full w-72 max-w-[calc(100vw-3rem)] shadow-2xl ${
               drawerOpen ? "ui-drawer-panel-enter" : "ui-drawer-panel-exit"
             }`}
           >
@@ -129,7 +129,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               type="button"
               aria-label="Close navigation"
               onClick={closeDrawer}
-              className="ui-pressable absolute -right-12 top-4 rounded-lg border border-slate-700 bg-slate-900 p-2 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="ui-pressable absolute right-3 top-3 z-10 rounded-lg border border-slate-700 bg-slate-900/90 p-2 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
               <X className="h-5 w-5" />
             </button>

@@ -216,7 +216,7 @@ export default function AdminSettingsPage() {
             />
           </div>
 
-          <div className="pt-2 flex items-center gap-3">
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Button
               type="submit"
               loading={isSaving}

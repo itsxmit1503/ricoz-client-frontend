@@ -311,9 +311,8 @@ export default function AdminOverviewPage() {
               description="Audit logging pipeline is active. Administrative modifications like role changes will stream here."
             />
           ) : (
-            <div className="overflow-hidden rounded-lg border border-slate-800 bg-[#080d17]">
-              <table className="w-full text-left text-xs font-mono">
-                <thead className="border-b border-slate-800 bg-[#060a12] text-slate-200 uppercase text-[10px]">
+            <div className="overflow-hidden rounded-lg border border-slate-800 bg-[#080d17]"><div className="overflow-x-auto theme-scrollbar"><table className="w-full text-left text-xs min-w-[560px]">
+                <thead className="border-b border-slate-800 bg-[#060a12] text-slate-400 uppercase text-[10px] font-semibold tracking-wider">
                   <tr>
                     <th className="px-3.5 py-2.5">Time</th>
                     <th className="px-3.5 py-2.5">Actor</th>
@@ -347,11 +346,5 @@ export default function AdminOverviewPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+              </table></div></div>)}</div></div></div>);
 }

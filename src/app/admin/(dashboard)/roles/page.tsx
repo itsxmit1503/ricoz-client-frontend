@@ -208,7 +208,7 @@ export default function AdminRolesPage() {
                 <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-300">
                   Enforced Permissions
                 </p>
-                <ul className="space-y-1.5 font-mono text-xs">
+                <ul className="space-y-1.5 text-xs">
                   {role.permissions.map((perm) => (
                     <li
                       key={perm.key}

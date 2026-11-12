@@ -246,9 +246,8 @@ export default function AdminUsersPage() {
         />
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0c111e] shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-[#080d17] font-mono uppercase tracking-wider text-slate-200">
+          <div className="overflow-x-auto theme-scrollbar"><table className="w-full text-left text-xs min-w-[720px]">
+              <thead className="border-b border-slate-800 bg-[#080d17] text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 <tr>
                   <th className="px-4 py-3 font-bold">User</th>
                   <th className="px-4 py-3 font-bold">Role</th>
@@ -258,7 +257,7 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3 text-right font-bold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80 font-mono">
+              <tbody className="divide-y divide-slate-800/80">
                 {filteredUsers.map((u) => (
                   <tr key={u._id} className="transition-colors hover:bg-[#0e1424]">
                     <td className="px-4 py-3.5">
@@ -270,7 +269,7 @@ export default function AdminUsersPage() {
                           <span className="block font-bold text-white truncate">
                             {u.username || u.name || "Unnamed Employee"}
                           </span>
-                          <span className="block text-[11px] text-slate-300 font-mono truncate">
+                          <span className="block text-xs text-slate-300 truncate">
                             {u.email}
                           </span>
                         </div>
@@ -390,7 +389,7 @@ export default function AdminUsersPage() {
           onClose={() => setSelectedUser(null)}
           title="Account Profile Inspection"
         >
-          <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-4 text-xs">
             <div className="rounded-lg border border-slate-800 bg-[#080d17] p-4 space-y-3">
               <div className="flex justify-between border-b border-slate-800/80 pb-2">
                 <span className="text-slate-300">Database ID:</span>
@@ -452,14 +451,14 @@ export default function AdminUsersPage() {
           onClose={() => setRoleChangeTarget(null)}
           title="Administrative Privilege Modification"
         >
-          <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-4 text-xs">
             <p className="text-slate-200">
               Update privilege tier for account: <strong className="text-white">{roleChangeTarget.email}</strong>
             </p>
 
             <div>
               <label className="block text-slate-300 font-semibold mb-2">Select Target Role:</label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
                   { id: "admin", label: "Administrator", tier: "Core Platform", desc: "Full console access & user governance" },
                   { id: "user", label: "Standard User", tier: "Core Platform", desc: "General read-only operational portal" },
@@ -477,12 +476,12 @@ export default function AdminUsersPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="block font-bold">{r.label}</span>
-                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800/80 text-slate-300">
+                      <span className="block font-bold text-sm text-white">{r.label}</span>
+                      <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border border-slate-700 bg-slate-800 text-slate-300">
                         {r.tier}
                       </span>
                     </div>
-                    <span className="mt-1 block text-[10px] text-slate-400">{r.desc}</span>
+                    <span className="mt-1 block text-xs text-slate-300 leading-snug">{r.desc}</span>
                   </button>
                 ))}
               </div>
@@ -493,7 +492,7 @@ export default function AdminUsersPage() {
               Role updates are committed directly to the backend database. If MongoDB is offline, administrative writes fail safely with HTTP 503 to prevent non-persistent state drift.
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-3 border-t border-slate-800">
               <Button
                 variant="outline"
                 size="sm"

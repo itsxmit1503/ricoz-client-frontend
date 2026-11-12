@@ -131,7 +131,7 @@ function Nav({ onNavigate, adminUser }: { onNavigate?: () => void; adminUser?: {
                 />
               ) : (
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-lg border text-xs font-bold font-mono shadow-sm ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border text-xs font-bold shadow-sm ${
                     isPreview
                       ? "border-amber-500/50 bg-amber-500/20 text-amber-200"
                       : "border-purple-500/50 bg-purple-600/20 text-purple-200"
@@ -160,8 +160,7 @@ function Nav({ onNavigate, adminUser }: { onNavigate?: () => void; adminUser?: {
                   {isPreview ? "PREVIEW" : "ADMIN"}
                 </span>
               </div>
-              <p
-                className="truncate font-mono text-[11px] font-bold text-slate-100 tracking-tight mt-1"
+              <p className="truncate text-xs font-semibold text-slate-200 mt-0.5 tracking-normal"
                 title={displayEmail}
               >
                 {displayEmail}
@@ -259,16 +258,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/70" onClick={() => setOpen(false)} />
-          <div className="relative h-full w-64">
-            <Nav onNavigate={() => setOpen(false)} adminUser={activeAdminUser} />
-            <button
-              aria-label="Close menu"
-              onClick={() => setOpen(false)}
-              className="absolute -right-12 top-4 rounded-lg bg-slate-900 p-2 text-slate-200"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <div className="relative h-full w-72 max-w-[calc(100vw-3rem)]"><Nav onNavigate={() => setOpen(false)} adminUser={activeAdminUser} /><button aria-label="Close menu" onClick={() => setOpen(false)} className="absolute right-3 top-3 z-10 rounded-lg border border-slate-700 bg-slate-900 p-2 text-slate-200 hover:bg-slate-800"><X className="h-4 w-4" /></button></div>
         </div>
       )}
 
@@ -283,7 +273,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         )}
 
         {!isPreview && healthStatus?.online === false && (
-          <div className="flex items-center justify-between border-b border-rose-500/40 bg-rose-950/60 px-4 py-1.5 text-xs text-rose-300 font-mono">
+          <div className="flex items-center justify-between border-b border-rose-500/40 bg-rose-950/60 px-3 sm:px-4 py-1.5 text-xs text-rose-300 flex-col sm:flex-row items-start sm:items-center gap-1.5">
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
               <span>BACKEND SERVICE UNREACHABLE: Ensure Ricoz MFG Express server is running on port 5000.</span>
@@ -295,7 +285,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         )}
 
         {!isPreview && healthStatus?.online && healthStatus?.dataSource === "store" && (
-          <div className="flex items-center justify-between border-b border-amber-500/30 bg-amber-950/40 px-4 py-1.5 text-xs text-amber-300 font-mono">
+          <div className="flex items-center justify-between border-b border-amber-500/30 bg-amber-950/40 px-3 sm:px-4 py-1.5 text-xs text-amber-300 flex-col sm:flex-row items-start sm:items-center gap-1.5">
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
               <span>STANDBY MODE: Primary database is offline. In-memory data store active; writes will not survive server restart.</span>
@@ -307,7 +297,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         )}
 
         {!isPreview && healthStatus?.online && healthStatus?.dataSource === "database" && (
-          <div className="flex items-center justify-between border-b border-emerald-500/30 bg-emerald-950/30 px-4 py-1 text-xs text-emerald-300 font-mono">
+          <div className="flex items-center justify-between border-b border-emerald-500/30 bg-emerald-950/30 px-3 sm:px-4 py-1 text-xs text-emerald-300 flex-col sm:flex-row items-start sm:items-center gap-1.5">
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
               <span>LIVE DATABASE: Primary MongoDB connected. Persistent storage verified.</span>
