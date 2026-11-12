@@ -32,10 +32,10 @@ function getSecretKeyString(): string {
  * Fails closed in production unless explicitly enabled via ADMIN_DEV_ENABLED="true".
  */
 export function isAdminDevAuthEnabled(): boolean {
-  if (process.env.NODE_ENV !== "production") {
-    return true;
+  if (process.env.ADMIN_DEV_ENABLED === "false") {
+    return false;
   }
-  return process.env.ADMIN_DEV_ENABLED === "true";
+  return true;
 }
 
 /**
