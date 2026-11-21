@@ -47,7 +47,17 @@ export default function Input({
             error
               ? "border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/25"
               : "border-slate-700/80 hover:border-slate-600 focus:border-blue-500 focus:ring-blue-500/25"
-          } ${className}`}
+          } ${type === "date" ? "cursor-pointer [color-scheme:dark]" : ""} ${className}`}
+          onClick={(e) => {
+            if (type === "date" && "showPicker" in e.currentTarget) {
+              try {
+                (e.currentTarget as any).showPicker();
+              } catch {
+                // showPicker fallback
+              }
+            }
+            rest.onClick?.(e);
+          }}
           {...rest}
         />
         {isPassword && (

@@ -25,6 +25,9 @@ function ProductPicker() {
 
   return (
     <div className="mx-auto max-w-3xl">
+      <Link href="/products" className="inline-flex items-center gap-2 mb-4 text-sm font-medium text-slate-300 hover:text-white transition">
+        <ArrowLeft className="h-4 w-4" /> Back to products
+      </Link>
       <h1 className="text-2xl font-bold tracking-tight text-white">Edit Product</h1>
       <p className="mb-6 mt-1 text-sm text-slate-300">Choose the product you want to edit.</p>
 

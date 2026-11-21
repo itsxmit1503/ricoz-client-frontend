@@ -16,6 +16,7 @@ import Select from "@/components/ui/Select";
 import Spinner from "@/components/ui/Spinner";
 import StatusFilterCards from "@/components/ui/StatusFilterCards";
 import { useList } from "@/hooks/useList";
+import { machineService } from "@/services/machine.service";
 import { productService } from "@/services/product.service";
 import { qualityIssueService } from "@/services/qualityIssue.service";
 import { workOrderService } from "@/services/workOrder.service";
@@ -36,6 +37,7 @@ export default function QualityIssuesPage() {
   const issues = useList(qualityIssueService.list, "Could not load quality issues.");
   const workOrders = useList(workOrderService.list, "Could not load work orders.");
   const products = useList(productService.list, "Could not load products.");
+  const machines = useList(machineService.list, "Could not load machines.");
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -302,6 +304,7 @@ export default function QualityIssuesPage() {
             initial={modal === "new" ? emptyQualityForm(suggestedNumber) : qualityIssueToForm(modal)}
             workOrders={workOrders.items}
             products={products.items}
+            machines={machines.items}
             submitLabel={modal === "new" ? "Log issue" : "Save changes"}
             onSubmit={handleSave}
             onCancel={() => setModal(null)}

@@ -11,6 +11,7 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Input from "@/components/ui/Input";
 import Spinner from "@/components/ui/Spinner";
 import { useList } from "@/hooks/useList";
+import { machineService } from "@/services/machine.service";
 import { productService } from "@/services/product.service";
 import { qualityIssueService } from "@/services/qualityIssue.service";
 import { workOrderService } from "@/services/workOrder.service";
@@ -93,6 +94,7 @@ function IssueDetails({ id }: { id: string }) {
   const router = useRouter();
   const workOrders = useList(workOrderService.list, "Could not load work orders.");
   const products = useList(productService.list, "Could not load products.");
+  const machines = useList(machineService.list, "Could not load machines.");
 
   const [issue, setIssue] = useState<QualityIssue | null>(null);
   const [loading, setLoading] = useState(true);
@@ -205,6 +207,7 @@ function IssueDetails({ id }: { id: string }) {
                 initial={qualityIssueToForm(issue)}
                 workOrders={workOrders.items}
                 products={products.items}
+                machines={machines.items}
                 onSubmit={handleUpdate}
                 onCancel={() => setEditing(false)}
               />

@@ -27,8 +27,9 @@ export type IssueStatus = (typeof ISSUE_STATUSES)[number]["value"];
 export interface QualityIssue {
   _id: string;
   issueNumber: string;
-  workOrder: { _id: string; workOrderNumber: string } | null; // null if the work order was deleted
+  workOrder: { _id: string; workOrderNumber: string } | null;
   product?: ProductRef | null;
+  machine?: { _id: string; name: string; code: string } | null;
   type: QualityType;
   quantityInspected: number;
   quantityPassed: number;
@@ -37,7 +38,6 @@ export interface QualityIssue {
   description?: string;
   severity: Severity;
   status: IssueStatus;
-  // The API populates this from the User model; show whichever name field comes back
   inspector?: { _id: string; username?: string; name?: string; email?: string } | null;
   correctiveAction?: string;
   closedAt?: string | null;
@@ -48,7 +48,8 @@ export interface QualityIssue {
 export interface QualityIssueInput {
   issueNumber: string;
   workOrder: string;
-  product: string | null;
+  product?: string | null;
+  machine?: string | null;
   type: QualityType;
   quantityInspected: number;
   quantityPassed: number;
@@ -70,4 +71,4 @@ export function withClosedAt<T extends { status: IssueStatus }>(values: T, exist
   };
 }
 
-export const inspectorName = (i: QualityIssue["inspector"]) => i?.username ?? i?.name ?? i?.email ?? "—";
+export const inspectorName = (i: QualityIssue["inspector"]) => i?.username ?? i?.name ?? i?.email ?? "-";
