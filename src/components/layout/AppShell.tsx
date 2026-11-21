@@ -19,6 +19,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
 
   const pathname = usePathname();
 
@@ -43,6 +45,56 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
   }, []);
+
+  // Native mobile gesture: edge-swipe from left to open drawer
+  useEffect(() => {
+    let edgeStartX = 0;
+    let edgeStartY = 0;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      edgeStartX = e.touches[0].clientX;
+      edgeStartY = e.touches[0].clientY;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (e.changedTouches.length !== 1) return;
+      const deltaX = e.changedTouches[0].clientX - edgeStartX;
+      const deltaY = e.changedTouches[0].clientY - edgeStartY;
+
+      // Swipe right from left edge (within 28px) to open navigation drawer
+      if (edgeStartX < 28 && deltaX > 50 && Math.abs(deltaY) < 60) {
+        setDrawerOpen(true);
+      }
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
+
+  // Touch gesture on drawer to swipe left and dismiss
+  const handleDrawerTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleDrawerTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartYRef.current;
+
+    // Swipe left (>= 45px) with modest vertical movement closes the drawer
+    if (deltaX < -45 && Math.abs(deltaY) < 90) {
+      closeDrawer();
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+  };
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -97,13 +149,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, [closeDrawer, drawerOpen]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#090d16] text-slate-100">
+    <div className="flex min-h-dvh h-dvh overflow-hidden bg-[#090d16] text-slate-100">
       {/* Desktop Persistent Sidebar */}
       <div className="hidden lg:block shrink-0">
         <Sidebar />
       </div>
 
-      {/* Mobile Drawer with Smooth Animated Entry and Exit */}
+      {/* Mobile Drawer with Smooth Animated Entry and Exit + Touch Gestures */}
       {drawerMounted && (
         <div
           ref={drawerRef}
@@ -119,7 +171,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
             onClick={closeDrawer}
           />
           <div
-            className={`ui-drawer-panel relative h-full w-72 max-w-[calc(100vw-3rem)] shadow-2xl ${
+            onTouchStart={handleDrawerTouchStart}
+            onTouchEnd={handleDrawerTouchEnd}
+            className={`ui-drawer-panel relative h-full w-72 max-w-[calc(100vw-3rem)] shadow-2xl touch-manipulation ${
               drawerOpen ? "ui-drawer-panel-enter" : "ui-drawer-panel-exit"
             }`}
           >
@@ -129,7 +183,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               type="button"
               aria-label="Close navigation"
               onClick={closeDrawer}
-              className="ui-pressable absolute right-3 top-3 z-10 rounded-lg border border-slate-700 bg-slate-900/90 p-2 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              className="ui-pressable min-h-[44px] min-w-[44px] flex items-center justify-center absolute right-3 top-3 z-10 rounded-lg border border-slate-700 bg-slate-900/90 p-2.5 text-slate-200 transition hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
             >
               <X className="h-5 w-5" />
             </button>
@@ -140,18 +194,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
       {/* Main Content Workspace Column */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Unified Top Command Header */}
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-800/80 bg-[#0b0f1a] px-4 sm:px-6">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-800/80 bg-[#0b0f1a] px-3 sm:px-6">
           <div className="flex items-center gap-3 min-w-0">
-            {/* Mobile hamburger button */}
+            {/* Mobile hamburger button - meets minimum 44x44px touch target */}
             <button
               ref={menuButtonRef}
               type="button"
               aria-label="Open navigation menu"
               aria-expanded={drawerOpen}
               onClick={() => setDrawerOpen(true)}
-              className="ui-pressable rounded-lg border border-slate-700 bg-[#121826] p-2 text-slate-300 transition hover:border-slate-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 lg:hidden"
+              className="ui-pressable min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg border border-slate-700 bg-[#121826] p-2.5 text-slate-300 transition hover:border-slate-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 lg:hidden touch-manipulation"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-5 w-5" />
             </button>
 
             {/* Mobile Brand Indicator */}
@@ -184,7 +238,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         {/* Scrollable Page Body with App Router Smooth Content Transition */}
-        <main className="theme-scrollbar flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="theme-scrollbar flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">
           <div key={pathname} className="ui-page-transition">
             {children}
           </div>
